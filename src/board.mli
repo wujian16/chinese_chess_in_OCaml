@@ -1,29 +1,23 @@
 open Core.Std
+open Piece
 
-(* the variable round tells the current round
- * is red side's turn or blue side's turn*)
-val round: bool
+module type Board_Info:
+sig
+  type board
 
-(* piece_info tells what is each peice*)
-type piece_info = General|Advisor|Elephant|Horse|Chariot|Cannon|Soldier
+  (* the variable round tells the current round
+   * is red side's turn or blue side's turn*)
+  val round: bool
 
-(*the second item of piece tells which side the piece belongs to*)
-type piece = piece_info*bool
+  (*get the piece given position*)
+  val check_position: position->piece option
 
-type position = int*int
+  (*get the position given a piece*)
+  val get_position: piece->position option
 
-(*The representation can get the piece given position*)
-val board_rep: piece array array
+  (*the following function can tell whether a piece still exists on the borad*)
+  val check_alive: piece->bool
 
-(*another representation can get the position given a piece*)
-val board_piece: (piece, position) Hashtbl.t = <abstr>
-
-(*get the piece given position*)
-val check_position: position->piece option
-
-(*get the position given a piece*)
-val get_position: piece->position option
-
-val check_alive: piece->bool
-
-val get_alive_pieces: unit->piece list
+  (*giving all the pieces which are still alive*)
+  val get_alive_pieces: unit->piece list
+end
