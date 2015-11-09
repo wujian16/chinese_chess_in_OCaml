@@ -10,14 +10,14 @@ sig
   val round: bool
 
   (*get the piece given position*)
-  val check_position: position->piece option
+  val check_position: board->position->piece option
 
   (*get the position given a piece*)
-  val get_position: piece->position option
+  val get_position: board->piece->position option
 
   (*the following function can tell whether a piece still exists on the borad*)
-  val check_alive: piece->bool
+  val check_alive: board->piece->bool
 
   (*giving all the pieces which are still alive*)
-  val get_alive_pieces: unit->piece list
+  val get_alive_pieces: board->piece list
 end
