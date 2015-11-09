@@ -7,13 +7,15 @@ module type Move_Info:
 sig  
   type board
 
-  val check_valid: board->step->bool
+  type prev_step
 
-  val check_win: board->step->bool
+  val check_valid: board->prev_step->step->bool
 
-  val checked: board->step->bool
+  val check_win: board->prev_step->step->bool
 
-  val update: board->board option
+  val checked: board->prev_step->step->bool
 
-  val generate_piece_move: board->piece->step list option
+  val update: (board,prev_step)->(board,prev_step) option
+
+  val generate_piece_move: board->prev_step->piece->step list option
 end 
