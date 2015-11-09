@@ -5,7 +5,13 @@ module type AI=
 sig
   type board
 
-  val sort: board->move list
+  type transposition_table
 
-  val best_move: int->board->move list
+  type history_table
+
+  val sort: board->step list
+
+  val best_move: int->board->transposition_table->history_table->step list
+
+  val update: transposition_table*history_table->transposition_table*history_table
 end

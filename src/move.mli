@@ -18,4 +18,6 @@ sig
   val update: (board,prev_step)->(board,prev_step) option
 
   val generate_piece_move: board->prev_step->piece->step list option
+
+  val:print_step: step->unit
 end 

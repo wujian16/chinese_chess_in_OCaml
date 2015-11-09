@@ -3,6 +3,9 @@ open Piece
 
 module type Board_Info:
 sig
+  (*
+   *board={first=piece array array; second=(string,piece) Hashtbl}
+   *)
   type board
 
   (* the variable round tells the current round
@@ -20,4 +23,10 @@ sig
 
   (*giving all the pieces which are still alive*)
   val get_alive_pieces: board->piece list
+
+  (*print the ball*)
+  val print_board: board->unit
+
+  (*print the peice*)
+  val print_piece: piece->unit
 end
