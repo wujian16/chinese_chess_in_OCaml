@@ -19,5 +19,5 @@ sig
 
   val generate_piece_move: board->prev_step->piece->step list option
 
-  val:print_step: step->unit
+  val print_step: step->unit
 end 
