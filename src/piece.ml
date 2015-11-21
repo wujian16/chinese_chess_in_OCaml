@@ -4,7 +4,7 @@ type positon = int*int
 type piece={
 name:string;
 print_name : string;
-print_color: (*color*)
+print_color: (*color*);
 type_of: piece_type;
 team: bool;
 init_place : position;
