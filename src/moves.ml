@@ -165,8 +165,10 @@ type step={start:position; destination: position; piece_captured: piece option}
          | _ , _ -> ()
       else
         match  (check_position b curr_position), (in_bound curr_position) with
-         | sth ,true -> result := {start = (x,y); destination = curr_position ;
-          piece_captured = sth}::(!result); 
+         | Some sth ,true -> if sth.team=pc.team then ()
+                             else 
+                    result := {start = (x,y); destination = curr_position;
+                    piece_captured = Some sth}::(!result); 
          | None, true -> loop_forward (x, y+1)
          | _ , _ -> ()
       in
@@ -179,8 +181,10 @@ type step={start:position; destination: position; piece_captured: piece option}
          | _ , _ -> ()
       else
         match  (check_position b curr_position), (in_bound curr_position) with
-         | sth ,true -> result := {start = (x,y); destination = curr_position ;
-          piece_captured = sth}::(!result); 
+         | Some sth ,true -> if sth.team=pc.team then ()
+                             else 
+                    result := {start = (x,y); destination = curr_position;
+                    piece_captured = Some sth}::(!result); 
          | None, true -> loop_back (x, y-1)
          | _ , _ -> ()
       in
@@ -193,8 +197,10 @@ type step={start:position; destination: position; piece_captured: piece option}
          | _ , _ -> ()
       else
         match  (check_position b curr_position), (in_bound curr_position) with
-         | sth ,true -> result := {start = (x,y); destination = curr_position ;
-          piece_captured = sth}::(!result);
+         | Some sth ,true -> if sth.team=pc.team then ()
+                             else 
+                    result := {start = (x,y); destination = curr_position;
+                    piece_captured = Some sth}::(!result); 
          | None, true -> loop_left (x-1, y)
          | _ , _ -> ()
       in
@@ -207,8 +213,10 @@ type step={start:position; destination: position; piece_captured: piece option}
          | _ , _ -> ()
       else
         match  (check_position b curr_position), (in_bound curr_position) with
-         | sth ,true -> result := {start = (x,y); destination = curr_position ;
-          piece_captured = sth}::(!result);
+         | Some sth ,true -> if sth.team=pc.team then ()
+                             else 
+                    result := {start = (x,y); destination = curr_position;
+                    piece_captured = Some sth}::(!result); 
          | None, true -> loop_right (x+1, y)
          | _ , _ -> ()
         in
