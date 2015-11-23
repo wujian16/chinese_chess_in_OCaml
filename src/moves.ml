@@ -3,16 +3,67 @@ open Piece
 exception TODO
 exception InvalidMove
 (* the following type tells one step during one game*)
-type step={start:position; destination: position; mutable piece_captured: piece option}
+type step={start:position; destination: position; mutable : piece option}
 
-module  Move_Info = struct
   type  board = board
   type  previous_step = step
 
 
+  let update_catch_piece = TODO
+
+  let in_bound ((x,y):position) : bool=
+    x>=1 && x<=9 && y>=1 && y <=9
+
+
   (*generate all the steps of a Rook on board with position p *)
-  let move_rook (b:board) (pc:piece) (p: position) :step list =
-    let result = [] in
+  let move_rook (b:board) (pc:piece) ((x,y): position) :step list =
+
+    begin
+      let result = ref [] in
+
+      let rec loop_forward curr_position =
+      match  check_postition dest with
+      | None -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = None}::result; loop_forward (x, y+1)
+      | sth -> result := {start = (x,y); destination = curr_position;
+          piece_captured = sth}::result
+      in
+      let rec loop_back curr_position =
+      match (check_position curr_position), (in_bound (x, y)) with
+      | None, true-> result := {start = (x, y); destination = curr_position;
+        piece_captured = None}::result; loop_back (x, y-1)
+      | sth, _ -> result := {start   = (x, y); destination = curr_position;
+        piece_captured = sth}::result
+      in
+      let rec loop_left  curr_position =
+
+        match (check_position curr_position), (in_bound (x, y)) with
+        | None, true -> result:= {start = (x, y); destination = curr_position;
+          piece_captured = None}::result; loop_left (x-1, y)
+        | sth, _ ->  result := {start = (x, y); destination = curr_position;
+          piece_captured = sth}::result
+
+        in
+      let rec loop_right curr_position =
+        match (check_position curr_position), (in_bound (x, y)) with
+        | None, true -> result:= {start = (x, y); destination = curr_position;
+          piece_captured = None}::result; loop_right (x+1, y)
+        | sth, _>  result := {start = (x, y); destination = curr_position;
+          piece_captured = sth}::result
+
+        in
+      loop_forward (x, y+1);
+      loop_back (x, y-1);
+      loop_right (x+1 , y);
+      loop_left (x-1, y);
+      !result
+    end
+
+
+
+
+
+ (*   let result = [] in
     begin
     match  p.place, pc.team  with
     | x , y ,b ->
@@ -34,10 +85,11 @@ module  Move_Info = struct
         end
  (*dfajlsj*)
   in  result
-  end
+  end*)
 (*move *)
   let move_sodier (b:board) (pc:piece) (p: position) :step list =
-    let result = [] begin
+   let result = [] in begin  if (pc.team ) &&
+
     (*two cases row+1 or col+1*)
       match pc.place, pc.team with
         | x, y, true  -> begin
