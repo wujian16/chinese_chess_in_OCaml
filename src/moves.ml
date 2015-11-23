@@ -5,7 +5,6 @@ exception InvalidMove
 (* the following type tells one step during one game*)
 type step={start:position; destination: position; piece_captured: piece option}
 
-  type  board = board
   type  previous_step = step
 
 
@@ -22,34 +21,47 @@ type step={start:position; destination: position; piece_captured: piece option}
       let result = ref [] in
 
       let rec loop_forward curr_position =
-      match  (check_postition dest), (in_bound curr_position) with
-      | None -> result := {start = (x,y); destination = curr_position ;
-          piece_captured = None}::result; loop_forward (x, y+1)
-      | sth -> result := {start = (x,y); destination = curr_position;
-          piece_captured = sth}::result
+      begin
+      match  (check_position b curr_position), (in_bound curr_position) with
+      | None, true -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = None}::(!result); loop_forward (x, y+1)
+      | sth ,true -> result := {start = (x,y); destination = curr_position;
+          piece_captured = sth}::(!result)
+      | _ , _ -> ()
+    end
       in
-      let rec loop_back curr_position =
-      match (check_position curr_position), (in_bound curr_position )with
-      | None, true-> result := {start = (x, y); destination = curr_position;
-        piece_captured = None}::result; loop_back (x, y-1)
-      | sth, _ -> result := {start   = (x, y); destination = curr_position;
-        piece_captured = sth}::result
-      in
-      let rec loop_left  curr_position =
 
-        match (check_position curr_position), (in_bound curr_position )with
+      let rec loop_back curr_position =
+      begin
+      match (check_position b curr_position), (in_bound curr_position )with
+      | None, true-> result := {start = (x, y); destination = curr_position;
+        piece_captured = None}::(!result); loop_back (x, y-1)
+      | sth ,true -> result := {start = (x, y); destination = curr_position;
+        piece_captured = sth}::(!result)
+      | _ , _ -> ()
+    end
+      in
+
+      let rec loop_left  curr_position =
+      begin
+        match (check_position b curr_position), (in_bound curr_position )with
         | None, true -> result:= {start = (x, y); destination = curr_position;
-          piece_captured = None}::result; loop_left (x-1, y)
-        | sth, _ ->  result := {start = (x, y); destination = curr_position;
-          piece_captured = sth}::result
+          piece_captured = None}::(!result); loop_left (x-1, y)
+        | sth ,true ->  result := {start = (x, y); destination = curr_position;
+          piece_captured = sth}::(!result)
+        | _ , _ -> ()
+    end
 
         in
       let rec loop_right curr_position =
-        match (check_position curr_position), (in_bound curr_position )with
+      begin
+        match (check_position b curr_position), (in_bound curr_position )with
         | None, true -> result:= {start = (x, y); destination = curr_position;
-          piece_captured = None}::result; loop_right (x+1, y)
-        | sth, _>  result := {start = (x, y); destination = curr_position;
-          piece_captured = sth}::result
+          piece_captured = None}::(!result); loop_right (x+1, y)
+        | sth ,true ->  result := {start = (x, y); destination = curr_position;
+          piece_captured = sth}::(!result)
+       | _ , _ -> ()
+    end
 
         in
       loop_forward (x, y+1);
@@ -87,7 +99,7 @@ type step={start:position; destination: position; piece_captured: piece option}
   in  result
   end*)
 (*move *)
-  let move_sodier (b:board) (pc:piece) (p: position) :step list =
+  let move_sodier (b:board) (pc:piece) (p: position) :step list = TODO
  (*  let result = [] in begin  if (pc.team ) &&
 
     (*two cases row+1 or col+1*)
