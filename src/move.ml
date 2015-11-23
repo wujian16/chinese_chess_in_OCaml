@@ -177,7 +177,7 @@ end
   end
 *)
 
-let move_horse =
+let move_horse (b:board) (pc:piece) ((x,y): position) :step list =
 (*red piece in its own part: row 0-5*)
  let raw_hori_pos = [(x+2, y+1); (x+2, y-1); (x-2,y+1); (x-2,y-1)] in
  let hori_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
