@@ -124,7 +124,48 @@ type step={start:position; destination: position; mutable : piece option}
   let move_horse =
 
 
-  let move_cannon = TODOHARD
+  let move_cannon =
+    begin
+      let result = ref [] in
+
+      let rec loop_forward curr_position =
+      match  check_postition dest with
+      | None -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = None}::result; loop_forward (x, y+1)
+      | sth -> result := {start = (x,y); destination = curr_position;
+          piece_captured = sth}::result
+      in
+      let rec loop_back curr_position =
+      match (check_position curr_position), (in_bound (x, y)) with
+      | None, true-> result := {start = (x, y); destination = curr_position;
+        piece_captured = None}::result; loop_back (x, y-1)
+      | sth, _ -> result := {start   = (x, y); destination = curr_position;
+        piece_captured = sth}::result
+      in
+      let rec loop_left  curr_position =
+
+        match (check_position curr_position), (in_bound (x, y)) with
+        | None, true -> result:= {start = (x, y); destination = curr_position;
+          piece_captured = None}::result; loop_left (x-1, y)
+        | sth, _ ->  result := {start = (x, y); destination = curr_position;
+          piece_captured = sth}::result
+
+        in
+      let rec loop_right curr_position =
+        match (check_position curr_position), (in_bound (x, y)) with
+        | None, true -> result:= {start = (x, y); destination = curr_position;
+          piece_captured = None}::result; loop_right (x+1, y)
+        | sth, _>  result := {start = (x, y); destination = curr_position;
+          piece_captured = sth}::result
+
+        in
+      loop_forward (x, y+1);
+      loop_back (x, y-1);
+      loop_right (x+1 , y);
+      loop_left (x-1, y);
+      !result
+    end
+
 
   let move_elephant = TODO
   let move_advisor = TODO
