@@ -9,7 +9,7 @@ type_of: piece_type;
 team: bool;
 init_place : position;
 place: position
- }
+}
 
 (*general*)
 let generalR= {name= "GR"; print_name="G";print_color= (*TODO*) ;
