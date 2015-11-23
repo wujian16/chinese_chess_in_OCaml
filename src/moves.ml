@@ -13,6 +13,10 @@ type step={start:position; destination: position; piece_captured: piece option}
   let in_bound ((x,y):position) : bool=
     x>=1 && x<=9 && y>=1 && y <=9
 
+let self_side (pc:piece) ((x,y); position):bool=
+  if pc.team=true && x>=1 && x<=9 && y>=1 && y <=5 then true
+  else if pc.team=false && x>=1 && x<=9 && y>=6 && y <=10 then true
+  else false
 
   (*generate all the steps of a Rook on board with position p *)
   let move_rook (b:board) (pc:piece) ((x,y): position) :step list =
@@ -232,7 +236,18 @@ type step={start:position; destination: position; piece_captured: piece option}
     end
 
 
-  let move_elephant = TODO
+  let move_elephant (b:board) (pc:piece) ((x,y): position) :step list =
+    let raw_pos=[(2,2); (-2,-2); (2,-2); (-2, 2)] in
+    match (self_side pc.team pc.place) with
+     (*self side*)
+     | true -> List.flatten (List.map (fun p -> 
+         if self_side pc.team (x+(fst p), y+(snd p)) &&
+            check_position b (x+(fst p)/2, y+(snd p)/2)=None
+         then [{start= (x,y); destination = p;
+         piece_captured = (check_position b p)}] else []) raw_pos)
+     (*other side of river*)
+     | false -> []
+    
   let move_advisor = TODO
   let move_general = TODO
 
