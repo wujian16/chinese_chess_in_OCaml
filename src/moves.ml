@@ -3,9 +3,8 @@ open Piece
 exception TODO
 exception InvalidMove
 (* the following type tells one step during one game*)
-type step={start:position; destination: position; mutable : piece option}
+type step={start:position; destination: position; piece_captured: piece option}
 
-  type  board = board
   type  previous_step = step
 
 
@@ -22,34 +21,47 @@ type step={start:position; destination: position; mutable : piece option}
       let result = ref [] in
 
       let rec loop_forward curr_position =
-      match  check_postition dest with
-      | None -> result := {start = (x,y); destination = curr_position ;
-          piece_captured = None}::result; loop_forward (x, y+1)
-      | sth -> result := {start = (x,y); destination = curr_position;
-          piece_captured = sth}::result
+      begin
+      match  (check_position b curr_position), (in_bound curr_position) with
+      | None, true -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = None}::(!result); loop_forward (x, y+1)
+      | sth ,true -> result := {start = (x,y); destination = curr_position;
+          piece_captured = sth}::(!result)
+      | _ , _ -> ()
+    end
       in
-      let rec loop_back curr_position =
-      match (check_position curr_position), (in_bound (x, y)) with
-      | None, true-> result := {start = (x, y); destination = curr_position;
-        piece_captured = None}::result; loop_back (x, y-1)
-      | sth, _ -> result := {start   = (x, y); destination = curr_position;
-        piece_captured = sth}::result
-      in
-      let rec loop_left  curr_position =
 
-        match (check_position curr_position), (in_bound (x, y)) with
+      let rec loop_back curr_position =
+      begin
+      match (check_position b curr_position), (in_bound curr_position )with
+      | None, true-> result := {start = (x, y); destination = curr_position;
+        piece_captured = None}::(!result); loop_back (x, y-1)
+      | sth ,true -> result := {start = (x, y); destination = curr_position;
+        piece_captured = sth}::(!result)
+      | _ , _ -> ()
+    end
+      in
+
+      let rec loop_left  curr_position =
+      begin
+        match (check_position b curr_position), (in_bound curr_position )with
         | None, true -> result:= {start = (x, y); destination = curr_position;
-          piece_captured = None}::result; loop_left (x-1, y)
-        | sth, _ ->  result := {start = (x, y); destination = curr_position;
-          piece_captured = sth}::result
+          piece_captured = None}::(!result); loop_left (x-1, y)
+        | sth ,true ->  result := {start = (x, y); destination = curr_position;
+          piece_captured = sth}::(!result)
+        | _ , _ -> ()
+    end
 
         in
       let rec loop_right curr_position =
-        match (check_position curr_position), (in_bound (x, y)) with
+      begin
+        match (check_position b curr_position), (in_bound curr_position )with
         | None, true -> result:= {start = (x, y); destination = curr_position;
-          piece_captured = None}::result; loop_right (x+1, y)
-        | sth, _>  result := {start = (x, y); destination = curr_position;
-          piece_captured = sth}::result
+          piece_captured = None}::(!result); loop_right (x+1, y)
+        | sth ,true ->  result := {start = (x, y); destination = curr_position;
+          piece_captured = sth}::(!result)
+       | _ , _ -> ()
+    end
 
         in
       loop_forward (x, y+1);
@@ -87,8 +99,8 @@ type step={start:position; destination: position; mutable : piece option}
   in  result
   end*)
 (*move *)
-  let move_sodier (b:board) (pc:piece) (p: position) :step list =
-   let result = [] in begin  if (pc.team ) &&
+  let move_sodier (b:board) (pc:piece) (p: position) :step list = TODO
+ (*  let result = [] in begin  if (pc.team ) &&
 
     (*two cases row+1 or col+1*)
       match pc.place, pc.team with
@@ -119,61 +131,20 @@ type step={start:position; destination: position; mutable : piece option}
 
   end
       end
+*)
+
+  let move_horse = TODO
 
 
-  let move_horse =
-
-
-  let move_cannon =
-    begin
-      let result = ref [] in
-
-      let rec loop_forward curr_position =
-      match  check_postition dest with
-      | None -> result := {start = (x,y); destination = curr_position ;
-          piece_captured = None}::result; loop_forward (x, y+1)
-      | sth -> result := {start = (x,y); destination = curr_position;
-          piece_captured = sth}::result
-      in
-      let rec loop_back curr_position =
-      match (check_position curr_position), (in_bound (x, y)) with
-      | None, true-> result := {start = (x, y); destination = curr_position;
-        piece_captured = None}::result; loop_back (x, y-1)
-      | sth, _ -> result := {start   = (x, y); destination = curr_position;
-        piece_captured = sth}::result
-      in
-      let rec loop_left  curr_position =
-
-        match (check_position curr_position), (in_bound (x, y)) with
-        | None, true -> result:= {start = (x, y); destination = curr_position;
-          piece_captured = None}::result; loop_left (x-1, y)
-        | sth, _ ->  result := {start = (x, y); destination = curr_position;
-          piece_captured = sth}::result
-
-        in
-      let rec loop_right curr_position =
-        match (check_position curr_position), (in_bound (x, y)) with
-        | None, true -> result:= {start = (x, y); destination = curr_position;
-          piece_captured = None}::result; loop_right (x+1, y)
-        | sth, _>  result := {start = (x, y); destination = curr_position;
-          piece_captured = sth}::result
-
-        in
-      loop_forward (x, y+1);
-      loop_back (x, y-1);
-      loop_right (x+1 , y);
-      loop_left (x-1, y);
-      !result
-    end
-
+  let move_cannon = TODO
 
   let move_elephant = TODO
   let move_advisor = TODO
   let move_general = TODO
 
 
-  let generate_piece_move b pv p =
-    let result_list = []
+  let generate_piece_move b pv p = TODO
+   (* let result_list = []
     match p.type_of with
     |Rook -> begin
      match p.team, p.place with
@@ -185,17 +156,17 @@ type step={start:position; destination: position; mutable : piece option}
     end
   end
 
+*)
 
-    | _ -> expr2
 
 
 
   let check_valid (b: board) (pv:prev_step) (st:step) :bool = TODO
-
+(*
   let check_win = match pie with
   | patt -> expr
   | _ -> expr2
-
+*)
   let checkek =  TODO (*may not implement*)
 
   let update = TODO(*What the heck it it?*)
@@ -213,8 +184,6 @@ end
 
   let print_step stp = print_endline (string_of_step stp)
 
-
-end
 
 
 (*
