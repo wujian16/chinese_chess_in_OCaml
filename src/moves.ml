@@ -108,10 +108,10 @@ type step={start:position; destination: position; piece_captured: piece option}
      List.flatten (List.map (fun p -> if in_bound p then [{start= (x,y); destination = p;
         piece_captured = (check_position b p)}] else []) raw_pos )
      (*black piece, own side*)
-     | false, true -> [{start= (x,y); destination = (x, y+1); piece_captured =
+     | false, true -> [{start= (x,y); destination = (x, y-1); piece_captured =
       (check_position b (x, y+1))}]
      (*black piece, other side*)
-     | false, false-> let raw_pos = [(x+1, y), (x-1, y), (x, y+1) ] in
+     | false, false-> let raw_pos = [(x+1, y), (x-1, y), (x, y-1) ] in
      List.flatten (List.map (fun p -> if in_bound p then [{start= (x,y); destination = p;
         piece_captured = (check_position b p)}] else []) raw_pos )
 
