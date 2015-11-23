@@ -73,8 +73,6 @@ type step={start:position; destination: position; piece_captured: piece option}
 
 
 
-
-
  (*   let result = [] in
     begin
     match  p.place, pc.team  with
@@ -99,7 +97,25 @@ type step={start:position; destination: position; piece_captured: piece option}
   in  result
   end*)
 (*move *)
-  let move_sodier (b:board) (pc:piece) (p: position) :step list = TODO
+  let move_sodier (b:board) (pc:piece) ((x,y): position) : step list =
+    (*red piece in its own part: row 0-5*)
+    match pc.team, y<=5 with
+     (*red piece, in river side*)
+     | true,  true -> [{start= (x,y); destination = (x, y+1); piece_captured =
+      (check_position b (x, y+1))}]
+     (*red piece, other side of river*)
+     | true, false -> let raw_pos = [(x+1, y), (x-1, y), (x, y+1) ] in
+     List.flatten (List.map (fun p -> if in_bound p then [{start= (x,y); destination = p;
+        piece_captured = (check_position b p)}] else []) raw_pos )
+     (*black piece, own side*)
+     | false, true -> [{start= (x,y); destination = (x, y-1); piece_captured =
+      (check_position b (x, y+1))}]
+     (*black piece, other side*)
+     | false, false-> let raw_pos = [(x+1, y), (x-1, y), (x, y-1) ] in
+     List.flatten (List.map (fun p -> if in_bound p then [{start= (x,y); destination = p;
+        piece_captured = (check_position b p)}] else []) raw_pos )
+
+
  (*  let result = [] in begin  if (pc.team ) &&
 
     (*two cases row+1 or col+1*)
