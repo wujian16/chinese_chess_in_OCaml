@@ -29,7 +29,7 @@ type step={start:position; destination: position; piece_captured: piece option}
           piece_captured = sth}::result
       in
       let rec loop_back curr_position =
-      match (check_position curr_position), (in_bound curr_position with
+      match (check_position curr_position), (in_bound curr_position )with
       | None, true-> result := {start = (x, y); destination = curr_position;
         piece_captured = None}::result; loop_back (x, y-1)
       | sth, _ -> result := {start   = (x, y); destination = curr_position;
@@ -37,7 +37,7 @@ type step={start:position; destination: position; piece_captured: piece option}
       in
       let rec loop_left  curr_position =
 
-        match (check_position curr_position), (in_bound curr_position with
+        match (check_position curr_position), (in_bound curr_position )with
         | None, true -> result:= {start = (x, y); destination = curr_position;
           piece_captured = None}::result; loop_left (x-1, y)
         | sth, _ ->  result := {start = (x, y); destination = curr_position;
@@ -45,7 +45,7 @@ type step={start:position; destination: position; piece_captured: piece option}
 
         in
       let rec loop_right curr_position =
-        match (check_position curr_position), (in_bound curr_position with
+        match (check_position curr_position), (in_bound curr_position )with
         | None, true -> result:= {start = (x, y); destination = curr_position;
           piece_captured = None}::result; loop_right (x+1, y)
         | sth, _>  result := {start = (x, y); destination = curr_position;
