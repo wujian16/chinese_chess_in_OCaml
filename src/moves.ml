@@ -136,7 +136,77 @@ type step={start:position; destination: position; piece_captured: piece option}
   let move_horse = TODO
 
 
-  let move_cannon = TODO
+  let move_cannon (b:board) (pc:piece) ((x,y): position) :step list =
+    begin
+      let result = ref [] in
+      let flag=ref false in
+      let rec loop_forward curr_position=
+      if !flag=false then
+        match  (check_position b curr_position), (in_bound curr_position) with
+         | None, true -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = None}::(!result); loop_forward (x, y+1)
+         | sth ,true -> flag:=true; loop_forward (x, y+1)
+         | _ , _ -> ()
+      else
+        match  (check_position b curr_position), (in_bound curr_position) with
+         | sth ,true -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = sth}::(!result); 
+         | None, true -> loop_forward (x, y+1)
+         | _ , _ -> ()
+      in
+      let rec loop_back curr_position =
+      if !flag=false then
+        match  (check_position b curr_position), (in_bound curr_position) with
+         | None, true -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = None}::(!result); loop_back (x, y-1)
+         | sth ,true -> flag:=true; loop_back (x, y-1)
+         | _ , _ -> ()
+      else
+        match  (check_position b curr_position), (in_bound curr_position) with
+         | sth ,true -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = sth}::(!result); 
+         | None, true -> loop_back (x, y-1)
+         | _ , _ -> ()
+      in
+      let rec loop_left curr_position =
+      if !flag=false then
+        match  (check_position b curr_position), (in_bound curr_position) with
+         | None, true -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = None}::(!result); loop_left (x-1, y)
+         | sth ,true -> flag:=true; loop_left (x-1, y)
+         | _ , _ -> ()
+      else
+        match  (check_position b curr_position), (in_bound curr_position) with
+         | sth ,true -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = sth}::(!result);
+         | None, true -> loop_left (x-1, y)
+         | _ , _ -> ()
+      in
+      let rec loop_right curr_position =
+      if !flag=false then
+        match  (check_position b curr_position), (in_bound curr_position) with
+         | None, true -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = None}::(!result); loop_right (x+1, y)
+         | sth ,true -> flag:=true; loop_right (x+1, y)
+         | _ , _ -> ()
+      else
+        match  (check_position b curr_position), (in_bound curr_position) with
+         | sth ,true -> result := {start = (x,y); destination = curr_position ;
+          piece_captured = sth}::(!result);
+         | None, true -> loop_right (x+1, y)
+         | _ , _ -> ()
+        in
+      let ()=flag:=false in
+      let ()=loop_forward (x, y+1) in
+      let ()=flag:=false in
+      let ()=loop_back (x, y-1) in
+      let ()=flag:=false in
+      let ()=loop_right (x+1 , y) in
+      let ()=flag:=false in
+      let ()=loop_left (x-1, y) in
+      !result
+    end
+
 
   let move_elephant = TODO
   let move_advisor = TODO
