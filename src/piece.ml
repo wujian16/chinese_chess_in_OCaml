@@ -1,5 +1,5 @@
 type piece_type = General|Advisor|Elephant|Horse|Rook|Cannon|Soldier
-type positon = int*int
+type position = int*int
 
 type piece={
 name:string;
@@ -77,19 +77,20 @@ let soldR4 = {name = "SR4"; print_name = "S";
 type_of = Soldier; team = true }
 let soldR5 = {name = "SR5"; print_name = "S";
 type_of = Soldier; team = true }
-let soldR1 = {name = "SB1"; print_name = "S";
+let soldB1 = {name = "SB1"; print_name = "S";
 type_of = Soldier; team = false }
-let soldR2 = {name = "SB2"; print_name = "S";
+let soldB2 = {name = "SB2"; print_name = "S";
 type_of = Soldier; team = false }
-let soldR3 = {name = "SB3"; print_name = "S";
+let soldB3 = {name = "SB3"; print_name = "S";
 type_of = Soldier; team = false }
-let soldR4 = {name = "SB4"; print_name = "S";
+let soldB4 = {name = "SB4"; print_name = "S";
 type_of = Soldier; team = false }
-let soldR5 = {name = "SB5"; print_name = "S";
+let soldB5 = {name = "SB5"; print_name = "S";
 type_of = Soldier; team = false }
 
-let print_position (ps:position ) = match  p with
+let print_position (ps:position ) = match  ps with
   | x, y -> print_int x; print_int y
-  | _ -> failwith "invalid"
+(*  | _ -> failwith "invalid"
 
-let print_piece pc = print_byte (pc.name^"at "); print_position pc.position
+let print_piece pc = print_bytes (pc.name^"at "); print_position pc.position
+*)

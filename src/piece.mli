@@ -1,5 +1,5 @@
 (* piece_info tells what is each peice*)
-type piece_info = General|Advisor|Elephant|Horse|Chariot|Cannon|Soldier
+type piece_type =  General|Advisor|Elephant|Horse|Rook|Cannon|Soldier
 
 (*the type tells the position of the piece on the board*)
 type position = int*int
@@ -8,14 +8,14 @@ type position = int*int
 type piece={
 name:string;
 print_name : string;
-type_of: piece_info;
+type_of: piece_type;
 team: bool
 }
-val genaralR: piece
-val genaralB: piece
+val generalR: piece
+val generalB: piece
 
-val advisor1R : piece
-val advisor2R : piece
+val advisorR1 : piece
+val advisorR2 : piece
 val advisorB1 : piece
 val advisorB2 : piece
 
@@ -51,5 +51,3 @@ val soldB2 : piece
 val soldB3 : piece
 val soldB4 : piece
 val soldB5 : piece
-
-

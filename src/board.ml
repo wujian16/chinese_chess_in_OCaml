@@ -23,11 +23,15 @@ let get_position (b:board) (pie:string) =
   else None
 
 (*giving all the pieces which are still alive*)
-let get_alive_pieces (b:board)=Hashtbl.fold (fun s p lst->p::lst) (b.second) []
+let get_alive_pieces (b:board)=Hashtbl.fold 
+(fun s p lst->let p=(b.first).((snd p)-1).((fst p)-1) in
+               match p with
+               | None->lst
+               | Some x->x::lst) (b.second) []
 
 let init ()=
   let r1=Array.of_list [Some rookR1;Some horseR1; Some elepR1;
-  Some advisorR1; Some generalR1; Some advisorR2;Some elepR2;
+  Some advisorR1; Some generalR; Some advisorR2;Some elepR2;
   Some horseR2; Some rookR2] in
   let r2=Array.of_list [None;None;None;None;None;None;None;None;None] in
   let r3=Array.of_list [None; Some canR1; None; None; None; None; None; Some canR2; None]
@@ -44,7 +48,7 @@ let init ()=
   in
   let r9=Array.of_list [None;None;None;None;None;None;None;None;None] in
   let r10=Array.of_list [Some rookB1;Some horseB1; Some elepB1;
-  Some advisorB1; Some generalB1; Some advisorB2;Some elepB2;
+  Some advisorB1; Some generalB; Some advisorB2;Some elepB2;
   Some horseB2; Some rookB2] in
   let f1= Array.of_list [r1;r2;r3;r4;r5;r6;r7;r8;r9;r10] in
   let f2= Hashtbl.create 32 in
