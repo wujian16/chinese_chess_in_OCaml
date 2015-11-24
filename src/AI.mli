@@ -9,9 +9,6 @@ type transposition_table
 (* record history AI computations*)
 type history_table
 
-(* a record type with fields new_board, new_trans, new_hist, recom_steps *)
-type result_AI
-
 (* sort the all possible moves*)
 val sort: board->step list
 
@@ -24,7 +21,7 @@ val update:
   step->transposition_table*history_table->transposition_table*history_table
 
 val easy_AI: 
-  board->transposition_table->history_table->result_AI
+  board->transposition_table->history_table->step list*transposition_table*history_table
   
 val hard_AI:
-  board->transposition_table->history_table->result_AI
+  board->transposition_table->history_table->step list*transposition_table*history_table
