@@ -30,13 +30,13 @@ type_of = Advisor; team =false = (10, 4) }
 let advisorB2= {name = "A2B"; print_name= "A";
 type_of = Advisor; team =false = (10,8) }
 
-let ElepR1= {name = "ER1"; print_name = "E"; type_of=
+let elepR1= {name = "ER1"; print_name = "E"; type_of=
 Elephant; team = true}
-let ElepR1= {name = "ER2"; print_name = "E"; type_of=
+let elepR1= {name = "ER2"; print_name = "E"; type_of=
 Elephant; team = true}
-let ElepB1= {name = "EB1"; print_name = "E"; type_of=
+let elepB1= {name = "EB1"; print_name = "E"; type_of=
 Elephant; team =false }
-let ElepB1= {name = "EB2"; print_name = "E"; type_of=
+let elepB1= {name = "EB2"; print_name = "E"; type_of=
 Elephant; team =false}
 
 let horseR1 = {name= "HR1"; print_name = "H";  type_of =
