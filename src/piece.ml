@@ -7,7 +7,7 @@ print_name : string;
 (* color*)
 type_of: piece_type;
 team: bool;
-( : pos: position *)
+
  }
 
 (*general*)
@@ -44,9 +44,9 @@ let horseR1 = {name= "HR1"; print_name = "H";  type_of =
 let horseR2 = {name= "HR2"; print_name = "H";  type_of =
   Horse ; team = true }
 let horseB1 = {name= "HB1"; print_name = "H";  type_of =
-  Horse ; team = false)}
+  Horse ; team = false}
 let horseB2 = {name= "HB2"; print_name = "H";  type_of =
-  Horse ; team = false)}
+  Horse ; team = false}
 
 
 let rookR1 = {name = "RR1"; print_name= "R";
