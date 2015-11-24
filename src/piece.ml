@@ -7,8 +7,7 @@ print_name : string;
 (* color*)
 type_of: piece_type;
 team: bool;
-
- }
+}
 
 (*general*)
 let generalR= {name= "GR"; print_name="G";
