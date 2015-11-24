@@ -21,6 +21,9 @@ val get_position: board->string->position option
 (*giving all the pieces which are still alive*)
 val get_alive_pieces: board->piece list
 
+(* initialize the board*)
+val init: unit->board
+
 (*print the ball*)
 val print_board: board->unit
 
