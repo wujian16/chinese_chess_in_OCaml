@@ -18,25 +18,26 @@ let generalB= {name= "GB"; print_name="G";
 }
 
 let advisorR1= {name = "A1R"; print_name= "A";
-type_of = Advisor; team = true = (1,4) }
+type_of = Advisor; team = true }
 
 let advisorR2= {name = "A2R"; print_name= "A";
-type_of = Advisor; team = true = (1,8) }
+type_of = Advisor; team = true }
 
 let advisorB1= {name = "A1B"; print_name= "A";
-type_of = Advisor; team =false = (10, 4) }
+type_of = Advisor; team =false }
 
 let advisorB2= {name = "A2B"; print_name= "A";
-type_of = Advisor; team =false = (10,8) }
+type_of = Advisor; team =false  }
 
 let elepR1= {name = "ER1"; print_name = "E"; type_of=
 Elephant; team = true}
-let elepR1= {name = "ER2"; print_name = "E"; type_of=
+let elepR2= {name = "ER2"; print_name = "E"; type_of=
 Elephant; team = true}
 let elepB1= {name = "EB1"; print_name = "E"; type_of=
 Elephant; team =false }
-let elepB1= {name = "EB2"; print_name = "E"; type_of=
+let elepB2= {name = "EB2"; print_name = "E"; type_of=
 Elephant; team =false}
+
 
 let horseR1 = {name= "HR1"; print_name = "H";  type_of =
   Horse ; team = true }
