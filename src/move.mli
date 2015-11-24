@@ -4,12 +4,6 @@ open Board
 (* the following type tells one step during one game*)
 type step={start:position; destination: position; piece_captured: piece option}
 
-(*We will implement a module with type Module_Info as a functor of
- * a module of type Board_Info*)
-
-(* the same as type board in Board_Info*)
-type board
-
 (* record the previous step*)
 type prev_step
 

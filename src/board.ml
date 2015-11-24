@@ -25,6 +25,8 @@ let get_position (b:board) (pie:string) =
 (*giving all the pieces which are still alive*)
 let get_alive_pieces (b:board)=Hashtbl.fold (fun s p lst->p::lst) (b.second) []
 
+let init ()=
+
 (*print the ball*)
 let print_board (b:board)=()
 
