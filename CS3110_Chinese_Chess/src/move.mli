@@ -17,7 +17,7 @@ val check_win: board->prev_step->step->bool
 val checked: board->prev_step->step->bool
 
 (* update the game information*)
-val update: step->(board,prev_step)->(board,prev_step)
+val update: (board,prev_step)->(board,prev_step) option
 
 (*generate all possible move steps*)
 val generate_piece_move: board->prev_step->piece->step list option

@@ -7,7 +7,7 @@ type board
 
 (* the variable round tells the current round
  * is red side's turn or blue side's turn*)
-type  round
+val round: bool
 
 (*get the piece given position*)
 val check_position: board-> position-> piece option
@@ -20,6 +20,9 @@ val get_position: board->string-> position option
 
 (*giving all the pieces which are still alive*)
 val get_alive_pieces: board-> piece list
+
+(*giving all the pieces on a specific side which are still alive*)
+val get_alive_side: board -> round -> piece list
 
 (* initialize the board*)
 val init: unit-> board
