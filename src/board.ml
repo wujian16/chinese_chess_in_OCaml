@@ -70,7 +70,7 @@ let init ()=
   in
   {first=f1;second=f2}
 
-(*print the ball*)
+(*print the board*)
 let print_board (b:board)=()
 
 (*print the peice*)
