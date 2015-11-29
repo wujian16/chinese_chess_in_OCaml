@@ -1,3 +1,4 @@
+(* x is the column, y is the row*)
 open Board
 open Piece
 exception TODO
@@ -5,7 +6,7 @@ exception InvalidMove
 (* the following type tells one step during one game*)
 type step={start:position; destination: position; piece_captured: piece option}
 
-type  previous_step = step
+type  previous_step = step list
 
 
 let check_position_eat (b: board) (p:position) : (piece option) =
@@ -248,15 +249,58 @@ let raw_pos = [(x+1, y); (x-1, y); (x, y+1); (x, y-1) ] in
  ) && (in_square pc p)then [{start= (x,y); destination = p;
     piece_captured = (check_position b p)}] else []) raw_pos )
 
+(* check whether the step satisfies the additional rules*)
+let additional_rules_1 (b:board) (pv:prev_step) (s:step)=
+  match check_position b s.start with
+  | None->false
+  | Some p-> match p.type_of with
+             | General-> if p.name="GB" then 
+                  match (get_position b "GR") with 
+                  |None-> false
+                  |Some opp_pos->if s.destination.x=opp_pos.x then false
+                                 else true
+                  else match (get_position b "GB") with 
+                  |None-> false
+                  |Some opp_pos->if s.destination.x=opp_pos.x then false
+                                 else true
+             | _ -> true
 
-let generate_piece_move b pc p (*pv?*)= match pc.type_of with
-  | Genaral -> move_general b pc p
-  | Advisor -> move_advisor b pc p
-  | Elephant -> move_elephant b pc p
-  | Horse    -> move_horse b pc p
-  | Rook     -> move_rook b pc p
-  | Cannon   -> move_cannon b pc p
-  | Soldier  -> move_soldier b pc p
+let additional_rules_2 (b:board) (pv:prev_step) (s:step)=
+  if List.length pc >=2 then
+    let h1=List.nth pv 0 in
+    let h2=List.nth pv 1 in
+    if (fst h1.start)=(fst s.destination) && (snd h1.start)=(snd s.destination)
+     && (fst h1.destination)=(fst s.start) && (snd h1.destination)=(snd s.start)
+     (fst h2.start)=(fst s.start) && (snd h2.destination)=(snd s.destination)
+     && (fst h2.start)=(fst s.start) && (snd h2.destination)=(snd s.destination)
+    then false
+    else true
+  else true
+
+let additional_rules (b:board) (pv:prev_step) (s:step)=
+  if additional_rules_1 b pv s=true && additional_rules_2 b pv s=true
+  then true
+  else false
+
+
+                                          
+let generate_piece_move (b:board) (pv:prev_step) (p:piece)= 
+  match p.type_of with
+  let pos_option=get_position b p.name in
+  match pos_option with
+  |None->None
+  |Some pos->let mvs=
+     | Genaral -> move_general b pv pos
+     | Advisor -> move_advisor b pv pos
+     | Elephant -> move_elephant b pv pos
+     | Horse    -> move_horse b pv pos
+     | Rook     -> move_rook b pv pos
+     | Cannon   -> move_cannon b pv pos
+     | Soldier  -> move_soldier b pv pos
+  in let candidate=List.filter (fun m->additional_rules b pv m) mvs in
+  if List.length candidate>0 then Some candidate
+  else None
+
 
   (*check*)
 
@@ -267,7 +311,7 @@ let check_valid (b: board) (pv:prev_step) (st:step) :bool =
   | _ -> expr2
 
 
-let checkek =  TODO (*may not implement*)
+let checked =  TODO (*may not implement*)
 
 let update = TODO(*What the heck it it?*)
 
