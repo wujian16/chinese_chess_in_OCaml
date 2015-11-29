@@ -5,9 +5,8 @@ open Piece
  *)
 type board={first:piece option array array; second:(string, position) Hashtbl.t}
 
-(* the variable round tells the current round
- *  * is red side's turn or blue side's turn*)
-type round = bool
+(* initialization to red's turn *)
+let round = false 
 
 (*get the piece given position*)
 let check_position (b:board) (p:position) =
