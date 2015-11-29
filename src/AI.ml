@@ -39,7 +39,7 @@ let alphaBetaMax (alpha:int ref) (beta:int ref) (depth_left:int)
 		let all_moves = Array.of_list (generate_all_moves b p col) in
 		let i = ref 0 in
 		while ((!i <= (Array.length all_moves)) && (!beta <> !result)) 
-		do 
+		do (* need to update board for each move...... *)
 			let updated_b = 
 			let score = alphaBetaMin alpha beta (depth_left - 1) in
 			if (score >= !beta) then result := !beta; i:=!i+1
