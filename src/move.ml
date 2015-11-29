@@ -5,17 +5,12 @@ exception InvalidMove
 (* the following type tells one step during one game*)
 type step={start:position; destination: position; piece_captured: piece option}
 
-type  previous_step = step
+type  previous_step = step list
 
 
-let check_position_eat (b: board) (p:position) : (piece option) =
-let
-match   with
-| patt -> expr
-| _ -> expr2
 
 let in_bound ((x,y):position) : bool=
-x>=1 && x<=9 && y>=1 && y <=10
+  x>=1 && x<=9 && y>=1 && y <=10
 
 let in_square (pc:piece) ((x,y): position) : bool =
 match pc.team with
@@ -206,14 +201,16 @@ let move_horse (b:board) (pc:piece) ((x,y): position) :step list =
     match piece_captured b p with
     | Some sth-> sth.team <> pc.team
     | None -> true
- ) && ( check_position ((p.x + x)/2 , y) = None) then [{start= (x,y); destination = p;
+ ) && ( check_position ((p.x + x)/2 , y) = None) then [{start= (x,y);
+ destination = p;
     piece_captured = (check_position b p)}] else []) raw_hori pos
 in let vert_raw_pos = [(x+1, y+2) ; (x+1,y-2); (x-1, y+2); (x-1, y-2)] in
 let vert_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
     match piece_captured b p with
     | Some sth-> sth.team <> pc.team
     | None -> true
- ) && ( check_position ((p.y+ y)/2 , x) = None) then [{start= (x,y); destination = p;
+ ) && ( check_position ((p.y+ y)/2 , x) = None) then [{start= (x,y);
+destination = p;
     piece_captured = (check_position b p)}] else []) raw_hori pos
 
 let move_elephant (b:board) (pc:piece) ((x,y): position) :step list =
@@ -260,17 +257,45 @@ let generate_piece_move b pc p (*pv?*)= match pc.type_of with
 
   (*check*)
 
-
 let check_valid (b: board) (pv:prev_step) (st:step) :bool =
-  match st.start with
-  | patt -> expr
-  | _ -> expr2
+  let start = st.start in
+  let pc = match (check_position b start ) with
+    | None -> raise "InvalidMove"
+    | Some piece -> piece
+  in
+  let psbl_list = generate_piece_move b pc start in
+  let check_single s ls = (s.start=ls.start) && (s.end = ls.end ) in
+  List.exists (fun a -> check_single pc a ) psbl_list
 
 
-let checkek =  TODO (*may not implement*)
 
-let update = TODO(*What the heck it it?*)
+let check_win (b:board) (pv : prev_step) (st:step) :bool=
+  (st.piece_captured).type_of = Genaral
 
+
+
+let update_board (b:board)  (s:step) : unit  =
+  let pc = check_position b (s.start) in
+  let (odx, ody) = s.start in
+  let (nwx, nwy) = s.destination in
+  b.first.(ody-1).(odx-1) <- None;
+  b.first.(nwy-1).(nwx-1) <- pc ;
+
+  let pc_in = match  pc with
+  | None -> raise InvalidMove
+  | Some piece-> piece
+in
+  Hashtbl.replace b.second pc_in s.destination ;
+
+  match s.piece_captured with
+  | None -> ()
+  | Some p -> Hashtbl.remove b.second p
+
+
+ let update_prev_step (s:step)  (pv:prev_step) :prev_step =
+  match pv with
+  | [] -> [s]
+  | hd::tl -> tl@[s]
 
 
 let string_of_step stp = begin match stp with
