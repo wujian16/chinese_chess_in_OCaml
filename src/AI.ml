@@ -3,7 +3,7 @@ open Board
 open Move
 open Score
 exception TODO
-
+  
 type board_hashcode = string
 
 type search_result = {depth:int; best:step list; conclu:int}
@@ -43,7 +43,7 @@ let alphaBetaMax (alpha:int ref) (beta:int ref) (depth_left:int)
 			let updated_b = 
 			let score = alphaBetaMin alpha beta (depth_left - 1) in
 			if (score >= !beta) then result := !beta; i:=!i+1
-  		else if (score > !alpha) then alpha := score; i:=!i+1
+			else if (score > !alpha) then alpha := score; i:=!i+1
 			else i:=!i+1
 		done;
 		if !result = !beta then !beta else !alpha
@@ -68,5 +68,4 @@ and alphaBetaMin (alpha:int ref) (beta:int ref) (depth_left:int)
 let best_move_v0 (n:int) (b:board) : step list = 
 	(* need to modify the alpha beta to keep track of the optimum steps *)
 	raise TODO
-
 
