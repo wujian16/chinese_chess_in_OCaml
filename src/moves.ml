@@ -8,8 +8,6 @@ type step={start:position; destination: position; piece_captured: piece option}
 type  previous_step = step
 
 
-
-
 let check_position_eat (b: board) (p:position) : (piece option) =
 let
 match   with
@@ -263,12 +261,12 @@ let generate_piece_move b pc p (*pv?*)= match pc.type_of with
   (*check*)
 
 
-let check_valid (b: board) (pv:prev_step) (st:step) :bool = TODO
-(*
-let check_win = match pie with
-| patt -> expr
-| _ -> expr2
-*)
+let check_valid (b: board) (pv:prev_step) (st:step) :bool =
+  match st.start with
+  | patt -> expr
+  | _ -> expr2
+
+
 let checkek =  TODO (*may not implement*)
 
 let update = TODO(*What the heck it it?*)
@@ -276,12 +274,12 @@ let update = TODO(*What the heck it it?*)
 
 
 let string_of_step stp = begin match stp with
-| {start = st; destination = ds; piece_captured=pcap} ->
+  | {start = st; destination = ds; piece_captured=pcap} ->
 "start: "^(string_of_position st)^"end: "^(string_of_position ds)^
 (begin match pcap with
-| None -> "Captured nothing"
-| Some pcs -> "Captured "^(string_of_piece_with_position pcs)
-| _ -> failwith "not valid"  end)
+  | None -> "Captured nothing"
+  | Some pcs -> "Captured "^(string_of_piece_with_position pcs)
+  | _ -> failwith "not valid"  end)
 end
 
 let print_step stp = print_endline (string_of_step stp)
