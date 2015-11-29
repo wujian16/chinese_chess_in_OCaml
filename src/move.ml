@@ -361,7 +361,7 @@ let additional_rules_1 (b:board) (pv:prev_step) (s:step)=
              | _ -> true
 
 let additional_rules_2 (b:board) (pv:prev_step) (s:step)=
-  if List.length pc >=2 then
+  if List.length pv >=2 then
     let h1=List.nth pv 0 in
     let h2=List.nth pv 1 in
     if (fst h1.start)=(fst s.destination) && (snd h1.start)=(snd s.destination)
@@ -380,21 +380,20 @@ let additional_rules (b:board) (pv:prev_step) (s:step)=
 
 
 let generate_piece_move (b:board) (pv:prev_step) (p:piece)=
-  match p.type_of with
-
+  match (get_position b p.name) with
   |None->None
   |Some pos->let mvs=
-     | Genaral -> move_general b pv pos
-     | Advisor -> move_advisor b pv pos
-     | Elephant -> move_elephant b pv pos
-     | Horse    -> move_horse b pv pos
-     | Rook     -> move_rook b pv pos
-     | Cannon   -> move_cannon b pv pos
-     | Soldier  -> move_soldier b pv pos
+    match p.type_of with
+     | Genaral -> move_general b p pos
+     | Advisor -> move_advisor b p pos
+     | Elephant -> move_elephant b p pos
+     | Horse    -> move_horse b p pos
+     | Rook     -> move_rook b p pos
+     | Cannon   -> move_cannon b p pos
+     | Soldier  -> move_soldier b p pos
   in let candidate=List.filter (fun m->additional_rules b pv m) mvs in
   if List.length candidate>0 then Some candidate
   else None
-
 
 
 
