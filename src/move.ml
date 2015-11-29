@@ -1,3 +1,4 @@
+(* x is the column, y is the row*)
 open Board
 open Piece
 exception TODO
@@ -13,9 +14,9 @@ let in_bound ((x,y):position) : bool=
   x>=1 && x<=9 && y>=1 && y <=10
 
 let in_square (pc:piece) ((x,y): position) : bool =
-match pc.team with
-  | true  -> x>=4 &&x<=6 && y>=1 && y<=3
-  | false -> x>=4 && x <= 6 && y>=8 && y<=10
+match pc.tea with
+| true  -> x>=4 &&x<=6 && y>=1 && y<=3
+| false -> x>=4 && x <= 6 && y>=8 && y<=10
 
 
 let self_side (pc:piece) ((x,y): position):bool=
@@ -86,6 +87,30 @@ end
 
 
 
+(*   let result = [] in
+begin
+match  p.place, pc.team  with
+| x , y ,b ->
+  (*forward*)
+  for y'=y+1 to 10 do
+    begin
+      match check_position b (x, y') with
+      | None -> {start= p; end = (x, y'); piece_captured = None}::result
+      | Some oth -> if oth.team = b then result;raise Exit
+                    else {start= p; end = (x, y'); piece_captured = oth}::result
+    end
+    (*TODOhow to link them!?!!!!!!!!!!!!!!*)
+    for y' = y-1 downto 1 do
+    begin
+      match check_position b (x, y') with
+      | None -> {start= p; end = (x, y'); piece_captured = None}::result
+      | Some oth -> if oth.team =b then result;raise Exit
+                    else {start= p; end = (x, y'); piece_captured = oth}::result
+    end
+(*dfajlsj*)
+in  result
+end*)
+(*move *)
 let move_soldier (b:board) (pc:piece) ((x,y): position) : step list =
 (*red piece in its own part: row 0-5*)
 match pc.team, y<=5 with
@@ -112,6 +137,56 @@ match pc.team, y<=5 with
  ) then [{start= (x,y); destination = p;
     piece_captured = (check_position b p)}] else []) raw_pos )
 
+
+(*  let result = [] in begin  if (pc.team ) &&
+
+(*two cases row+1 or col+1*)
+  match pc.place, pc.team with
+    | x, y, true  -> begin
+(*how to let the computer know i'M doing position *)
+    let psb: (position list)  = [(x+1, y); (x-1,y), (x, y+1)]
+    let tem_rslt = List.map (fun dest -> match dest with
+    | x, y -> if (x>=1 && x <= 10) && (y>=1 and y<=9) then begin
+      match check_position  b dest with
+      | None -> [{start= p; destination=dest; piece_captured = None }]
+      | Some oth -> if oth.team = pc.team then [] else
+        [{start=p ; destination = dest; piece_captured = oth}]
+    end
+    | _ -> failwith"not possible"
+  in List.flatten tem_rslt end
+
+  | x, y ,false -> begin
+    let psb : (position list ) = [(x+1, y); (x-1,y); (x, y-1)]
+    let tem_rslt = List.map (fun dest -> match dest with
+    | x, y -> if (x>=1 && x <= 10) && (y>=1 and y<=9) then begin
+      match check_position  b dest with
+      | None -> [{start= p; destination=dest; piece_captured = None }]
+      | Some oth -> if oth.team = pc.team then [] else
+        [{start=p ; destination = dest; piece_captured = oth}]
+    end
+    | _ ->failwith"not possible"
+  in List.flatten tem_rslt end
+
+end
+  end
+*)
+
+let move_horse (b:board) (pc:piece) ((x,y): position) :step list =
+(*red piece in its own part: row 0-5*)
+ let raw_hori_pos = [(x+2, y+1); (x+2, y-1); (x-2,y+1); (x-2,y-1)] in
+ let hori_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
+    match piece_captured b p with
+    | Some sth-> sth.team <> pc.team
+    | None -> true
+ ) && ( check_position ((p.x + x)/2 , y) = None) then [{start= (x,y); destination = p;
+    piece_captured = (check_position b p)}] else []) raw_hori pos
+in let vert_raw_pos = [(x+1, y+2) ; (x+1,y-2); (x-1, y+2); (x-1, y-2)] in
+let vert_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
+    match piece_captured b p with
+    | Some sth-> sth.team <> pc.team
+    | None -> true
+ ) && ( check_position ((p.y+ y)/2 , x) = None) then [{start= (x,y); destination = p;
+    piece_captured = (check_position b p)}] else []) raw_hori pos
 
 
 
@@ -194,6 +269,7 @@ let move_cannon (b:board) (pc:piece) ((x,y): position) :step list =
     !result
   end
 
+
 let move_horse (b:board) (pc:piece) ((x,y): position) :step list =
 (*red piece in its own part: row 0-5*)
  let raw_hori_pos = [(x+2, y+1); (x+2, y-1); (x-2,y+1); (x-2,y-1)] in
@@ -213,9 +289,10 @@ let vert_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
 destination = p;
     piece_captured = (check_position b p)}] else []) raw_hori pos
 
+
 let move_elephant (b:board) (pc:piece) ((x,y): position) :step list =
-  let raw_pos=[(2,2); (-2,-2); (2,-2); (-2, 2)] in
-  match (self_side pc.team pc.place) with
+let raw_pos=[(2,2); (-2,-2); (2,-2); (-2, 2)] in
+match (self_side pc.team pc.place) with
  (*self side*)
  | true -> List.flatten (List.map (fun p ->
      if self_side pc.team (x+(fst p), y+(snd p)) &&
@@ -246,31 +323,7 @@ let raw_pos = [(x+1, y); (x-1, y); (x, y+1); (x, y-1) ] in
     piece_captured = (check_position b p)}] else []) raw_pos )
 
 
-let generate_piece_move b pc p (*pv?*)= match pc.type_of with
-  | Genaral -> move_general b pc p
-  | Advisor -> move_advisor b pc p
-  | Elephant -> move_elephant b pc p
-  | Horse    -> move_horse b pc p
-  | Rook     -> move_rook b pc p
-  | Cannon   -> move_cannon b pc p
-  | Soldier  -> move_soldier b pc p
-
   (*check*)
-
-let check_valid (b: board) (pv:prev_step) (st:step) :bool =
-  let start = st.start in
-  let pc = match (check_position b start ) with
-    | None -> raise "InvalidMove"
-    | Some piece -> piece
-  in
-  let psbl_list = generate_piece_move b pc start in
-  let check_single s ls = (s.start=ls.start) && (s.end = ls.end ) in
-  List.exists (fun a -> check_single pc a ) psbl_list
-
-
-
-let check_win (b:board) (pv : prev_step) (st:step) :bool=
-  (st.piece_captured).type_of = Genaral
 
 
 
@@ -291,6 +344,76 @@ in
   | None -> ()
   | Some p -> Hashtbl.remove b.second p
 
+(* check whether the step satisfies the additional rules*)
+let additional_rules_1 (b:board) (pv:prev_step) (s:step)=
+  match check_position b s.start with
+  | None->false
+  | Some p-> match p.type_of with
+             | General-> if p.name="GB" then
+                  match (get_position b "GR") with
+                  |None-> false
+                  |Some opp_pos->if s.destination.x=opp_pos.x then false
+                                 else true
+                  else match (get_position b "GB") with
+                  |None-> false
+                  |Some opp_pos->if s.destination.x=opp_pos.x then false
+                                 else true
+             | _ -> true
+
+let additional_rules_2 (b:board) (pv:prev_step) (s:step)=
+  if List.length pc >=2 then
+    let h1=List.nth pv 0 in
+    let h2=List.nth pv 1 in
+    if (fst h1.start)=(fst s.destination) && (snd h1.start)=(snd s.destination)
+     && (fst h1.destination)=(fst s.start) && (snd h1.destination)=(snd s.start)
+     (fst h2.start)=(fst s.start) && (snd h2.destination)=(snd s.destination)
+     && (fst h2.start)=(fst s.start) && (snd h2.destination)=(snd s.destination)
+    then false
+    else true
+  else true
+
+let additional_rules (b:board) (pv:prev_step) (s:step)=
+  if additional_rules_1 b pv s=true && additional_rules_2 b pv s=true
+  then true
+  else false
+
+
+
+let generate_piece_move (b:board) (pv:prev_step) (p:piece)=
+  match p.type_of with
+
+  |None->None
+  |Some pos->let mvs=
+     | Genaral -> move_general b pv pos
+     | Advisor -> move_advisor b pv pos
+     | Elephant -> move_elephant b pv pos
+     | Horse    -> move_horse b pv pos
+     | Rook     -> move_rook b pv pos
+     | Cannon   -> move_cannon b pv pos
+     | Soldier  -> move_soldier b pv pos
+  in let candidate=List.filter (fun m->additional_rules b pv m) mvs in
+  if List.length candidate>0 then Some candidate
+  else None
+
+
+
+
+let check_valid (b: board) (pv:prev_step) (st:step) :bool =
+  let start = st.start in
+  let pc = match (check_position b start ) with
+    | None -> raise "InvalidMove"
+    | Some piece -> piece
+  in
+  let psbl_list = generate_piece_move b pc start in
+  let check_single s ls = (s.start=ls.start) && (s.end = ls.end ) in
+  List.exists (fun a -> check_single pc a ) psbl_list
+
+
+
+let check_win (b:board) (pv : prev_step) (st:step) :bool=
+  (st.piece_captured).type_of = Genaral
+
+
 
  let update_prev_step (s:step)  (pv:prev_step) :prev_step =
   match pv with
@@ -299,12 +422,12 @@ in
 
 
 let string_of_step stp = begin match stp with
-  | {start = st; destination = ds; piece_captured=pcap} ->
+| {start = st; destination = ds; piece_captured=pcap} ->
 "start: "^(string_of_position st)^"end: "^(string_of_position ds)^
 (begin match pcap with
-  | None -> "Captured nothing"
-  | Some pcs -> "Captured "^(string_of_piece_with_position pcs)
-  | _ -> failwith "not valid"  end)
+| None -> "Captured nothing"
+| Some pcs -> "Captured "^(string_of_piece_with_position pcs)
+| _ -> failwith "not valid"  end)
 end
 
 let print_step stp = print_endline (string_of_step stp)

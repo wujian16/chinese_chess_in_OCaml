@@ -14,13 +14,10 @@ val check_valid: board->prev_step->step->bool
 val check_win: board->prev_step->step->bool
 
 (* check whether either side is checked*)
-val checked: board-> prev_step -> step ->bool
+val checked: board->prev_step->step->bool
 
 (* update the game information*)
-
-val update_board : board -> step -> unit
-(* update a previous step with a new step*)
-val update_prev : step -> prev_step -> prev_step
+val update: (board,prev_step)->(board,prev_step) option
 
 (*generate all possible move steps*)
 val generate_piece_move: board->prev_step->piece->step list option
