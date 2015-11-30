@@ -6,14 +6,14 @@ open Piece
 type board={first:piece option array array; second:(string, position) Hashtbl.t}
 
 (* initialization to red's turn *)
-let round = false 
+let round = false
 
 (*get the piece given position*)
 let check_position (b:board) (p:position) =
   ((b.first).((snd p)-1)).((fst p)-1)
 
 (*the following function can tell whether a piece still exists on the borad*)
-let check_alive (b:board) (pie:string) = Hashtbl.mem (b.second) pie 
+let check_alive (b:board) (pie:string) = Hashtbl.mem (b.second) pie
 
 (*get the position given a piece*)
 let get_position (b:board) (pie:string) =
@@ -22,7 +22,7 @@ let get_position (b:board) (pie:string) =
   else None
 
 (*giving all the pieces which are still alive*)
-let get_alive_pieces (b:board)=Hashtbl.fold 
+let get_alive_pieces (b:board)=Hashtbl.fold
 (fun s p lst->let p=(b.first).((snd p)-1).((fst p)-1) in
                match p with
                | None->lst
@@ -32,6 +32,30 @@ let get_alive_pieces (b:board)=Hashtbl.fold
 let get_alive_side (b:board)=let alive_piece=get_alive_pieces b in
                              List.filter (fun p->p.team=round) alive_piece
 
+(* p1 is the start position
+ * p2 is the destination position
+ * pc is the piece captured
+*)
+let change_entry (b:board) (p1:position) (p2:position) (pcapture:piece option)=
+()
+(*)
+let pc_in=check_position b p1 in
+let (odx, ody) = p1 in
+let (nwx, nwy) = p2 in
+ b.first.(ody-1).(odx-1) <- None;
+ b.first.(nwy-1).(nwx-1) <- pc ;
+
+ let pc_in = match pc with
+ | None -> raise InvalidMove
+ | Some piece-> piece
+ in
+ Hashtbl.replace b.second pc_in p2 ;
+
+ match pcapture with
+ | None -> ()
+ | Some p -> Hashtbl.remove b.second p
+*)
+
 let init ()=
   let r1=Array.of_list [Some rookR1;Some horseR1; Some elepR1;
   Some advisorR1; Some generalR; Some advisorR2;Some elepR2;
@@ -39,13 +63,13 @@ let init ()=
   let r2=Array.of_list [None;None;None;None;None;None;None;None;None] in
   let r3=Array.of_list [None; Some canR1; None; None; None; None; None; Some canR2; None]
   in
-  let r4=Array.of_list [Some soldR1; None; Some soldR2; None; 
-  Some soldR3; None; Some soldR4; None; 
+  let r4=Array.of_list [Some soldR1; None; Some soldR2; None;
+  Some soldR3; None; Some soldR4; None;
   Some soldR5] in
   let r5=Array.of_list [None;None;None;None;None;None;None;None;None] in
   let r6=Array.of_list [None;None;None;None;None;None;None;None;None] in
-  let r7=Array.of_list [Some soldB1; None; Some soldB2; None; 
-  Some soldB3; None; Some soldB4; None; 
+  let r7=Array.of_list [Some soldB1; None; Some soldB2; None;
+  Some soldB3; None; Some soldB4; None;
   Some soldB5] in
   let r8=Array.of_list [None; Some canB1; None; None; None; None; None; Some canB2; None]
   in
