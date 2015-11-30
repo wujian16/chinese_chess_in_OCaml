@@ -118,7 +118,7 @@ match pc.team, y<=5 with
  | true,  true -> [{start= (x,y); destination = (x, y+1); piece_captured =
   (check_position b (x, y+1))}]
  (*red piece, other side of river*)
- | true, false -> let raw_pos = [(x+1, y; (x-1, y); (x, y+1) ] in
+ | true, false -> let raw_pos = [(x+1, y); (x-1, y); (x, y+1)] in
  List.flatten (List.map (fun p -> if (in_bound p) && (
     match piece_captured b p with
     | Some sth-> sth.team <> pc.team
@@ -170,16 +170,22 @@ match pc.team, y<=5 with
 end
   end
 *)
-
+(*
 let move_horse (b:board) (pc:piece) ((x,y): position) :step list =
 (*red piece in its own part: row 0-5*)
  let raw_hori_pos = [(x+2, y+1); (x+2, y-1); (x-2,y+1); (x-2,y-1)] in
- let hori_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
+ let hori_pos = List.filter (fun p -> )
+ *)
+(*
+ List.flatten (List.map (fun p -> if (in_bound p) && (
     match piece_captured b p with
     | Some sth-> sth.team <> pc.team
     | None -> true
  ) && ( check_position ((p.x + x)/2 , y) = None) then [{start= (x,y); destination = p;
-    piece_captured = (check_position b p)}] else []) raw_hori pos
+    piece_captured = (check_position b p)}] else [])  *)
+
+
+(*  raw_hori pos
 in let vert_raw_pos = [(x+1, y+2) ; (x+1,y-2); (x-1, y+2); (x-1, y-2)] in
 let vert_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
     match piece_captured b p with
@@ -187,7 +193,7 @@ let vert_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
     | None -> true
  ) && ( check_position ((p.y+ y)/2 , x) = None) then [{start= (x,y); destination = p;
     piece_captured = (check_position b p)}] else []) raw_hori pos
-
+ *)
 
 
 let move_cannon (b:board) (pc:piece) ((x,y): position) :step list =
@@ -279,15 +285,17 @@ let move_horse (b:board) (pc:piece) ((x,y): position) :step list =
     | None -> true
  ) && ( check_position ((p.x + x)/2 , y) = None) then [{start= (x,y);
  destination = p;
-    piece_captured = (check_position b p)}] else []) raw_hori pos
-in let vert_raw_pos = [(x+1, y+2) ; (x+1,y-2); (x-1, y+2); (x-1, y-2)] in
-let vert_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
+    piece_captured = (check_position b p)}] else []) raw_hori_pos)
+
+in let raw_vert_pos = [(x+1, y+2) ; (x+1,y-2); (x-1, y+2); (x-1, y-2)] in
+  let vert_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
     match piece_captured b p with
     | Some sth-> sth.team <> pc.team
     | None -> true
  ) && ( check_position ((p.y+ y)/2 , x) = None) then [{start= (x,y);
 destination = p;
-    piece_captured = (check_position b p)}] else []) raw_hori pos
+    piece_captured = (check_position b p)}] else []) raw_vert_pos)
+in hori_pos@vert_pos
 
 
 let move_elephant (b:board) (pc:piece) ((x,y): position) :step list =
