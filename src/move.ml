@@ -13,7 +13,7 @@ let in_bound ((x,y):position) : bool=
   x>=1 && x<=9 && y>=1 && y <=10
 
 let in_square (pc:piece) ((x,y): position) : bool =
-match pc.tea with
+match pc.team with
 | true  -> x>=4 &&x<=6 && y>=1 && y<=3
 | false -> x>=4 && x <= 6 && y>=8 && y<=10
 
