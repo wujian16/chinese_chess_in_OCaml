@@ -299,8 +299,8 @@ in hori_pos@vert_pos
 
 
 let move_elephant (b:board) (pc:piece) ((x,y): position) :step list =
-let raw_pos=[(2,2); (-2,-2); (2,-2); (-2, 2)] in
-match (self_side pc.team pc.place) with
+  let raw_pos=[(2,2); (-2,-2); (2,-2); (-2, 2)] in
+  match (self_side pc.team pc.place) with
  (*self side*)
  | true -> List.flatten (List.map (fun p ->
      if self_side pc.team (x+(fst p), y+(snd p)) &&
@@ -330,10 +330,7 @@ let raw_pos = [(x+1, y); (x-1, y); (x, y+1); (x, y-1) ] in
  ) && (in_square pc p)then [{start= (x,y); destination = p;
     piece_captured = (check_position b p)}] else []) raw_pos )
 
-
   (*check*)
-
-
 
 let update_board (b:board)  (s:step) : unit  =
   let pc = check_position b (s.start) in
@@ -353,6 +350,7 @@ in
   | Some p -> Hashtbl.remove b.second p
 
 (* check whether the step satisfies the additional rules*)
+(*general cannot be in the same coloum*)
 let additional_rules_1 (b:board) (pv:prev_step) (s:step)=
   match check_position b s.start with
   | None->false
@@ -367,7 +365,7 @@ let additional_rules_1 (b:board) (pv:prev_step) (s:step)=
                   |Some opp_pos->if s.destination.x=opp_pos.x then false
                                  else true
              | _ -> true
-
+(*cannot repeat 3 times*)
 let additional_rules_2 (b:board) (pv:prev_step) (s:step)=
   if List.length pv >=2 then
     let h1=List.nth pv 0 in
@@ -419,7 +417,6 @@ let check_valid (b: board) (pv:prev_step) (st:step) :bool =
 
 let check_win (b:board) (pv : prev_step) (st:step) :bool=
   (st.piece_captured).type_of = Genaral
-
 
 
 let update_prev_step (s:step)  (pv:prev_step) :prev_step =
