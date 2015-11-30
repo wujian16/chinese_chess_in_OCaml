@@ -88,8 +88,8 @@ type_of = Soldier; team = false }
 let soldB5 = {name = "SB5"; print_name = "S";
 type_of = Soldier; team = false }
 
-let print_position (ps:position ) = match  ps with
-  | x, y -> print_int x; print_int y
+(* let print_position (ps:position ) = match  ps with
+  | x, y -> print_int x; print_int y *)
 (*  | _ -> failwith "invalid"
 
 let print_piece pc = print_bytes (pc.name^"at "); print_position pc.position
