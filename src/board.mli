@@ -22,7 +22,7 @@ val get_position: board->string-> position option
 val get_alive_pieces: board-> piece list
 
 (*giving all the pieces on a specific side which are still alive*)
-val get_alive_side: board -> round -> piece list
+val get_alive_side: board -> piece list
 
 (* initialize the board*)
 val init: unit-> board

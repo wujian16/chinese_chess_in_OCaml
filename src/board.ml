@@ -28,6 +28,10 @@ let get_alive_pieces (b:board)=Hashtbl.fold
                | None->lst
                | Some x->x::lst) (b.second) []
 
+
+let get_alive_side (b:board)=let alive_piece=get_alive_pieces b in
+                             List.filter (fun p->p.team=round) alive_piece
+
 let init ()=
   let r1=Array.of_list [Some rookR1;Some horseR1; Some elepR1;
   Some advisorR1; Some generalR; Some advisorR2;Some elepR2;

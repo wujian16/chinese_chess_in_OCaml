@@ -13,7 +13,7 @@ let in_bound ((x,y):position) : bool=
   x>=1 && x<=9 && y>=1 && y <=10
 
 let in_square (pc:piece) ((x,y): position) : bool =
-match pc.tea with
+match pc.team with
 | true  -> x>=4 &&x<=6 && y>=1 && y<=3
 | false -> x>=4 && x <= 6 && y>=8 && y<=10
 
@@ -305,8 +305,15 @@ let move_elephant (b:board) (pc:piece) ((x,y): position) :step list =
  | true -> List.flatten (List.map (fun p ->
      if self_side pc.team (x+(fst p), y+(snd p)) &&
         check_position b (x+(fst p)/2, y+(snd p)/2)=None
-     then [{start= (x,y); destination = p;
-     piece_captured = (check_position b p)}] else []) raw_pos)
+     then 
+      match (check_position b (x+(fst p), y+(snd p))) with
+      |None->  [{start= (x,y); destination = (x+(fst p), y+(snd p));
+     piece_captured = None}]
+      |Some sth->if sth.team<>pc.team then
+       [{start= (x,y); destination = p;
+        piece_captured = (check_position b p)}]
+                 else []
+     else []) raw_pos)
  (*other side of river*)
  | false -> []
 
