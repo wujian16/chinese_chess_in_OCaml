@@ -98,6 +98,9 @@ let init ()=
   in
   {first=f1;second=f2}
 
+let get_boardArray (b: board) =
+  b.first
+
 (*print the board*)
 let print_board (b:board)=()
 
