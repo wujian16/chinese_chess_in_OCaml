@@ -54,9 +54,9 @@ type_of = Rook; team =true}
 let rookR2 = {name = "RR2"; print_name="R";
 type_of = Rook; team = true}
 let rookB1 = {name = "RB1"; print_name= "R";
-type_of = Rook; team = true}
+type_of = Rook; team = false}
 let rookB2 = {name = "RB2"; print_name= "R";
-type_of = Rook; team = true}
+type_of = Rook; team = false}
 
 let canR1 = {name= "CR1"; print_name = "C";
 type_of = Rook; team = true}
