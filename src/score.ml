@@ -1,5 +1,6 @@
 open Board
 open Piece
+
 let score_general=
 [
 0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;
@@ -150,6 +151,7 @@ let col=3+(fst p) in
 (* initialize AI's color to red*)
 let col = true
 
+
 let evaluate (b:board) (c:bool)=
 let score=ref 0 in
 let ()=
@@ -175,4 +177,9 @@ for i=1 to 9 do
     end
   done
 done
-in if c=true then (-(!score)) else !score
+in let ()=if c=true then score:=(-(!score)) else() in
+let ()=if c=true && check_alive b "GR" then score:=!score-10000
+       else if c=false && check_alive b "GB" then score:=!score-10000
+            else ()
+in !score
+
