@@ -38,7 +38,7 @@ let get_alive_side (b:board)=let alive_piece=get_alive_pieces b in
 *)
 let change_entry (b:board) (p1:position) (p2:position) (pcapture:piece option)=
 ()
-(*)
+(*
 let pc_in=check_position b p1 in
 let (odx, ody) = p1 in
 let (nwx, nwy) = p2 in

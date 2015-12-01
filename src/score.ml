@@ -1,4 +1,5 @@
-
+open Board
+open Piece
 let score_general=
 [
 0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;  0;
@@ -146,8 +147,12 @@ let col=3+(fst p) in
 16*(row-1)+col-1
 
 
-let evaluate (b:board) (c:col)=
+(* initialize AI's color to red*)
+let col = true
+
+let evaluate (b:board) (c:bool)=
 let score=ref 0 in
+let ()=
 for i=1 to 9 do
   for j=1 to 10 do
     begin
@@ -157,16 +162,17 @@ for i=1 to 9 do
       let ()=
       begin
        match pie.type_of with
-        |General->sp:=score_general[transform_position (i,j)]
-        |Advisor->sp:=score_advisor[transform_position (i,j)]
-        |Elephant->sp:=score_elephant[transform_position (i,j)]
-        |Horse->sp:=score_horse[transform_position (i,j)]
-        |Rook->sp:=score_rook[transform_position (i,j)]
-        |Cannon->sp:=score_cannon[transform_position (i,j)]
-        |Soldier->sp:=score_soldier[transform_position (i,j)]
+        |General->sp:=List.nth score_general (transform_position (i,j))
+        |Advisor->sp:=List.nth score_advisor (transform_position (i,j))
+        |Elephant->sp:=List.nth score_advisor (transform_position (i,j))
+        |Horse->sp:=List.nth score_horse (transform_position (i,j))
+        |Rook->sp:=List.nth score_rook (transform_position (i,j))
+        |Cannon->sp:=List.nth score_cannon (transform_position (i,j))
+        |Soldier->sp:=List.nth score_soldier (transform_position (i,j))
       end
         in
-        let ()=if pie.team=true then sp:=0-!sp else () in score:=!score+sp
+        let ()=if pie.team=true then sp:=(-(!sp)) else () in score:=!score+(!sp)
     end
   done
 done
+in if c=true then (-(!score)) else !score

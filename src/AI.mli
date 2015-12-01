@@ -18,9 +18,6 @@ type history_table
 (* Determine AI's side color *)
 val det_col: bool -> bool
 
-(* The color of AI's side; Red is true and Black if false *)
-val col: bool
-
 (* sort the all possible moves*)
 val sort: board-> step list
 

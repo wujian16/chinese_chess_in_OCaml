@@ -25,7 +25,7 @@ val get_alive_pieces: board-> piece list
 val get_alive_side: board -> piece list
 
 (* change the board*)
-val change_entry: board-> position -> position-> piece->unit
+val change_entry: board-> position -> position-> piece option->unit
 
 (* initialize the board*)
 val init: unit-> board

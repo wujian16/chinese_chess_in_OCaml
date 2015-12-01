@@ -16,8 +16,6 @@ type history_table = (string, search_result) Hashtbl.
 let det_col b : bool = 
 	if b then true else false
 
-(* initialize AI's color to black *)
-let col = true
 
 let sort = raise TODO
 
