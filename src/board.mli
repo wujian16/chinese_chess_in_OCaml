@@ -30,6 +30,10 @@ val change_entry: board-> position -> position-> piece option->unit
 (* initialize the board*)
 val init: unit-> board
 
+(* grabs the piece array from the board*)
+val get_boardArray: board -> piece option array array
+
+
 (*print the ball*)
 val print_board: board->unit
 
