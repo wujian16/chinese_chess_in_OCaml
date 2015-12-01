@@ -15,12 +15,6 @@ type transposition_table
 (* record history AI computations*)
 type history_table
 
-<<<<<<< HEAD
-=======
-(* Determine AI's side color *)
-val det_col: bool -> bool
-
->>>>>>> ebf60a63c24f33d428a46bc061a8de94877dffc8
 (* sort the all possible moves*)
 val sort: board-> step list
 
