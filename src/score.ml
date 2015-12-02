@@ -183,3 +183,4 @@ let ()=if c=true && check_alive b "GR" then score:=!score-10000
             else ()
 in !score
 
+let eval_board (b:board)=evaluate b col
