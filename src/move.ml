@@ -9,6 +9,8 @@ type step={start:position; destination: position; piece_captured: piece option}
 
 type prev_step = step list
 
+let init_PrevStep () = []
+
 let in_bound ((x,y):position) : bool=
   x>=1 && x<=9 && y>=1 && y <=10
 
