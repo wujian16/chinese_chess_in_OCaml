@@ -442,20 +442,27 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
 
 
 
-(*
 
+(*
 let string_of_step stp = begin match stp with
   | {start = st; destination = ds; piece_captured=pcap} ->
   "start: "^(string_of_position st)^"end: "^(string_of_position ds)^
   (begin match pcap with
   | None -> "Captured nothing"
-  | Some pcs -> "Captured "^(string_of_piece_with_position pcs)
+  | Some pcs -> "Captured "^(string_of_piece pcs)
   | _ -> failwith "not valid"  end)
-end
+end*)
 
-let print_step stp = print_endline (string_of_step stp)
+let print_step stp = 
+  begin match stp with
+  | {start = st; destination = ds; piece_captured=pcap} ->
+  Printf.printf "starting position: (%d, %d)\n" (fst st) (snd st);
+  Printf.printf "ending position: (%d, %d)\n" (fst ds) (snd ds);
+  print_piece pcap
+  end
 
- *)
+
+
 
 (*
 1.generals cannot face each other
