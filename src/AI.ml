@@ -30,24 +30,23 @@ let alphaBeta (alpha:int) (beta:int) (depth_left:int)
 	if depth_left = 0 then ((evaluate b),[])
 	else
 		if curr_rd = ai_col then
-
 			result = ref (int_of_float neg_infinity);
 			v = ref alpha;
 			i = ref 0;
 			best_steps = ref [];
-			begin match generate_all_moves b p col with
-			| [] -> ((-depth_left) - (int_of_float neg_infinity),[])
+			begin match (generate_all_moves b p col) with
+			| [] -> (depth_left - (int_of_float infinity),[])
 			| l ->
 				let all_moves = Array.of_list l in
 
 				while ((!i < (Array.length all_moves)) && (beta <> !result))
 				do
-					let (updated_b,updated_prev) = update all_moves.i (b,p) in
+					let (updated_b,updated_prev) = update all_moves.(i) (b,p) in
 					let (score,new_best_steps) = alphaBeta !v beta (depth_left - 1)
 								updated_b updated_prev ai_col !curr_rd in
 					if (score > !v) then
 						v:= score;
-						best_steps:= all_moves.i::new_best_steps;
+						best_steps:= all_moves.(i)::new_best_steps;
 						i:= i+1
 					else if (score > beta) then result := beta; i:= i+1
 					else i:= i+1
@@ -62,17 +61,17 @@ let alphaBeta (alpha:int) (beta:int) (depth_left:int)
 			i = ref 0;
 			best_steps = ref [];
 			begin match generate_all_moves b p col with
-			| [] -> (depth_left - (int_of_float infinity),[])
+			| [] -> ((-depth_left) - (int_of_float neg_infinity),[])
 			| l ->
 				let all_moves = Array.of_list l in
 				while ((!i < (Array.length all_moves)) && (alpha <> !result))
 				do
-					let (updated_b,updated_prev) = update all_moves.i (b,p) in
+					let (updated_b,updated_prev) = update all_moves.(i) (b,p) in
 					let (score,new_best_steps) = alphaBeta alpha !v (depth_left - 1)
 								updated_b updated_prev ai_col !curr_rd in
 					if (score < !v) then
 						v:= score;
-						best_steps:= all_moves.i::new_best_steps;
+						best_steps:= all_moves.(i)::new_best_steps;
 						i:= i+1
 					else if (score < alpha) then result := alpha; i:= i+1
 					else i:= i+1
