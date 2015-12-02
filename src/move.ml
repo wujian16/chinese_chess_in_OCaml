@@ -7,7 +7,7 @@ exception InvalidMove
 (* the following type tells one step during one game*)
 type step={start:position; destination: position; piece_captured: piece option}
 
-type  prev_step = step list
+type prev_step = step list
 
 let in_bound ((x,y):position) : bool=
   x>=1 && x<=9 && y>=1 && y <=10

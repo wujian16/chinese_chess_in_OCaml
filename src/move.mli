@@ -5,7 +5,7 @@ open Board
 type step={start:position; destination: position; piece_captured: piece option}
 
 (* record the previous step*)
-type prev_step
+type prev_step=step list
 
 (*check whether a step is valid or not*)
 val check_valid: board->prev_step->step->bool
