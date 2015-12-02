@@ -1,5 +1,6 @@
 (*open Core.Std*)
 open Piece
+exception InvalidMove
 
 (*board={first=piece array array; second=(string,piece) Hashtbl}
  *)
@@ -37,24 +38,21 @@ let get_alive_side (b:board)=let alive_piece=get_alive_pieces b in
  * pc is the piece captured
 *)
 let change_entry (b:board) (p1:position) (p2:position) (pcapture:piece option)=
-()
-(*
-let pc_in=check_position b p1 in
+let pc=check_position b p1 in
 let (odx, ody) = p1 in
 let (nwx, nwy) = p2 in
  b.first.(ody-1).(odx-1) <- None;
- b.first.(nwy-1).(nwx-1) <- pc ;
+ b.first.(nwy-1).(nwx-1) <- pc;
 
  let pc_in = match pc with
  | None -> raise InvalidMove
  | Some piece-> piece
  in
- Hashtbl.replace b.second pc_in p2 ;
-
+ Hashtbl.replace b.second pc_in.name p2;
  match pcapture with
  | None -> ()
- | Some p -> Hashtbl.remove b.second p
-*)
+ | Some p -> Hashtbl.remove b.second p.name
+
 
 let init ()=
   let r1=Array.of_list [Some rookR1;Some horseR1; Some elepR1;
