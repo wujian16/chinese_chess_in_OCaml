@@ -341,24 +341,47 @@ let raw_pos = [(x+1, y); (x-1, y); (x, y+1); (x, y-1) ] in
 
 
 let update_board (b:board)  (s:step) : unit  =
- ()  (* change_entry b s.start s.destination s.piece_captured  *)
+ change_entry b s.start s.destination s.piece_captured
 
+ (**)
+let update_prev (s:step)  (pv:prev_step) :prev_step =
+ begin
+   match pv with
+  | [] -> [s]
+  | hd::tl -> begin match tl with
+              | []->hd::[s]
+              | _->tl@[s]
+              end
+end
+
+let update_unmutable (s:step) (b:board) (p:prev_step) =
+  let p_next=update_prev s p in
+  let ()=update_board b s in
+  (b,p_next)
 
 let additional_rules_1 (b:board) (pv:prev_step) (s:step)=
   match check_position b s.start with
   | None->false
-  | Some p-> match p.type_of with
+  | Some p->
+             begin
+             match p.type_of with
              | General-> if p.name="GB" then
+                  begin
                   match (get_position b "GR") with
                   |None-> false
                   |Some opp_pos->if (fst s.destination)=(fst opp_pos) then false
                                  else true
-                  else match (get_position b "GB") with
+                  end
+                  else
+                  begin
+                  match (get_position b "GB") with
                   |None-> false
                   |Some opp_pos->if (fst s.destination) =
                     (fst opp_pos)  then false
                                  else true
+                  end
              | _ -> true
+             end
 (*cannot repeat 3 times*)
 let additional_rules_2 (b:board) (pv:prev_step) (s:step)=
   if List.length pv >=2 then
@@ -416,17 +439,6 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
     | General -> true
     | _ -> false
   end
-
-(**)
-let update_prev (s:step)  (pv:prev_step) :prev_step =
- begin
-   match pv with
-  | [] -> [s]
-  | hd::tl -> begin match tl with
-              | []->hd::[s]
-              | _->tl@[s]
-            end
-end
 
 
 
