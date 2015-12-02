@@ -7,7 +7,7 @@ exception InvalidMove
 type board={first:piece option array array; second:(string, position) Hashtbl.t}
 
 (* initialization to red's turn *)
-let round = false
+let round = true
 
 (*get the piece given position*)
 let check_position (b:board) (p:position) =
@@ -30,8 +30,9 @@ let get_alive_pieces (b:board)=Hashtbl.fold
                | Some x->x::lst) (b.second) []
 
 
-let get_alive_side (b:board)=let alive_piece=get_alive_pieces b in
-                             List.filter (fun p->p.team=round) alive_piece
+let get_alive_side (b:board) (side:bool) =
+  let alive_piece=get_alive_pieces b in
+  List.filter (fun p->p.team=side) alive_piece
 
 (* p1 is the start position
  * p2 is the destination position
@@ -43,12 +44,10 @@ let (odx, ody) = p1 in
 let (nwx, nwy) = p2 in
  b.first.(ody-1).(odx-1) <- None;
  b.first.(nwy-1).(nwx-1) <- pc;
-
- let pc_in = match pc with
- | None -> raise InvalidMove
- | Some piece-> piece
+let ()= match pc with
+ | None -> ()
+ | Some pie-> Hashtbl.replace b.second pie.name p2
  in
- Hashtbl.replace b.second pc_in.name p2;
  match pcapture with
  | None -> ()
  | Some p -> Hashtbl.remove b.second p.name
@@ -99,8 +98,23 @@ let init ()=
 let get_boardArray (b: board) =
   b.first
 
-(*print the board*)
-let print_board (b:board)=()
-
 (*print the peice*)
-let print_piece (pie:piece)=()
+let print_piece (p:piece option)=
+  match  p with
+  | None -> Printf.printf "%s%s" "\027[37m" "  -"
+  (* red // green *)
+  | Some pc -> let clr = if pc.team then "\027[31m " else "\027[32m " in
+    Printf.printf "%s %s" clr pc.print_name
+
+(*print the board*)
+let print_board (b:board)=
+  let line_counter = ref 0 in
+  Printf.printf "%s%s" "\027[37m" "     1  2  3  4  5  6  7  8  9\n";
+  Array.iter (fun inner_arr ->
+  incr line_counter;
+  if (!line_counter = 10) then Printf.printf "%s %d" "\027[37m" (!line_counter)
+  else Printf.printf "%s %d" "\027[37m " (!line_counter) ;
+  Array.iter print_piece inner_arr; Printf.printf "%s\n" "\027[37m")
+  (get_boardArray b)
+
+
