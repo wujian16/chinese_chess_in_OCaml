@@ -9,9 +9,17 @@ type board={first:piece option array array; second:(string, position) Hashtbl.t}
 (* initialization to red's turn *)
 let round = true
 
+(* check whether the position is on the board
+ * duplicate with the function in move
+ * handle later *)
+let in_bound ((x,y):position) : bool=
+ x>=1 && x<=9 && y>=1 && y <=10 
+
 (*get the piece given position*)
 let check_position (b:board) (p:position) =
+  if in_bound p then
   ((b.first).((snd p)-1)).((fst p)-1)
+  else None
 
 (*the following function can tell whether a piece still exists on the borad*)
 let check_alive (b:board) (pie:string) = Hashtbl.mem (b.second) pie

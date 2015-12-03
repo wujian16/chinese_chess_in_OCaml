@@ -25,6 +25,15 @@ if pc.team=true && x>=1 && x<=9 && y>=1 && y <=5 then true
 else if pc.team=false && x>=1 && x<=9 && y>=6 && y <=10 then true
 else false
 
+
+let print_step stp = 
+  begin match stp with
+  | {start = st; destination = ds; piece_captured=pcap} ->
+  Printf.printf "starting position: (%d, %d)\n" (fst st) (snd st);
+  Printf.printf "ending position: (%d, %d)\n" (fst ds) (snd ds);
+  print_piece pcap
+  end
+
 (*generate all the steps of a Rook on board with position p *)
 let move_rook (b:board) (pc:piece) ((x,y): position) :step list =
 
@@ -34,7 +43,8 @@ begin
   begin
   match  (check_position b curr_position), (in_bound curr_position) with
   | None, true -> result := {start = (x,y); destination = curr_position ;
-      piece_captured = None}::(!result); loop_forward (x, y+1)
+      piece_captured = None}::(!result); 
+      loop_forward (fst curr_position, (snd curr_position)+1)
   | Some sth ,true -> if sth.team <> pc.team then
       result := {start = (x,y); destination = curr_position;
       piece_captured = Some sth}::(!result) else ()
@@ -44,9 +54,9 @@ begin
 
   let rec loop_back curr_position =
   begin
-  match (check_position b curr_position), (in_bound curr_position )with
+  match (check_position b curr_position), (in_bound curr_position ) with
   | None, true-> result := {start = (x, y); destination = curr_position;
-    piece_captured = None}::(!result); loop_back (x, y-1)
+    piece_captured = None}::(!result); loop_back  (fst curr_position, (snd curr_position)-1)
   | Some sth ,true -> if sth.team <> pc.team then
       result := {start = (x, y); destination = curr_position;
     piece_captured = Some sth}::(!result)  else ()
@@ -58,7 +68,7 @@ begin
   begin
     match (check_position b curr_position), (in_bound curr_position )with
     | None, true -> result:= {start = (x, y); destination = curr_position;
-      piece_captured = None}::(!result); loop_left (x-1, y)
+      piece_captured = None}::(!result); loop_left  ((fst curr_position)-1, snd curr_position)
     | Some sth ,true -> if sth.team <> pc.team then
          result := {start = (x, y); destination = curr_position;
       piece_captured = Some sth}::(!result) else ()
@@ -70,7 +80,7 @@ begin
   begin
     match (check_position b curr_position), (in_bound curr_position )with
     | None, true -> result:= {start = (x, y); destination = curr_position;
-      piece_captured = None}::(!result); loop_right (x+1, y)
+      piece_captured = None}::(!result); loop_right  ((fst curr_position)+1, snd curr_position)
     | Some sth ,true -> if sth.team <> pc.team then
          result := {start = (x, y); destination = curr_position;
       piece_captured = Some sth}::(!result) else ()
@@ -204,68 +214,88 @@ let move_cannon (b:board) (pc:piece) ((x,y): position) :step list =
     let flag=ref false in
     let rec loop_forward curr_position=
     if !flag=false then
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
-       | None, true -> result := {start = (x,y); destination = curr_position ;
-        piece_captured = None}::(!result); loop_forward (x, y+1)
-       | sth ,true -> flag:=true; loop_forward (x, y+1)
+       | None, true -> (result := {start = (x,y); destination = curr_position ;
+        piece_captured = None}::(!result);
+        loop_forward (fst curr_position, (snd curr_position)+1))
+       | Some sth ,true -> (flag:=true;
+       loop_forward (fst curr_position, (snd curr_position)+1))
        | _ , _ -> ()
+      end
     else
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
-       | Some sth ,true -> if sth.team=pc.team then ()
-                           else
+       | Some sth ,true -> 
+                  if sth.team=pc.team then ()
+                  else
                   result := {start = (x,y); destination = curr_position;
-                  piece_captured = Some sth}::(!result);
-       | None, true -> loop_forward (x, y+1)
+                  piece_captured = Some sth}::(!result)
+       | None, true -> loop_forward (fst curr_position, (snd curr_position)+1)
        | _ , _ -> ()
+      end
     in
     let rec loop_back curr_position =
     if !flag=false then
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | None, true -> result := {start = (x,y); destination = curr_position ;
-        piece_captured = None}::(!result); loop_back (x, y-1)
-       | sth ,true -> flag:=true; loop_back (x, y-1)
+        piece_captured = None}::(!result); loop_back (fst curr_position, (snd curr_position)-1)
+       | Some sth ,true -> flag:=true; loop_back (fst curr_position, (snd curr_position)-1)
        | _ , _ -> ()
+      end
     else
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | Some sth ,true -> if sth.team=pc.team then ()
                            else
                   result := {start = (x,y); destination = curr_position;
-                  piece_captured = Some sth}::(!result);
-       | None, true -> loop_back (x, y-1)
+                  piece_captured = Some sth}::(!result)
+       | None, true -> loop_back (fst curr_position, (snd curr_position)-1)
        | _ , _ -> ()
+      end
     in
     let rec loop_left curr_position =
     if !flag=false then
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | None, true -> result := {start = (x,y); destination = curr_position ;
-        piece_captured = None}::(!result); loop_left (x-1, y)
-       | sth ,true -> flag:=true; loop_left (x-1, y)
+        piece_captured = None}::(!result); loop_left ((fst curr_position)-1, snd curr_position)
+       | Some sth ,true -> flag:=true; loop_left  ((fst curr_position)-1, snd curr_position)
        | _ , _ -> ()
+      end
     else
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | Some sth ,true -> if sth.team=pc.team then ()
                            else
                   result := {start = (x,y); destination = curr_position;
-                  piece_captured = Some sth}::(!result);
-       | None, true -> loop_left (x-1, y)
+                  piece_captured = Some sth}::(!result)
+       | None, true -> loop_left  ((fst curr_position)-1, snd curr_position)
        | _ , _ -> ()
+      end
     in
     let rec loop_right curr_position =
     if !flag=false then
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | None, true -> result := {start = (x,y); destination = curr_position ;
-        piece_captured = None}::(!result); loop_right (x+1, y)
-       | sth ,true -> flag:=true; loop_right (x+1, y)
+        piece_captured = None}::(!result); loop_right ((fst curr_position)+1, snd curr_position)
+       | Some sth ,true -> flag:=true; loop_right  ((fst curr_position)+1, snd curr_position)
        | _ , _ -> ()
+      end
     else
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | Some sth ,true -> if sth.team=pc.team then ()
                            else
                   result := {start = (x,y); destination = curr_position;
-                  piece_captured = Some sth}::(!result);
-       | None, true -> loop_right (x+1, y)
+                  piece_captured = Some sth}::(!result)
+       | None, true -> loop_right  ((fst curr_position)+1, snd curr_position)
        | _ , _ -> ()
+      end
       in
+      let ()=result:=[] in
     let ()=flag:=false in
     let ()=loop_forward (x, y+1) in
     let ()=flag:=false in
@@ -444,7 +474,6 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
 
 
 
-
 (*
 let string_of_step stp = begin match stp with
   | {start = st; destination = ds; piece_captured=pcap} ->
@@ -454,14 +483,6 @@ let string_of_step stp = begin match stp with
   | Some pcs -> "Captured "^(string_of_piece pcs)
   | _ -> failwith "not valid"  end)
 end*)
-
-let print_step stp = 
-  begin match stp with
-  | {start = st; destination = ds; piece_captured=pcap} ->
-  Printf.printf "starting position: (%d, %d)\n" (fst st) (snd st);
-  Printf.printf "ending position: (%d, %d)\n" (fst ds) (snd ds);
-  print_piece pcap
-  end
 
 
 

@@ -27,31 +27,19 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 	if depth_left = 0 then ((eval_board b),[])
 	else
 		(if curr_rd = ai_col then 
-			(print_endline "1";
-			let result = ref min_int in
-			print_int !result;
-			print_string "here\n";
+			(let result = ref min_int in
 			let v = ref alpha in
 			let i = ref 0 in
 			let best_steps = ref [] in
 			(*begin match (generate_all_moves b p col) with*)
-			let h_e = (generate_piece_move b p soldR1)@(generate_piece_move b p soldR2)
-				@(generate_piece_move b p soldR3)@(generate_piece_move b p soldR4)@
-				(generate_piece_move b p soldR5)@(generate_piece_move b p horseR1) in
+			let h_e = (generate_piece_move b p rookR1) in
 			begin match h_e with
-			| [] -> print_endline "1.1";(depth_left - max_int,[])
-			| l -> print_endline "1.2";
+			| [] -> (depth_left - max_int,[])
+			| l -> 
 				let all_moves = Array.of_list l in
-				print_endline "1.3";
-				print_int (Array.length all_moves);
-				print_string "hi\n";
-				print_int beta;
-				print_string "hello\n";
-				print_int !result;
-
 				while ((!i < (Array.length all_moves)) && (beta <> !result))
 				do
-					print_endline "1.4";
+				(*	print_step all_moves.(!i);*)
 					let (updated_b,updated_prev) = update_unmutable all_moves.(!i) b p in
 					let (score,new_best_steps) = alphaBeta !v beta (depth_left - 1)
 								updated_b updated_prev ai_col (not curr_rd) in
@@ -73,7 +61,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 			let i = ref 0 in
 			let best_steps = ref [] in
 			(*begin match generate_all_moves b p col with*)
-			begin match (generate_piece_move b p horseR1) with
+			begin match (generate_piece_move b p rookR1) with
 			| [] -> ((-depth_left) - min_int,[])
 			| l ->
 				let all_moves = Array.of_list l in
