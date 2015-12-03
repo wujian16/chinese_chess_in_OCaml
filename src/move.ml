@@ -373,6 +373,10 @@ let raw_pos = [(x+1, y); (x-1, y); (x, y+1); (x, y-1) ] in
 
 
 let update_board (b:board)  (s:step) : unit  =
+ (*let (xs,ys) = s.start in
+ let (xe,ye) = s.destination in
+ Printf.printf "starting point is %d, %d\n" xs ys;
+ Printf.printf "destination point is %d, %d\n" xe ye;*)
  change_entry b s.start s.destination s.piece_captured
 
  (**)
@@ -386,10 +390,13 @@ let update_prev (s:step)  (pv:prev_step) :prev_step =
               end
 end
 
+(*THIS IS WRONG!! b still gets mutated!*)
 let update_unmutable (s:step) (b:board) (p:prev_step) =
   let p_next=update_prev s p in
-  let ()=update_board b s in
-  (b,p_next)
+  let b_copy = b in
+  let ()=update_board b_copy s in
+
+  (b_copy,p_next)
 
 let additional_rules_1 (b:board) (pv:prev_step) (s:step)=
   match check_position b s.start with

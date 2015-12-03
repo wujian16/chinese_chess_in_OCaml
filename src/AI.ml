@@ -31,27 +31,44 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 			let v = ref alpha in
 			let i = ref 0 in
 			let best_steps = ref [] in
-			(*begin match (generate_all_moves b p col) with*)
-			let h_e = (generate_piece_move b p rookR1) in
+			(*begin match (generate_all_moves b p ai_col) with*)
+			let h_e = (generate_piece_move b p canR1) in
 			begin match h_e with
 			| [] -> (depth_left - max_int,[])
 			| l -> 
+				List.iter print_step l;
 				let all_moves = Array.of_list l in
+
 				while ((!i < (Array.length all_moves)) && (beta <> !result))
 				do
-				(*	print_step all_moves.(!i);*)
+		
 					let (updated_b,updated_prev) = update_unmutable all_moves.(!i) b p in
 					let (score,new_best_steps) = alphaBeta !v beta (depth_left - 1)
 								updated_b updated_prev ai_col (not curr_rd) in
-					if (score > !v) then
-						(v:= score;
+					Printf.printf "This is move: \n";
+					print_step all_moves.(!i);
+					Printf.printf "\nIts %d's child has score %d. Its best moves are: \n" !i score;
+					List.iter print_step new_best_steps;
+					Printf.printf "\nThe current alpha is %d; beta is %d\n" !v beta;
+					(if (score > !v) then
+						(
+						v:= score;
+						Printf.printf "Score is greater than current alpha. Alpha is updated: %d\n" !v;
 						best_steps:= all_moves.(!i)::new_best_steps;
-						i:= !i+1)
-					else if (score > beta) then (result := beta; i:= !i+1)
-					else i:= !i+1
+						Printf.printf "Now the best steps are: \n";
+						List.iter print_step !best_steps
+						)
+					else if (score > beta) then 
+						(Printf.printf "Score is greater than beta, impossible, break immediately\n";
+						result := beta)
+					else (Printf.printf "Nothing happens\n")
+					);
+					i:= !i+1
 				done;
-				if !result = beta then (beta,!best_steps) 
-				else (!v,!best_steps)
+				if !result = beta then (Printf.printf "Break with beta %d; Best steps are: \n" beta; 
+										List.iter print_step !best_steps; (beta,!best_steps) )
+				else (Printf.printf "Node's value is %d; Best steps are: \n" !v; 
+					List.iter print_step !best_steps; (!v,!best_steps))
 			end)
 
 		else
@@ -60,7 +77,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 			let v = ref beta in
 			let i = ref 0 in
 			let best_steps = ref [] in
-			(*begin match generate_all_moves b p col with*)
+			(*begin match generate_all_moves b p ai_col with*)
 			begin match (generate_piece_move b p rookR1) with
 			| [] -> ((-depth_left) - min_int,[])
 			| l ->

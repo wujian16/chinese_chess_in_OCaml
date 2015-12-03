@@ -47,18 +47,20 @@ let get_alive_side (b:board) (side:bool) =
  * pc is the piece captured
 *)
 let change_entry (b:board) (p1:position) (p2:position) (pcapture:piece option)=
-let pc=check_position b p1 in
-let (odx, ody) = p1 in
-let (nwx, nwy) = p2 in
- b.first.(ody-1).(odx-1) <- None;
- b.first.(nwy-1).(nwx-1) <- pc;
-let ()= match pc with
- | None -> ()
- | Some pie-> Hashtbl.replace b.second pie.name p2
- in
- match pcapture with
- | None -> ()
- | Some p -> Hashtbl.remove b.second p.name
+  let pc=check_position b p1 in
+  let (odx, ody) = p1 in
+  let (nwx, nwy) = p2 in
+   
+  let ()= match pc with
+   | None -> Printf.printf "Starting position none\n"
+   | Some p-> 
+      b.first.(ody-1).(odx-1) <- None;
+      b.first.(nwy-1).(nwx-1) <- pc;
+      Hashtbl.replace b.second p.name p2
+   in
+   match pcapture with
+   | None -> ()
+   | Some p -> Hashtbl.remove b.second p.name
 
 
 let init ()=
