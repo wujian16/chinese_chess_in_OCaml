@@ -393,9 +393,8 @@ end
 (*THIS IS WRONG!! b still gets mutated!*)
 let update_unmutable (s:step) (b:board) (p:prev_step) =
   let p_next=update_prev s p in
-  let b_copy = b in
+  let b_copy = Board.copy b in
   let ()=update_board b_copy s in
-
   (b_copy,p_next)
 
 let additional_rules_1 (b:board) (pv:prev_step) (s:step)=

@@ -63,6 +63,15 @@ let change_entry (b:board) (p1:position) (p2:position) (pcapture:piece option)=
    | Some p -> Hashtbl.remove b.second p.name
 
 
+let copy (b:board)=
+  let f=b.first in
+  let s=b.second in
+  let f_tempt=Array.fold_left (fun lst row->lst@[Array.copy row]) [] f in
+  let f_copy=Array.of_list f_tempt in
+  {first=f_copy;second=Hashtbl.copy s}
+
+
+
 let init ()=
   let r1=Array.of_list [Some rookR1;Some horseR1; Some elepR1;
   Some advisorR1; Some generalR; Some advisorR2;Some elepR2;
