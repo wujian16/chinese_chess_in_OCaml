@@ -26,7 +26,7 @@ else if pc.team=false && x>=1 && x<=9 && y>=6 && y <=10 then true
 else false
 
 
-let print_step stp = 
+let print_step stp =
   begin match stp with
   | {start = st; destination = ds; piece_captured=pcap} ->
   Printf.printf "starting position: (%d, %d)\n" (fst st) (snd st);
@@ -43,7 +43,7 @@ begin
   begin
   match  (check_position b curr_position), (in_bound curr_position) with
   | None, true -> result := {start = (x,y); destination = curr_position ;
-      piece_captured = None}::(!result); 
+      piece_captured = None}::(!result);
       loop_forward (fst curr_position, (snd curr_position)+1)
   | Some sth ,true -> if sth.team <> pc.team then
       result := {start = (x,y); destination = curr_position;
@@ -226,7 +226,7 @@ let move_cannon (b:board) (pc:piece) ((x,y): position) :step list =
     else
       begin
       match  (check_position b curr_position), (in_bound curr_position) with
-       | Some sth ,true -> 
+       | Some sth ,true ->
                   if sth.team=pc.team then ()
                   else
                   result := {start = (x,y); destination = curr_position;
@@ -384,6 +384,8 @@ let update_board (b:board)  (s:step) : unit  =
  change_entry b s.start s.destination s.piece_captured
 
  (**)
+
+
 let update_prev (s:step)  (pv:prev_step) :prev_step =
  begin
    match pv with
@@ -483,6 +485,13 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
   end
 
 
+let undo (b:board) (ps : prev_step) : prev_step =
+  let rect_step = List.hd ps in
+  let dest_piece = check_position b rect_step.destination in
+  let dest = rect_step.destination in
+  let strt = rect_step.start in
+  b.((snd dest) -1).((fst dest) -1) <- rect_step.piece_captured;
+  b.((snd strt) -1).((fst strt) -1) <- dest_piece
 
 (*
 let string_of_step stp = begin match stp with

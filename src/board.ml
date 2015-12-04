@@ -13,7 +13,7 @@ let round = true
  * duplicate with the function in move
  * handle later *)
 let in_bound ((x,y):position) : bool=
- x>=1 && x<=9 && y>=1 && y <=10 
+ x>=1 && x<=9 && y>=1 && y <=10
 
 (*get the piece given position*)
 let check_position (b:board) (p:position) =
@@ -50,10 +50,10 @@ let change_entry (b:board) (p1:position) (p2:position) (pcapture:piece option)=
   let pc=check_position b p1 in
   let (odx, ody) = p1 in
   let (nwx, nwy) = p2 in
-   
+
   let ()= match pc with
    | None -> Printf.printf "Starting position none\n"
-   | Some p-> 
+   | Some p->
       b.first.(ody-1).(odx-1) <- None;
       b.first.(nwy-1).(nwx-1) <- pc;
       Hashtbl.replace b.second p.name p2
@@ -61,6 +61,10 @@ let change_entry (b:board) (p1:position) (p2:position) (pcapture:piece option)=
    match pcapture with
    | None -> ()
    | Some p -> Hashtbl.remove b.second p.name
+
+let change_one (b:board) (p:position) (pnew:piece option) : unit=
+  let (x, y) = p in
+  b.first.(y-1).(x-1)<- pnew
 
 
 let copy (b:board)=
