@@ -14,6 +14,7 @@ type history_table = (string, search_result) Hashtbl.t
 
 let sort b = raise TODO
 
+
 let generate_all_moves (b:board) (p:prev_step) (side:bool): step list=
 	let all_pieces = get_alive_side b side in
 	let each_steps = List.map 
@@ -25,8 +26,10 @@ let cnt = ref 0
 let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 	(b:board) (p:prev_step) (ai_col:bool) (curr_rd:bool): int*step list =
 
+
 	if depth_left = 0 then (cnt := !cnt + 1; (eval_board b),[])
 	else
+
 		(if curr_rd = ai_col then 
 			(let result = ref min_int in
 			let v = ref alpha in
@@ -37,13 +40,13 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 			begin match h_e with*)
 			| [] -> (depth_left - max_int,[])
 			| l -> 
+
 				(*List.iter print_step l;*)
+
 				let all_moves = Array.of_list l in
 
 				while ((!i < (Array.length all_moves)) && (beta <> !result))
 				do
-					Printf.printf "This is move: \n";
-					print_step all_moves.(!i);
 
 					let (updated_b,updated_prev) = update_unmutable all_moves.(!i) b p in
 					let (score,new_best_steps) = alphaBeta !v beta (depth_left - 1)
@@ -75,6 +78,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 			end)
 
 		else
+
 			(
 			let result = ref max_int in
 			let v = ref beta in
@@ -89,6 +93,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 				do
 					Printf.printf "This is move: \n";
 					print_step all_moves.(!i);
+
 					let (updated_b,updated_prev) = update_unmutable all_moves.(!i) b p in
 					let (score,new_best_steps) = alphaBeta alpha !v (depth_left - 1)
 								updated_b updated_prev ai_col (not curr_rd) in
@@ -159,6 +164,7 @@ and alphaBetaMin (alpha:int ref) (beta:int ref) (depth_left:int)
 		done;
 		if !result = !alpha then !alpha else !beta
 *)
+
 let best_move_v0 (n:int) (b:board) (p:prev_step) : int*step list =
 	(* need to modify the alpha beta to keep track of the optimum steps *)
 		alphaBeta min_int max_int

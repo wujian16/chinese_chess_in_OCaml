@@ -1,4 +1,4 @@
-(* The main file for REPL
+ The main file for REPL
  * including printing the chess board
  * printing the information needed for player
  * starting some dialogue with player
@@ -43,16 +43,71 @@ let print_board (b: board) : unit =
   Array.iter print_piece inner_arr; Printf.printf "%s\n" "\027[37m")
   (get_boardArray curr_board)
 
+let run_board = print_board (init_board)
+
 let comma = Str.regexp ","
 
-let input_Parse (input) =
+let input_Parse (input : byte list) =
   let input = Str.bounded_split comma input 2 in
     if List.length input > 1
       then [List.hd input] @ List.tl input
     else input
+(*convert [x;y] to a position *)
+let rec position_Convert (input: bytes list): int * int =
+  if (List.length input = 2) then
+    (int_of_string (List.hd input), int_of_string (List.hd (List.rev input)))
+  else
+    failwith "Incorrect coordinate size"
 
-let position_Convert (input: bytes list) =
-  (int_of_string (List.hd input), int_of_string (List.hd (List.rev input)))
+(*Gets the piece option at the given parsed location*)
+let check_ValidCoor (p: position) (board) : piece option =
+  check_position b p
+
+  (* check whether there is a piece at this position *)
+let is_piece (b:board ) (p:position): bool =
+  let po = check_position b p in
+  match po with
+  | None -> false
+  | Some _ -> true
+
+
+let rec repl (board: board): bool =
+let input = read_line() in
+(*if (Bytes.lowercase input) <> "quit" then*)
+  try
+  let parsed_Input = input_Parse input in
+  let check_Converted_Position = check_ValidCoor parsed_Input board in
+    match check_Converted_Position with
+    | None -> print_endline "Nothing at this position";
+              failwith "Invalid first coordinate"
+    | Some x ->  (Printf.printf "%s\n" x.name); true
+  with
+    _ -> print_endline "Please input a valid starting coordinate."; repl (board)
+
+
+(* second coordinate *)
+let rec repl2 (board:board) =
+  let input2 = read_line() in
+  (* let second_coordinate =
+  ( *)try
+  let sndparsed_Input = input_Parse input2 in
+  let check_Converted_Position = check_ValidCoor sndparsed_Input board in
+    match check_Converted_Position with
+    | None -> print_endline "Nothing at this position"
+    | Some x -> (Printf.printf "%s\n" x.name); true
+  with
+    _ -> print_endline "Please input a valid starting coordinate."; repl2 (board)
+
+let start_test = repl init_board in
+ Printf.printf "%B" start_test
+let start_test2 = repl2(init_board)
+
+(* let position_Convert (input: bytes list) =
+  (int_of_string (List.hd input), int_of_string (List.hd (List.rev input))) *)
+let command_undo  =
+  TODO
+
+
 
 let assign_Inputs (input: bytes list) =
   | [] ->           Exception
@@ -63,7 +118,7 @@ let assign_Inputs (input: bytes list) =
   | "forfeit" ->    Forfeit
   | "restart" ->    Restart
   | h :: t ->       Other_input
-
+(*
 let input_convert (board: board) (user_input: bytes) (input: inputs)=
   match input with
   | Other_input ->
@@ -107,19 +162,29 @@ let input_response (inputs: inputs)(thisBoard: board)
   | StartCo     ->
   | EndCo       ->
   | Exception   -> (print_endline "Please input a valid input.")
+ *)
 
 
-let  _  =
-print_endline ("Please choose the game mode that you would like to play.
-If you would like to play against an AI, type '1P'.
-If you would like to play two player, type '2P'. ");
-init_state (List.nth (Array.to_list Sys.argv) 1) ;
-print_endline ("Please select the color of the team you would like to play as: red goes first
-black goes second. Please type 'red' if you would like to play as red or 'black'
-if you would like to play as black.")
-choose_team ( List.nth (Array.to_list Sys.argv) 1 ) ;
-print_endline "ASK FOR 2 COORDINATES";
-repl_move ()
+let rec init_stateGame ()=
+  (*if (Array.length Sys.argv - 1) = 1 then *)
+  let input = read_line() in
+  match lowercase(input) with
+  | "1p" -> let () = curr_GameState.started <- true in
+            let () = curr_GameState.game_mode <- true in
+            (print_endline "You will now playing against the AI.")
+  | "2p" -> let () = curr_GameState.started <- true in
+            let () = curr_GameState.game_mode <- false in
+            (print_endline "You will be playing against a second human player.")
+  | _ ->    (print_endline "Please type a valid game mode."); init_stateGame()
+
+let rec init_stateTeam () =
+  let input = read_line() in
+  match lowercase(input) with
+  | "red"    -> let () = curr_GameState.color <- true in
+                print_endline "You are now playing as Red."
+  | "green"  -> let () = curr_GameState.color <- false in
+                print_endline "You are now playing as Green."
+  | _        -> print_endline ("Please choose a valid team color.")
 
 "Please input the starting coordinates of the piece you would like to move
  in the following format: \"x, y \" where x is the x coordinate and y is the
@@ -194,19 +259,3 @@ let piece_convertPrint =
   elepB2;
   horseB2
   rookB2 in
-*)
-
-let init_state (input: bytes) =
-  if List
-
-let rec repl (board: board) =
-  let input = read_line() in
-  if (Bytes.lowercase input) <> "quit" then
-    try
-      let user_input = input_Parse input in
-      let input_type =
-      let this_board =
-    with
-      _ ->
-
-let start_game = askGameMode; ask_PlayerColor; repl curr_Board
