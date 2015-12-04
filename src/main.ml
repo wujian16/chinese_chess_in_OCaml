@@ -1,4 +1,4 @@
-(* The main file for REPL
+ The main file for REPL
  * including printing the chess board
  * printing the information needed for player
  * starting some dialogue with player
@@ -47,21 +47,29 @@ let run_board = print_board (init_board)
 
 let comma = Str.regexp ","
 
-let input_Parse (input) =
+let input_Parse (input : byte list) =
   let input = Str.bounded_split comma input 2 in
     if List.length input > 1
       then [List.hd input] @ List.tl input
     else input
-
+(*convert [x;y] to a position *)
 let rec position_Convert (input: bytes list): int * int =
   if (List.length input = 2) then
     (int_of_string (List.hd input), int_of_string (List.hd (List.rev input)))
   else
     failwith "Incorrect coordinate size"
 
-(*Gets the piece at the given parsed location*)
-let check_ValidCoor (input) (board) =
-  Board.check_position (board) (position_Convert(input))
+(*Gets the piece option at the given parsed location*)
+let check_ValidCoor (p: position) (board) : piece option =
+  check_position b p
+
+  (* check whether there is a piece at this position *)
+let is_piece (b:board ) (p:position): bool =
+  let po = check_position b p in
+  match po with
+  | None -> false
+  | Some _ -> true
+
 
 let rec repl (board: board): bool =
 let input = read_line() in
@@ -76,6 +84,8 @@ let input = read_line() in
   with
     _ -> print_endline "Please input a valid starting coordinate."; repl (board)
 
+
+(* second coordinate *)
 let rec repl2 (board:board) =
   let input2 = read_line() in
   (* let second_coordinate =
@@ -92,8 +102,12 @@ let start_test = repl init_board in
  Printf.printf "%B" start_test
 let start_test2 = repl2(init_board)
 
-let position_Convert (input: bytes list) =
-  (int_of_string (List.hd input), int_of_string (List.hd (List.rev input)))
+(* let position_Convert (input: bytes list) =
+  (int_of_string (List.hd input), int_of_string (List.hd (List.rev input))) *)
+let command_undo  =
+  TODO
+
+
 
 let assign_Inputs (input: bytes list) =
   | [] ->           Exception
@@ -104,7 +118,7 @@ let assign_Inputs (input: bytes list) =
   | "forfeit" ->    Forfeit
   | "restart" ->    Restart
   | h :: t ->       Other_input
-
+(*
 let input_convert (board: board) (user_input: bytes) (input: inputs)=
   match input with
   | Other_input ->
@@ -148,7 +162,7 @@ let input_response (inputs: inputs)(thisBoard: board)
   | StartCo     ->
   | EndCo       ->
   | Exception   -> (print_endline "Please input a valid input.")
-
+ *)
 
 let  _  =
 print_endline ("Please choose the game mode that you would like to play.
@@ -235,4 +249,3 @@ let piece_convertPrint =
   elepB2;
   horseB2
   rookB2 in
-*)
