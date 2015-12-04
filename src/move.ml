@@ -31,7 +31,8 @@ let print_step stp =
   | {start = st; destination = ds; piece_captured=pcap} ->
   Printf.printf "starting position: (%d, %d)\n" (fst st) (snd st);
   Printf.printf "ending position: (%d, %d)\n" (fst ds) (snd ds);
-  print_piece pcap
+  print_piece pcap;
+  Printf.printf "\n"
   end
 
 (*generate all the steps of a Rook on board with position p *)

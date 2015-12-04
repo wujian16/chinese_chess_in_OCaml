@@ -15,6 +15,8 @@ type transposition_table
 (* record history AI computations*)
 type history_table
 
+val cnt: int ref
+
 (* sort the all possible moves*)
 val sort: board-> step list
 
