@@ -164,17 +164,27 @@ let input_response (inputs: inputs)(thisBoard: board)
   | Exception   -> (print_endline "Please input a valid input.")
  *)
 
-let  _  =
-print_endline ("Please choose the game mode that you would like to play.
-If you would like to play against an AI, type '1P'.
-If you would like to play two player, type '2P'. ");
-init_state (List.nth (Array.to_list Sys.argv) 1) ;
-print_endline ("Please select the color of the team you would like to play as: red goes first
-black goes second. Please type 'red' if you would like to play as red or 'black'
-if you would like to play as black.")
-choose_team ( List.nth (Array.to_list Sys.argv) 1 ) ;
-print_endline "ASK FOR 2 COORDINATES";
-repl_move ()
+
+let rec init_stateGame ()=
+  (*if (Array.length Sys.argv - 1) = 1 then *)
+  let input = read_line() in
+  match lowercase(input) with
+  | "1p" -> let () = curr_GameState.started <- true in
+            let () = curr_GameState.game_mode <- true in
+            (print_endline "You will now playing against the AI.")
+  | "2p" -> let () = curr_GameState.started <- true in
+            let () = curr_GameState.game_mode <- false in
+            (print_endline "You will be playing against a second human player.")
+  | _ ->    (print_endline "Please type a valid game mode."); init_stateGame()
+
+let rec init_stateTeam () =
+  let input = read_line() in
+  match lowercase(input) with
+  | "red"    -> let () = curr_GameState.color <- true in
+                print_endline "You are now playing as Red."
+  | "green"  -> let () = curr_GameState.color <- false in
+                print_endline "You are now playing as Green."
+  | _        -> print_endline ("Please choose a valid team color.")
 
 "Please input the starting coordinates of the piece you would like to move
  in the following format: \"x, y \" where x is the x coordinate and y is the
