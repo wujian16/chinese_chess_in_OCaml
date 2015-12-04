@@ -164,22 +164,45 @@ for i=1 to 9 do
       let ()=
       begin
        match pie.type_of with
-        |General->sp:=List.nth score_general (transform_position (i,j))
-        |Advisor->sp:=List.nth score_advisor (transform_position (i,j))
-        |Elephant->sp:=List.nth score_advisor (transform_position (i,j))
-        |Horse->sp:=List.nth score_horse (transform_position (i,j))
-        |Rook->sp:=List.nth score_rook (transform_position (i,j))
-        |Cannon->sp:=List.nth score_cannon (transform_position (i,j))
-        |Soldier->sp:=List.nth score_soldier (transform_position (i,j))
+        |General->(if pie.team=false then
+          sp:=List.nth score_general (transform_position (i,j))
+        else sp:=- (List.nth score_general (transform_position (10-i,11-j)))
+        )
+        |Advisor->(if pie.team=false then
+          sp:=List.nth score_advisor (transform_position (i,j))
+        else sp:=- (List.nth score_advisor (transform_position (10-i,11-j)))
+        )
+        |Elephant->(if pie.team=false then
+          sp:=List.nth score_elephant (transform_position (i,j))
+        else sp:=- (List.nth score_elephant (transform_position (10-i,11-j)))
+        )
+        |Horse->(if pie.team=false then
+          sp:=List.nth score_horse (transform_position (i,j))
+        else sp:=- (List.nth score_horse (transform_position (10-i,11-j)))
+        )
+        |Rook->(if pie.team=false then
+          sp:=List.nth score_rook (transform_position (i,j))
+        else sp:=- (List.nth score_rook (transform_position (10-i,11-j)))
+        )
+        |Cannon->(if pie.team=false then
+          sp:=List.nth score_cannon (transform_position (i,j))
+        else sp:=- (List.nth score_cannon (transform_position (10-i,11-j)))
+        )
+        |Soldier->(if pie.team=false then
+          sp:=List.nth score_soldier (transform_position (i,j))
+        else sp:=-(List.nth score_soldier (transform_position (10-i,11-j)))
+        )
       end
-        in
-        let ()=if pie.team=true then sp:=(-(!sp)) else () in score:=!score+(!sp)
+      in score:=!score+(!sp)
     end
   done
 done
-in let ()=if c=true then score:=(-(!score)) else() in
-let ()=if c=true && check_alive b "GR" then score:=!score-10000
-       else if c=false && check_alive b "GB" then score:=!score-10000
-            else ()
-in !score
+in let ()=if c=true then score:=(-(!score)) else () in
 
+let ()=if c=true && (not (check_alive b "GR")) then score:=!score-10000
+       else if c=false && (not (check_alive b "GB")) then score:=!score-10000
+            else ()
+in
+ !score
+
+let eval_board (b:board)=evaluate b col

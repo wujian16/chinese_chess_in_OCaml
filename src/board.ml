@@ -7,11 +7,19 @@ exception InvalidMove
 type board={first:piece option array array; second:(string, position) Hashtbl.t}
 
 (* initialization to red's turn *)
-let round = false
+let round = true
+
+(* check whether the position is on the board
+ * duplicate with the function in move
+ * handle later *)
+let in_bound ((x,y):position) : bool=
+ x>=1 && x<=9 && y>=1 && y <=10
 
 (*get the piece given position*)
 let check_position (b:board) (p:position) =
+  if in_bound p then
   ((b.first).((snd p)-1)).((fst p)-1)
+  else None
 
 (*the following function can tell whether a piece still exists on the borad*)
 let check_alive (b:board) (pie:string) = Hashtbl.mem (b.second) pie
@@ -30,28 +38,42 @@ let get_alive_pieces (b:board)=Hashtbl.fold
                | Some x->x::lst) (b.second) []
 
 
-let get_alive_side (b:board)=let alive_piece=get_alive_pieces b in
-                             List.filter (fun p->p.team=round) alive_piece
+let get_alive_side (b:board) (side:bool) =
+  let alive_piece=get_alive_pieces b in
+  List.filter (fun p->p.team=side) alive_piece
 
 (* p1 is the start position
  * p2 is the destination position
  * pc is the piece captured
 *)
 let change_entry (b:board) (p1:position) (p2:position) (pcapture:piece option)=
-let pc=check_position b p1 in
-let (odx, ody) = p1 in
-let (nwx, nwy) = p2 in
- b.first.(ody-1).(odx-1) <- None;
- b.first.(nwy-1).(nwx-1) <- pc;
+  let pc=check_position b p1 in
+  let (odx, ody) = p1 in
+  let (nwx, nwy) = p2 in
 
- let pc_in = match pc with
- | None -> raise InvalidMove
- | Some piece-> piece
- in
- Hashtbl.replace b.second pc_in.name p2;
- match pcapture with
- | None -> ()
- | Some p -> Hashtbl.remove b.second p.name
+  let ()= match pc with
+   | None -> Printf.printf "Starting position none\n"
+   | Some p->
+      b.first.(ody-1).(odx-1) <- None;
+      b.first.(nwy-1).(nwx-1) <- pc;
+      Hashtbl.replace b.second p.name p2
+   in
+   match pcapture with
+   | None -> ()
+   | Some p -> Hashtbl.remove b.second p.name
+
+let change_one (b:board) (p:position) (pnew:piece option) : unit=
+  let (x, y) = p in
+  b.first.(y-1).(x-1)<- pnew
+
+
+let copy (b:board)=
+  let f=b.first in
+  let s=b.second in
+  let f_tempt=Array.fold_left (fun lst row->lst@[Array.copy row]) [] f in
+  let f_copy=Array.of_list f_tempt in
+  {first=f_copy;second=Hashtbl.copy s}
+
 
 
 let init ()=
@@ -99,8 +121,23 @@ let init ()=
 let get_boardArray (b: board) =
   b.first
 
-(*print the board*)
-let print_board (b:board)=()
-
 (*print the peice*)
-let print_piece (pie:piece)=()
+let print_piece (p:piece option)=
+  match  p with
+  | None -> Printf.printf "%s%s" "\027[37m" "  -"
+  (* red // green *)
+  | Some pc -> let clr = if pc.team then "\027[31m " else "\027[32m " in
+    Printf.printf "%s %s" clr pc.print_name
+
+(*print the board*)
+let print_board (b:board)=
+  let line_counter = ref 0 in
+  Printf.printf "%s%s" "\027[37m" "     1  2  3  4  5  6  7  8  9\n";
+  Array.iter (fun inner_arr ->
+  incr line_counter;
+  if (!line_counter = 10) then Printf.printf "%s %d" "\027[37m" (!line_counter)
+  else Printf.printf "%s %d" "\027[37m " (!line_counter) ;
+  Array.iter print_piece inner_arr; Printf.printf "%s\n" "\027[37m")
+  (get_boardArray b)
+
+

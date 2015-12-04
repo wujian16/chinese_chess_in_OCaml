@@ -22,10 +22,13 @@ val get_position: board->string-> position option
 val get_alive_pieces: board-> piece list
 
 (*giving all the pieces on a specific side which are still alive*)
-val get_alive_side: board -> piece list
+val get_alive_side: board -> bool -> piece list
 
 (* change the board*)
 val change_entry: board-> position -> position-> piece option->unit
+
+(* make a copy of board*)
+val copy: board->board
 
 (* initialize the board*)
 val init: unit-> board
@@ -38,4 +41,4 @@ val get_boardArray: board -> piece option array array
 val print_board: board->unit
 
 (*print the peice*)
-val print_piece: piece->unit
+val print_piece: piece option->unit

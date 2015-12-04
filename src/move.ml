@@ -7,7 +7,9 @@ exception InvalidMove
 (* the following type tells one step during one game*)
 type step={start:position; destination: position; piece_captured: piece option}
 
-type  prev_step = step list
+type prev_step = step list
+
+let init_PrevStep () = []
 
 let in_bound ((x,y):position) : bool=
   x>=1 && x<=9 && y>=1 && y <=10
@@ -23,6 +25,15 @@ if pc.team=true && x>=1 && x<=9 && y>=1 && y <=5 then true
 else if pc.team=false && x>=1 && x<=9 && y>=6 && y <=10 then true
 else false
 
+
+let print_step stp =
+  begin match stp with
+  | {start = st; destination = ds; piece_captured=pcap} ->
+  Printf.printf "starting position: (%d, %d)\n" (fst st) (snd st);
+  Printf.printf "ending position: (%d, %d)\n" (fst ds) (snd ds);
+  print_piece pcap
+  end
+
 (*generate all the steps of a Rook on board with position p *)
 let move_rook (b:board) (pc:piece) ((x,y): position) :step list =
 
@@ -32,7 +43,8 @@ begin
   begin
   match  (check_position b curr_position), (in_bound curr_position) with
   | None, true -> result := {start = (x,y); destination = curr_position ;
-      piece_captured = None}::(!result); loop_forward (x, y+1)
+      piece_captured = None}::(!result);
+      loop_forward (fst curr_position, (snd curr_position)+1)
   | Some sth ,true -> if sth.team <> pc.team then
       result := {start = (x,y); destination = curr_position;
       piece_captured = Some sth}::(!result) else ()
@@ -42,9 +54,9 @@ begin
 
   let rec loop_back curr_position =
   begin
-  match (check_position b curr_position), (in_bound curr_position )with
+  match (check_position b curr_position), (in_bound curr_position ) with
   | None, true-> result := {start = (x, y); destination = curr_position;
-    piece_captured = None}::(!result); loop_back (x, y-1)
+    piece_captured = None}::(!result); loop_back  (fst curr_position, (snd curr_position)-1)
   | Some sth ,true -> if sth.team <> pc.team then
       result := {start = (x, y); destination = curr_position;
     piece_captured = Some sth}::(!result)  else ()
@@ -56,7 +68,7 @@ begin
   begin
     match (check_position b curr_position), (in_bound curr_position )with
     | None, true -> result:= {start = (x, y); destination = curr_position;
-      piece_captured = None}::(!result); loop_left (x-1, y)
+      piece_captured = None}::(!result); loop_left  ((fst curr_position)-1, snd curr_position)
     | Some sth ,true -> if sth.team <> pc.team then
          result := {start = (x, y); destination = curr_position;
       piece_captured = Some sth}::(!result) else ()
@@ -68,7 +80,7 @@ begin
   begin
     match (check_position b curr_position), (in_bound curr_position )with
     | None, true -> result:= {start = (x, y); destination = curr_position;
-      piece_captured = None}::(!result); loop_right (x+1, y)
+      piece_captured = None}::(!result); loop_right  ((fst curr_position)+1, snd curr_position)
     | Some sth ,true -> if sth.team <> pc.team then
          result := {start = (x, y); destination = curr_position;
       piece_captured = Some sth}::(!result) else ()
@@ -202,68 +214,88 @@ let move_cannon (b:board) (pc:piece) ((x,y): position) :step list =
     let flag=ref false in
     let rec loop_forward curr_position=
     if !flag=false then
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
-       | None, true -> result := {start = (x,y); destination = curr_position ;
-        piece_captured = None}::(!result); loop_forward (x, y+1)
-       | sth ,true -> flag:=true; loop_forward (x, y+1)
+       | None, true -> (result := {start = (x,y); destination = curr_position ;
+        piece_captured = None}::(!result);
+        loop_forward (fst curr_position, (snd curr_position)+1))
+       | Some sth ,true -> (flag:=true;
+       loop_forward (fst curr_position, (snd curr_position)+1))
        | _ , _ -> ()
+      end
     else
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
-       | Some sth ,true -> if sth.team=pc.team then ()
-                           else
+       | Some sth ,true ->
+                  if sth.team=pc.team then ()
+                  else
                   result := {start = (x,y); destination = curr_position;
-                  piece_captured = Some sth}::(!result);
-       | None, true -> loop_forward (x, y+1)
+                  piece_captured = Some sth}::(!result)
+       | None, true -> loop_forward (fst curr_position, (snd curr_position)+1)
        | _ , _ -> ()
+      end
     in
     let rec loop_back curr_position =
     if !flag=false then
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | None, true -> result := {start = (x,y); destination = curr_position ;
-        piece_captured = None}::(!result); loop_back (x, y-1)
-       | sth ,true -> flag:=true; loop_back (x, y-1)
+        piece_captured = None}::(!result); loop_back (fst curr_position, (snd curr_position)-1)
+       | Some sth ,true -> flag:=true; loop_back (fst curr_position, (snd curr_position)-1)
        | _ , _ -> ()
+      end
     else
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | Some sth ,true -> if sth.team=pc.team then ()
                            else
                   result := {start = (x,y); destination = curr_position;
-                  piece_captured = Some sth}::(!result);
-       | None, true -> loop_back (x, y-1)
+                  piece_captured = Some sth}::(!result)
+       | None, true -> loop_back (fst curr_position, (snd curr_position)-1)
        | _ , _ -> ()
+      end
     in
     let rec loop_left curr_position =
     if !flag=false then
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | None, true -> result := {start = (x,y); destination = curr_position ;
-        piece_captured = None}::(!result); loop_left (x-1, y)
-       | sth ,true -> flag:=true; loop_left (x-1, y)
+        piece_captured = None}::(!result); loop_left ((fst curr_position)-1, snd curr_position)
+       | Some sth ,true -> flag:=true; loop_left  ((fst curr_position)-1, snd curr_position)
        | _ , _ -> ()
+      end
     else
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | Some sth ,true -> if sth.team=pc.team then ()
                            else
                   result := {start = (x,y); destination = curr_position;
-                  piece_captured = Some sth}::(!result);
-       | None, true -> loop_left (x-1, y)
+                  piece_captured = Some sth}::(!result)
+       | None, true -> loop_left  ((fst curr_position)-1, snd curr_position)
        | _ , _ -> ()
+      end
     in
     let rec loop_right curr_position =
     if !flag=false then
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | None, true -> result := {start = (x,y); destination = curr_position ;
-        piece_captured = None}::(!result); loop_right (x+1, y)
-       | sth ,true -> flag:=true; loop_right (x+1, y)
+        piece_captured = None}::(!result); loop_right ((fst curr_position)+1, snd curr_position)
+       | Some sth ,true -> flag:=true; loop_right  ((fst curr_position)+1, snd curr_position)
        | _ , _ -> ()
+      end
     else
+      begin
       match  (check_position b curr_position), (in_bound curr_position) with
        | Some sth ,true -> if sth.team=pc.team then ()
                            else
                   result := {start = (x,y); destination = curr_position;
-                  piece_captured = Some sth}::(!result);
-       | None, true -> loop_right (x+1, y)
+                  piece_captured = Some sth}::(!result)
+       | None, true -> loop_right  ((fst curr_position)+1, snd curr_position)
        | _ , _ -> ()
+      end
       in
+      let ()=result:=[] in
     let ()=flag:=false in
     let ()=loop_forward (x, y+1) in
     let ()=flag:=false in
@@ -341,24 +373,55 @@ let raw_pos = [(x+1, y); (x-1, y); (x, y+1); (x, y-1) ] in
 
 
 let update_board (b:board)  (s:step) : unit  =
- ()  (* change_entry b s.start s.destination s.piece_captured  *)
+ (*let (xs,ys) = s.start in
+ let (xe,ye) = s.destination in
+ Printf.printf "starting point is %d, %d\n" xs ys;
+ Printf.printf "destination point is %d, %d\n" xe ye;*)
+ change_entry b s.start s.destination s.piece_captured
 
+ (**)
+
+
+let update_prev (s:step)  (pv:prev_step) :prev_step =
+ begin
+   match pv with
+  | [] -> [s]
+  | hd::tl -> begin match tl with
+              | []->hd::[s]
+              | _->tl@[s]
+              end
+end
+
+(*THIS IS WRONG!! b still gets mutated!*)
+let update_unmutable (s:step) (b:board) (p:prev_step) =
+  let p_next=update_prev s p in
+  let b_copy = Board.copy b in
+  let ()=update_board b_copy s in
+  (b_copy,p_next)
 
 let additional_rules_1 (b:board) (pv:prev_step) (s:step)=
   match check_position b s.start with
   | None->false
-  | Some p-> match p.type_of with
+  | Some p->
+             begin
+             match p.type_of with
              | General-> if p.name="GB" then
+                  begin
                   match (get_position b "GR") with
                   |None-> false
                   |Some opp_pos->if (fst s.destination)=(fst opp_pos) then false
                                  else true
-                  else match (get_position b "GB") with
+                  end
+                  else
+                  begin
+                  match (get_position b "GB") with
                   |None-> false
                   |Some opp_pos->if (fst s.destination) =
                     (fst opp_pos)  then false
                                  else true
+                  end
              | _ -> true
+             end
 (*cannot repeat 3 times*)
 let additional_rules_2 (b:board) (pv:prev_step) (s:step)=
   if List.length pv >=2 then
@@ -417,33 +480,27 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
     | _ -> false
   end
 
-(**)
-let update_prev (s:step)  (pv:prev_step) :prev_step =
- begin
-   match pv with
-  | [] -> [s]
-  | hd::tl -> begin match tl with
-              | []->hd::[s]
-              | _->tl@[s]
-            end
-end
 
-
+let undo (b:board) (ps : prev_step) : prev_step =
+  let rect_step = List.hd ps in
+  let dest_piece = check_position b rect_step.destination in
+  let dest = rect_step.destination in
+  let strt = rect_step.start in
+  b.((snd dest) -1).((fst dest) -1) <- rect_step.piece_captured;
+  b.((snd strt) -1).((fst strt) -1) <- dest_piece
 
 (*
-
 let string_of_step stp = begin match stp with
   | {start = st; destination = ds; piece_captured=pcap} ->
   "start: "^(string_of_position st)^"end: "^(string_of_position ds)^
   (begin match pcap with
   | None -> "Captured nothing"
-  | Some pcs -> "Captured "^(string_of_piece_with_position pcs)
+  | Some pcs -> "Captured "^(string_of_piece pcs)
   | _ -> failwith "not valid"  end)
-end
+end*)
 
-let print_step stp = print_endline (string_of_step stp)
 
- *)
+
 
 (*
 1.generals cannot face each other
