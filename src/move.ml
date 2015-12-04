@@ -332,22 +332,26 @@ in hori_pos@vert_pos
 
 let move_elephant (b:board) (pc:piece) ((x,y): position) :step list =
   let raw_pos=[(2,2); (-2,-2); (2,-2); (-2, 2)] in
+  begin
   match (self_side pc (x,y)) with
  (*self side*)
  | true -> List.flatten (List.map (fun p ->
      if self_side pc (x+(fst p), y+(snd p)) &&
         check_position b (x+(fst p)/2, y+(snd p)/2)=None
      then
+      begin
       match (check_position b (x+(fst p), y+(snd p))) with
       |None->  [{start= (x,y); destination = (x+(fst p), y+(snd p));
      piece_captured = None}]
       |Some sth->if sth.team<>pc.team then
-       [{start= (x,y); destination = p;
+       [{start= (x,y); destination =  (x+(fst p), y+(snd p));
         piece_captured = (check_position b p)}]
                  else []
+      end
      else []) raw_pos)
  (*other side of river*)
  | false -> []
+  end
 
 
 let move_advisor (b:board) (pc:piece) ((x,y): position) : step list =
