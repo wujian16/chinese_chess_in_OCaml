@@ -43,6 +43,8 @@ let print_board (b: board) : unit =
   Array.iter print_piece inner_arr; Printf.printf "%s\n" "\027[37m")
   (get_boardArray curr_board)
 
+let run_board = print_board (init_board)
+
 let comma = Str.regexp ","
 
 let input_Parse (input) =
@@ -50,6 +52,45 @@ let input_Parse (input) =
     if List.length input > 1
       then [List.hd input] @ List.tl input
     else input
+
+let rec position_Convert (input: bytes list): int * int =
+  if (List.length input = 2) then
+    (int_of_string (List.hd input), int_of_string (List.hd (List.rev input)))
+  else
+    failwith "Incorrect coordinate size"
+
+(*Gets the piece at the given parsed location*)
+let check_ValidCoor (input) (board) =
+  Board.check_position (board) (position_Convert(input))
+
+let rec repl (board: board): bool =
+let input = read_line() in
+(*if (Bytes.lowercase input) <> "quit" then*)
+  try
+  let parsed_Input = input_Parse input in
+  let check_Converted_Position = check_ValidCoor parsed_Input board in
+    match check_Converted_Position with
+    | None -> print_endline "Nothing at this position";
+              failwith "Invalid first coordinate"
+    | Some x ->  (Printf.printf "%s\n" x.name); true
+  with
+    _ -> print_endline "Please input a valid starting coordinate."; repl (board)
+
+let rec repl2 (board:board) =
+  let input2 = read_line() in
+  (* let second_coordinate =
+  ( *)try
+  let sndparsed_Input = input_Parse input2 in
+  let check_Converted_Position = check_ValidCoor sndparsed_Input board in
+    match check_Converted_Position with
+    | None -> print_endline "Nothing at this position"
+    | Some x -> (Printf.printf "%s\n" x.name); true
+  with
+    _ -> print_endline "Please input a valid starting coordinate."; repl2 (board)
+
+let start_test = repl init_board in
+ Printf.printf "%B" start_test
+let start_test2 = repl2(init_board)
 
 let position_Convert (input: bytes list) =
   (int_of_string (List.hd input), int_of_string (List.hd (List.rev input)))
