@@ -43,7 +43,7 @@ let print_board (b: board) : unit =
 
 let run_board = print_board (init_board)
 
-let comma = Str.regexp ","
+(* let comma = Str.regexp ","
 
 let input_Parse (input) =
   let input = Str.bounded_split comma input 2 in
@@ -56,10 +56,22 @@ let position_Convert (input: bytes list) =
 
 let check_ValidCoor (input) (board) =
   let isPiece = Board.check_position (board) (position_Convert(input)) in
-  match isPiece with 
-  | None    -> 
-  | Some pc -> 
+  match isPiece with
+  | None    ->
+  | Some pc ->
+ *)
 
+(* (parse) *)
+let to_tuple (x:int) (y:int) : (int*int) =
+    (x,y)
 
-(*parse*)
-val parse: string->cmd
+(* val parse: string->cmd *)
+(*in this form start_x start_y dest_x dest_y*)
+  let start = to_tuple (List.nth (Array.to_list Sys.argv) 1)
+    (List.nth (Array.to_list Sys.argv) 2)  in
+
+  let dest = to_tuple (List.nth (Array.to_list Sys.argv) 3)
+    (List.nth (Array.to_list Sys.argv) 4) in
+
+let init_state (input: string) =
+  if
