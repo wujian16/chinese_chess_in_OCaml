@@ -208,8 +208,14 @@ and alphaBetaMin (alpha:int ref) (beta:int ref) (depth_left:int)
 
 let best_move_v0 (n:int) (b:board) (p:prev_step) : int*step list =
 	(* need to modify the alpha beta to keep track of the optimum steps *)
-		alphaBeta min_int max_int
-			n b p col round
+	  let t=Unix.gettimeofday () in
+		let result=ref (0, []) in
+		let i=ref 1 in
+		while ((Unix.gettimeofday () -. t)<=300.0 && !i<n) do
+			result:=(alphaBeta min_int max_int (!i) b p col round);
+			i:=!i+1
+		done;
+		!result
 
 (*generate the best possible moves for the futural several steps
 * int below is how many steps we predict for the future*)
