@@ -32,14 +32,9 @@ let compared s1 s2=
 	(Hashtbl.find nHistoryTable (s2.start, s2.destination))
 	-(Hashtbl.find nHistoryTable (s1.start, s1.destination))
 
-let generate_all_moves (b:board) (p:prev_step) (side:bool): step list=
-	let all_pieces = get_alive_side b side in
-	let each_steps = List.map 
-		(fun a -> let l = generate_piece_move b p a in List.iter print_step l; l) all_pieces in
-	List.sort compared (List.flatten each_steps)
-
 let check_end_game (b:board) : bool = 
-	not ((check_alive b "GR") && (check_alive b "GB"))
+	(generate_all_moves = []) ||
+	(not ((check_alive b "GR") && (check_alive b "GB")))
 
 let cnt = ref 0
 

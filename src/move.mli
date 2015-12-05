@@ -25,8 +25,11 @@ val update_board : board -> step -> unit
 (* update a previous step with a new step*)
 val update_prev : step -> prev_step -> prev_step
 
-(*generate all possible move steps*)
-val generate_piece_move: board->prev_step->piece->step list
+(*generate all possible move steps for one piece *)
+val generate_piece_move: board-> prev_step-> piece-> step list
+
+(*generate all possible move steps for one side *)
+val generate_all_moves: board-> prev_step-> bool-> step list
 
 (* print for debugging purpose*)
 val print_step: step->unit 
