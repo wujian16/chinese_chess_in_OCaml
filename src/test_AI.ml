@@ -7,7 +7,7 @@ open Score
 
 let generate_all_moves (b:board) (p:prev_step) (side:bool): step list=
 	let all_pieces = get_alive_side b side in
-	let each_steps = List.map 
+	let each_steps = List.map
 		(fun a -> let l = generate_piece_move b p a in List.iter print_step l; l) all_pieces in
 	List.flatten each_steps
 
@@ -33,9 +33,32 @@ do
 	i := !i + 1
 done;
 *)
-let t=Unix.gettimeofday () in
+(*
+let score=quiescence min_int max_int 32 b0 prev0 col round in
+print_int score
+*)
+(*
+let all_moves = generate_all_moves b0 prev0 round in
+let cap_moves = List.filter (fun s->
+  begin
+	match s.piece_captured with
+	|None -> false
+	|Some p-> true
+  end
+) all_moves in
+List.iter print_step cap_moves;
+print_endline "hihi";
+let result=ref [] in
+List.iter (fun s-> begin
+	match s.piece_captured with
+	|None -> ()
+	|Some p-> result:=(s::(!result))
+  end
+) all_moves;
+List.iter print_step !result
+*)
+
 let (score, pred) = best_move_v0 3 b0 prev0 true in
-print_float (Unix.gettimeofday () -. t);
 print_int score;
 List.iter print_step pred;
 print_int !cnt

@@ -489,6 +489,10 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
     | _ -> false
   end
 
+let checked (b:board) (pv:prev_step) (cur_side:bool)=
+  let all_moves=generate_all_moves b pv cur_side in
+  List.exists (fun a->check_win b pv a) all_moves
+
 (*In main, still need to ensure that the undos are restricted*)
 let undo_one (b:board) (ps : prev_step) : prev_step =
   let rect_step = List.hd ps in

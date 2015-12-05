@@ -199,9 +199,14 @@ for i=1 to 9 do
 done
 in let ()=if c=true then score:=(-(!score)) else () in
 
-let ()=if c=true && (not (check_alive b "GR")) then score:=!score-10000
-       else if c=false && (not (check_alive b "GB")) then score:=!score-10000
-            else ()
+let ()=if c=true then
+          (if (not (check_alive b "GR")) then score:=!score-10000
+          else if (not (check_alive b "GB")) then score:=!score+10000)
+          else ()
+       else
+           if (not (check_alive b "GB")) then score:=!score-10000
+           else if (not (check_alive b "GR")) then score:=!score+10000
+           else ()
 in
  !score
 
