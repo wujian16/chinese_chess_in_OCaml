@@ -120,7 +120,7 @@ and choose_mode (gs: game_state) : game_state =
   | "2p" -> choose_color {gs with game_mode = false}
 
   | _ -> choose_mode gs
-
+(* let the user choose color, red always goes first *)
 and choose_color (gs:game_state) : game_state =
   let () = print_endline "Type 'Red' to play first, type 'green' to play later." in
   let input = read_line () in
@@ -128,11 +128,11 @@ and choose_color (gs:game_state) : game_state =
   | "red" -> run_round {gs with color = true}
   | "green" -> run_round {gs with color = false}
   | _ -> print_endline "please type either 'red' or 'green'"; choose_color gs
-
+(* run a round *)
 and run_round (gs:game_state) : game_state =
+let () = print_board gs.board in
+(* let () = print_endline "enter run_round" *)
 
-let () = print_endline "enter run_round"
- in
     if gs.game_mode && (not gs.color)=gs.curr_color then
     let () = print_endline "AI running"
   in
@@ -145,7 +145,7 @@ and run_undo (gs:game_state) : game_state =
   run_round {gs with prev_step = new_pv }
 
 and first_coor (gs:game_state) : game_state =
-  let () = print_board gs.board in
+   (* let () = print_board gs.board in *)
    let () = print_endline "type the first piece you want to move, in the form
    'x, y' " in
   try( let input = read_line () in
@@ -176,7 +176,7 @@ and second_coor (gs: game_state) : game_state =
     piece_captured = (pos |> check_position gs.board)} in
     if check_valid gs.board gs.prev_step st then
       run_step {gs with curr_step = st } else
-      let () = print_endline "Somehow validated the rule" in second_coor gs
+      let () = print_endline "Somehow violated the rule" in second_coor gs
    | false -> print_endline "invalid coordinate"; second_coor gs
  end )
  with _ -> print_endline "invalid input, retype a coordinate"; second_coor gs
