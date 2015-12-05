@@ -466,10 +466,10 @@ let generate_piece_move (b:board) (pv:prev_step) (p:piece)=
 
 let generate_all_moves (b:board) (p:prev_step) (side:bool): step list=
   let all_pieces = get_alive_side b side in
-  let each_steps = List.map 
+  let each_steps = List.map
     (fun a -> generate_piece_move b p a) all_pieces in
   List.flatten each_steps
-  
+
 
 let check_valid (b: board) (pv:prev_step) (st:step) :bool =
   let start = st.start in
@@ -491,7 +491,7 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
   end
 
 (*In main, still need to ensure that the undos are restricted*)
-let undo (b:board) (ps : prev_step) : prev_step =
+let undo_one (b:board) (ps : prev_step) : prev_step =
   let rect_step = List.hd ps in
   let dest_piece = check_position b rect_step.destination in
   let dest = rect_step.destination in
@@ -499,6 +499,9 @@ let undo (b:board) (ps : prev_step) : prev_step =
   let () = (get_boardArray b).((snd dest) -1).((fst dest) -1) <- rect_step.piece_captured in
   let () = (get_boardArray b).((snd strt) -1).((fst strt) -1) <- dest_piece in
   List.tl ps
+
+let undo (b:board) (ps : prev_step ) : prev_step =
+  undo_one b ps |> undo_one b
 
 (*
 let string_of_step stp = begin match stp with

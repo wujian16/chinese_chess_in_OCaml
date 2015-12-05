@@ -36,6 +36,8 @@ val generate_piece_move: board-> prev_step-> piece-> step list
 (*generate all possible move steps for one side *)
 val generate_all_moves: board-> prev_step-> bool-> step list
 
+val undo_one : board -> prev_step -> prev_step
 
+val undo : board -> prev_step -> prev_step
 (* print for debugging purpose*)
 val print_step: step->unit

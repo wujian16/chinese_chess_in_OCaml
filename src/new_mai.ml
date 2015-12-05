@@ -103,11 +103,14 @@ and choose_color (gs:game_state) : game_state =
 
 and run_round (gs:game_state) : game_state =
   if gs.game_mode then run_ai gs else run_human gs
+and run_undo (gs:game_state) : game_state =
+  gs
 
 and  first_coor (gs:game_state) : game_state =
    let () = print_endline "type the first piece you want to move, in the form
    'x, y' " in
    let input = read_line () in
+   if input = "undo" then run_undo gs else
    let pos = input |> input_Parse |> position_Convert  in
 
    if ( pos |> (valid_first_coor gs )) then
@@ -120,7 +123,10 @@ and  first_coor (gs:game_state) : game_state =
 and  second_coor (gs: game_state) : game_state =
    let () = print_endline "type the destination you want to go to, in the form
    'x, y' " in
-   let input = read_line () in
+   let input = read_line () in if input = "back" then
+    let () = print_endline "retype starting point like (x,y)"
+  in first_coor gs else
+
    let pos = input |> input_Parse |> position_Convert  in
    begin
    match pos |> valid_snd_coor gs with
@@ -130,23 +136,24 @@ and  second_coor (gs: game_state) : game_state =
       let st = {gs.curr_step with destination = pos;
     piece_captured = pc} in
     if check_valid gs.board gs.prev_step st then
-      run_step {gs with curr_step = st }
+      run_step {gs with curr_step = st } else
+      let () = print_endline "Somehow validated the rule" in second_coor gs
    | false -> print_endline "invalid coordinate"; second_coor gs
-
+ end
 and run_step (gs : game_state ) : game_state =
 
     match check_win gs.board gs.prev_step gs.curr_step with
       | true -> let () = print_endline "You win! " in init_game ()
       | false -> let () =  print_endline "continue---"  in
-    let () = update_board gs.board st in
-      run_round {gs with prev_step = gs.prev_step |> update_prev st ; color= not (gs.color)}
+    let () = update_board gs.board gs.curr_step in
+      run_round {gs with prev_step = gs.prev_step |> update_prev gs.curr_step ; color= not (gs.color)}
 
 
 and run_human (gs: game_state ) : game_state =
   gs |> first_coor |>second_coor
 
 and run_ai (gs: game_state) : game_state =
-  let bst_step = hard_A1 gs.board gs.prev_step in
+  let bst_step = hard_AI gs.board gs.prev_step in
   let up_gs = {gs with curr_step = bst_step} in
   run_step up_gs
 
