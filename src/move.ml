@@ -490,14 +490,13 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
 
 (*In main, still need to ensure that the undos are restricted*)
 let undo (b:board) (ps : prev_step) : prev_step =
-  let rect_step = List.nth ps (List.length ps - 1) in
+  let rect_step = List.hd ps in
   let dest_piece = check_position b rect_step.destination in
   let dest = rect_step.destination in
   let strt = rect_step.start in
   let () = (get_boardArray b).((snd dest) -1).((fst dest) -1) <- rect_step.piece_captured in
   let () = (get_boardArray b).((snd strt) -1).((fst strt) -1) <- dest_piece in
-  List.tl (List.rev ps)
-
+  List.tl ps
 
 (*
 let string_of_step stp = begin match stp with
