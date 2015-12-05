@@ -316,16 +316,16 @@ let move_horse (b:board) (pc:piece) ((x,y): position) :step list =
     match check_position b p with
     | Some sth-> sth.team <> pc.team
     | None -> true
- ) && ( check_position b (((fst p) + x)/2 , y) = None) then [{start= (x,y);
+ ) && ( check_position b ((fst p +x) /2 , (snd p)) = None) then [{start= (x,y);
  destination = p;
-    piece_captured = (check_position b p)}] else []) raw_hori_pos)
+    piece_captured = (check_position b p )}] else []) raw_hori_pos)
 
 in let raw_vert_pos = [(x+1, y+2) ; (x+1,y-2); (x-1, y+2); (x-1, y-2)] in
   let vert_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
     match check_position b p with
     | Some sth-> sth.team <> pc.team
     | None -> true
- ) && ( check_position b (((snd p)+ y)/2 , x) = None) then [{start= (x,y);
+ ) && ( check_position b ((fst p),((snd p)+ y)/2  ) = None) then [{start= (x,y);
 destination = p;
     piece_captured = (check_position b p)}] else []) raw_vert_pos)
 in hori_pos@vert_pos
