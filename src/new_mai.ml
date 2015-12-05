@@ -37,8 +37,8 @@ started: bool;
 board: board;
 prev_step : prev_step;
 curr_step : step;
-undon: bool
-
+undon: bool;
+hard: bool
 }
 
 (* if red goes first *)
@@ -49,7 +49,8 @@ let init_GameState  =
   started = false; board = curr_Board;
   prev_step = init_PrevStep() ;
   curr_step = init_step () ;
-  undon = false
+  undon = false;
+  hard = false
   }
 
 (* following funtion all have readline! *)
@@ -115,7 +116,7 @@ and choose_mode (gs: game_state) : game_state =
   let () = print_endline "type 'AI' to play with AI, type 2p to play with another" in
   let input = read_line () in
   match  lowercase (input) with
-  | "ai" -> choose_color {gs with game_mode = true}
+  | "ai" -> choose_difficulty {gs with game_mode = true}
   | "2p" -> choose_color {gs with game_mode = false}
   | "quit" -> run_quit gs
   | "restart" -> run_restart gs
@@ -123,8 +124,8 @@ and choose_mode (gs: game_state) : game_state =
 (* let the user choose color, red always goes firs *)
 and choose_color (gs:game_state) : game_state =
   let () = print_endline "Type 'red' to play first, type 'green' to play later.
-   Type 'restart' to restart.
-   Type 'quit' to quit game."   in
+  Type 'restart' to restart.
+  Type 'quit' to quit game."   in
   let input = read_line () in
   match lowercase (input) with
   | "red" -> run_round {gs with color = true}
@@ -133,6 +134,20 @@ and choose_color (gs:game_state) : game_state =
   | "restart" -> run_restart gs
   | _ -> print_endline "please type either 'red' or 'green'"; choose_color gs
 (* run a round *)
+and choose_difficulty (gs:game_state) : game_state =
+  let () = print_endline
+ "Type 'easy' to play with a 2110 (easy) AI.
+  Type 'hard' to play with a 3110 (hard) AI.
+  Type 'restart' to restart.
+  Type 'quit' to quit game."   in
+  let input = read_line () in
+  match lowercase (input) with
+  | "easy" -> choose_color {gs with hard =false}
+  | "hard" -> choose_color {gs with color = true}
+  | "quit" -> run_quit gs
+  | "restart" -> run_restart gs
+  | _ -> print_endline "please type either 'easy' or 'hard'"; choose_difficulty gs
+
 and run_round (gs:game_state) : game_state =
 (* let () = print_board gs.board in *)
 (* let () = print_endline "enter run_round" *)
@@ -141,7 +156,7 @@ and run_round (gs:game_state) : game_state =
     if gs.game_mode && (not gs.color)=gs.curr_color then
     let () = print_endline "AI running"
   in
-  run_ai gs
+  (if gs.hard then run_hard_ai gs else run_easy_ai gs)
   else
     let () = print_endline "human running" in run_human gs
 
@@ -228,10 +243,18 @@ and run_step (gs : game_state ) : game_state =
 and run_human (gs: game_state ) : game_state =
   gs |> first_coor |>second_coor
 
-and run_ai (gs: game_state) : game_state =
+
+and run_hard_ai (gs: game_state) : game_state =
   let () = print_board gs.board in
-  let () = print_endline "got in run_ai, please wait patiently" in
+  let () = print_endline "got in run_AI, please wait patiently" in
   let bst_step =  hard_AI gs.board gs.prev_step (not gs.color) in
+  let up_gs = {gs with curr_step = bst_step} in
+  run_step up_gs
+
+and run_easy_ai (gs: game_state) : game_state =
+  let () = print_board gs.board in
+  let () = print_endline "got in run_AI, please wait patiently" in
+  let bst_step =  easy_AI gs.board gs.prev_step (not gs.color) in
   let up_gs = {gs with curr_step = bst_step} in
   run_step up_gs
 

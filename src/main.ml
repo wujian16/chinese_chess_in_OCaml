@@ -81,11 +81,7 @@ let is_piece (b:board ) (p:position): bool =
   there is a piece at that position
   the piece is of the current team*)
 let check_first_coor (ps : position) (gs  : game_state): bool =
-(* let input = read_line() in
-if (Bytes.lowercase input) <> "quit" then
-  try
-  let parsed_Input = input_Parse input in
-  let check_Converted_Position = check_ValidCoor parsed_Input board in *)
+
     match check_position ps with
     | None -> let () = print_endline "Nothing at this position" in false
     | Some x -> if (curr_GameState.color = x.team) then
