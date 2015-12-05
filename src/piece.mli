@@ -41,7 +41,6 @@ val canR2 : piece
 val canB1 : piece
 val canB2 : piece
 
-
 val soldR1 : piece
 val soldR2 : piece
 val soldR3 : piece
@@ -56,5 +55,6 @@ val soldB5 : piece
 
 val string_of_position : position -> string
 val string_of_piece : piece option -> string
+val piece_name : piece option -> string
 
 
