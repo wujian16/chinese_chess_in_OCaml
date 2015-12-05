@@ -217,7 +217,7 @@ let best_move_v0 (n:int) (b:board) (p:prev_step) (ai_col:bool): int*step list =
 		let result=ref (0, []) in
 		let i=ref 1 in
 		while ((Unix.gettimeofday () -. t)<=300.0 && !i<=n) do
-			result:=(alphaBeta min_int max_int (!i) b p ai_col round);
+			result:=(alphaBeta min_int max_int (!i) b p ai_col ai_col);
 			i:=!i+1
 		done;
 		

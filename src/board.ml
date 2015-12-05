@@ -6,9 +6,6 @@ exception InvalidMove
  *)
 type board={first:piece option array array; second:(string, position) Hashtbl.t}
 
-(* initialization to red's turn *)
-let round = true
-
 (* check whether the position is on the board
  * duplicate with the function in move
  * handle later *)
