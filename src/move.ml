@@ -394,16 +394,35 @@ let additional_rules_1 (b:board) (pv:prev_step) (s:step)=
                   begin
                   match (get_position b "GR") with
                   |None-> false
-                  |Some opp_pos->if (fst s.destination)=(fst opp_pos) then false
-                                 else true
+                  |Some opp_pos->
+                      if (fst s.destination)=(fst opp_pos) then
+                        let x=fst opp_pos in
+                        let flag=ref false in
+                        (for y = (snd opp_pos) to (snd s.destination) do
+                          match check_position b (x,y) with
+                          |None->()
+                          |Some x->flag:=true
+                        done);
+                        (if !flag=true then true
+                        else false)
+                      else true
                   end
-                  else
+                 else
                   begin
                   match (get_position b "GB") with
                   |None-> false
                   |Some opp_pos->if (fst s.destination) =
-                    (fst opp_pos)  then false
-                                 else true
+                    (fst opp_pos)  then
+                        let x=fst opp_pos in
+                        let flag=ref false in
+                        (for y = (snd s.destination) to (snd opp_pos) do
+                          match check_position b (x,y) with
+                          |None->()
+                          |Some x->flag:=true
+                        done);
+                        (if !flag=true then true
+                        else false)
+                    else true
                   end
              | _ -> true
              end

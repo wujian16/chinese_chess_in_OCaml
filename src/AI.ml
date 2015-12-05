@@ -78,12 +78,12 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
     let result = ref min_int in
     let sort_moves =
     if checked b (init_PrevStep ()) (not curr_rd) then
-      let ()=print_endline "hehehehehe" in
+      (* let ()=print_endline "hehehehehe" in *)
       let all_moves = generate_all_moves b p curr_rd in
       List.sort (fun s1 s2->compared_MVV b s1 s2) all_moves
     else
     (
-      print_endline "hahahah";
+      (* print_endline "hahahah"; *)
       let score=eval_board b ai_col in
       (if (score > !v) then
             v:= score
@@ -105,8 +105,8 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
            List.sort (fun s1 s2->compared_MVV b s1 s2) !cap_moves
       )
     ) in
-    List.iter (fun s-> print_step s) sort_moves;
-    print_endline "Not hello";
+    (* List.iter (fun s-> print_step s) sort_moves;
+    print_endline "Not hello"; *)
     (
     if !result=beta then !result
     else
@@ -117,10 +117,10 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
         while ((!i < (Array.length sort_moves_array)) && (beta <> !result))
         do
           let (updated_b,updated_prev) = update_unmutable sort_moves_array.(!i) b p in
-          print_int !i;
+          (* print_int !i;
           print_string " ";
           print_int (List.length (get_alive_pieces updated_b));
-          print_endline "";
+          print_endline ""; *)
           let next=(quiescence !v beta (depth-1) updated_b updated_prev
             ai_col (not curr_rd)) in
           (if (next > !v) then
@@ -145,12 +145,12 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
     let result = ref max_int in
     let sort_moves =
     if checked b (init_PrevStep ()) (not curr_rd) then
-      let ()=print_endline "hehehehehe" in
+      (* let ()=print_endline "hehehehehe" in *)
       let all_moves = generate_all_moves b p curr_rd in
       List.sort (fun s1 s2->compared_MVV b s1 s2) all_moves
     else
     (
-      print_endline "hahahah";
+      (* print_endline "hahahah"; *)
       let score=eval_board b ai_col in
       (if (score < !v) then
             v:= score
@@ -172,8 +172,8 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
            List.sort (fun s1 s2->compared_MVV b s1 s2) !cap_moves
       )
     ) in
-    List.iter (fun s-> print_step s) sort_moves;
-    print_endline "Not hello";
+    (* List.iter (fun s-> print_step s) sort_moves;
+    print_endline "Not hello"; *)
     (
     if !result=alpha then !result
     else
@@ -184,10 +184,10 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
         while ((!i < (Array.length sort_moves_array)) && (alpha <> !result))
         do
           let (updated_b,updated_prev) = update_unmutable sort_moves_array.(!i) b p in
-          print_int !i;
+          (* print_int !i;
           print_string " ";
           print_int (List.length (get_alive_pieces updated_b));
-          print_endline "";
+          print_endline ""; *)
           let next=(quiescence alpha !v (depth-1) updated_b updated_prev
             ai_col (not curr_rd)) in
           (if (next < !v) then
@@ -211,8 +211,8 @@ let cnt = ref 0
 let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 	(b:board) (p:prev_step) (ai_col:bool) (curr_rd:bool): int*step list =
 
-	if depth_left = 0 then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n"; *)((eval_board b ai_col),[]))
-     (*((quiescence alpha beta depth_limit b p ai_col curr_rd), []))*)
+	if depth_left = 0 then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n"; *)(*((eval_board b ai_col),[]))*)
+     ((quiescence alpha beta depth_limit b p ai_col curr_rd), []))
 	else if check_end_game b p then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n";*)((eval_board b ai_col),[]))
 	else
 
@@ -406,11 +406,11 @@ let update_AI (b:board) (s:step) (tran:transposition_table) (hist:history_table)
 
 let easy_AI (b:board) (p:prev_step) (ai_col:bool): step =
 
-  let (score,pred) = best_move_v0 2 b p ai_col in
+  let (score,pred) = best_move_v0 1 b p ai_col in
   List.hd pred
 
 let hard_AI (b:board) (p:prev_step) (ai_col:bool): step =
-let res =
+(* let res = *)
   let (score,pred) = best_move_v0 2 b p ai_col in
   List.hd pred
-in let () = print_step res in res
+(* in let () = print_step res in res *)
