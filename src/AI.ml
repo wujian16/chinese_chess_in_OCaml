@@ -217,10 +217,10 @@ let best_move_v0 (n:int) (b:board) (p:prev_step) : int*step list =
 		let result=ref (0, []) in
 		let i=ref 1 in
 		while ((Unix.gettimeofday () -. t)<=300.0 && !i<=n) do
-			result:=(alphaBeta min_int max_int (!i) b p col round);
+			result:=(alphaBeta min_int max_int (!i) b p !col round);
 			i:=!i+1
 		done;
-		print_float (Unix.gettimeofday () -. t);
+		
 		!result
 
 (*generate the best possible moves for the futural several steps

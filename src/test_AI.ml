@@ -33,8 +33,9 @@ do
 	i := !i + 1
 done;
 *)
-
-let (score, pred) = best_move_v0 4 b0 prev0 in
+let t=Unix.gettimeofday () in
+let (score, pred) = best_move_v0 3 b0 prev0 in
+print_float (Unix.gettimeofday () -. t);
 print_int score;
 List.iter print_step pred;
 print_int !cnt
