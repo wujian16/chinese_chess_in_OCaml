@@ -196,6 +196,7 @@ and run_human (gs: game_state ) : game_state =
 and run_ai (gs: game_state) : game_state =
   let () = print_board gs.board in
   let () = print_endline "got in run_ai" in
+  clr := not gs.color ;
   let bst_step = (let () = print_endline "haha" in hard_AI gs.board gs.prev_step) in
   let () = print_endline "update board and step " in
   let up_gs = {gs with curr_step = bst_step} in
