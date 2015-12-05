@@ -259,12 +259,3 @@ and run_easy_ai (gs: game_state) : game_state =
   run_step up_gs
 
 let _ = init_game ()
-
-
-
-
-
-
-
-
-
