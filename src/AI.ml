@@ -12,7 +12,7 @@ type transposition_table = (string, search_result) Hashtbl.t
 
 type history_table = (string, search_result) Hashtbl.t
 
-let depth_limit=2
+let depth_limit=4
 
 let nHistoryTable=Hashtbl.create (90*90)
 
@@ -403,6 +403,10 @@ raise TODO
 let update_AI (b:board) (s:step) (tran:transposition_table) (hist:history_table)
 				: transposition_table * history_table =
   raise TODO
+
+let random_AI (b:board) (p:prev_step) (ai_col:bool): step =
+    let all_moves=generate_all_moves b p ai_col in
+		List.nth all_moves (Random.int (List.length all_moves))
 
 let easy_AI (b:board) (p:prev_step) (ai_col:bool): step =
 
