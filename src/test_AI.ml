@@ -18,7 +18,7 @@ let prev0 = init_PrevStep () in
 let moves = generate_all_moves b0 prev0 true in
 List.iter print_step moves
 *)
-
+(*
 let can_moves_list = generate_piece_move b0 prev0 canR1 in
 let can_moves = Array.of_list can_moves_list in
 let i = ref 0 in
@@ -32,9 +32,9 @@ do
 	Printf.printf "It has score %d \n" new_score;
 	i := !i + 1
 done;
-
-(*
-let (score, pred) = best_move_v0 1 b0 prev0 in
-print_int score;
-List.iter print_step pred
 *)
+
+let (score, pred) = best_move_v0 4 b0 prev0 in
+print_int score;
+List.iter print_step pred;
+print_int !cnt
