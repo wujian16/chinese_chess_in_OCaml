@@ -368,13 +368,14 @@ let update_board (b:board)  (s:step) : unit  =
 
 let update_prev (s:step)  (pv:prev_step) :prev_step =
  begin
-   match pv with
+  (*match pv with
   | [] -> [s]
   | hd::tl -> begin match tl with
               | []->hd::[s]
               | h::[] -> hd :: h :: [s]
               | _->tl@[s]
-              end
+              end*)
+  s::pv
 end
 
 (*THIS IS WRONG!! b still gets mutated!*)
