@@ -9,84 +9,83 @@ type_of: piece_type;
 team: bool;
 }
 
-
 (*general*)
-let generalR= {name= "GR"; print_name="G";
+let generalR= {name= "GR"; print_name= "\xE2\x99\x94";
 type_of=General;team = true }
 
-let generalB= {name= "GB"; print_name="G";
+let generalB= {name= "GB"; print_name= "\xE2\x99\x94";
  type_of=General;team = false
 }
 
-let advisorR1= {name = "A1R"; print_name= "A";
+let advisorR1= {name = "A1R"; print_name= "\xE2\x99\x97";
 type_of = Advisor; team = true }
 
-let advisorR2= {name = "A2R"; print_name= "A";
+let advisorR2= {name = "A2R"; print_name= "\xE2\x99\x97";
 type_of = Advisor; team = true }
 
-let advisorB1= {name = "A1B"; print_name= "A";
+let advisorB1= {name = "A1B"; print_name= "\xE2\x99\x97";
 type_of = Advisor; team =false }
 
-let advisorB2= {name = "A2B"; print_name= "A";
+let advisorB2= {name = "A2B"; print_name= "\xE2\x99\x97";
 type_of = Advisor; team =false  }
 
-let elepR1= {name = "ER1"; print_name = "E"; type_of=
+let elepR1= {name = "ER1"; print_name = "\xE2\x9A\x97"; type_of=
 Elephant; team = true}
-let elepR2= {name = "ER2"; print_name = "E"; type_of=
+let elepR2= {name = "ER2"; print_name = "\xE2\x9A\x97"; type_of=
 Elephant; team = true}
-let elepB1= {name = "EB1"; print_name = "E"; type_of=
+let elepB1= {name = "EB1"; print_name = "\xE2\x9A\x97"; type_of=
 Elephant; team =false }
-let elepB2= {name = "EB2"; print_name = "E"; type_of=
+let elepB2= {name = "EB2"; print_name = "\xE2\x9A\x97"; type_of=
 Elephant; team =false}
 
 
-let horseR1 = {name= "HR1"; print_name = "H";  type_of =
+let horseR1 = {name= "HR1"; print_name = "\xE2\x99\x98";  type_of =
   Horse ; team = true }
-let horseR2 = {name= "HR2"; print_name = "H";  type_of =
+let horseR2 = {name= "HR2"; print_name = "\xE2\x99\x98";  type_of =
   Horse ; team = true }
-let horseB1 = {name= "HB1"; print_name = "H";  type_of =
+let horseB1 = {name= "HB1"; print_name = "\xE2\x99\x98";  type_of =
   Horse ; team = false}
-let horseB2 = {name= "HB2"; print_name = "H";  type_of =
+let horseB2 = {name= "HB2"; print_name = "\xE2\x99\x98"; type_of =
   Horse ; team = false}
 
 
-let rookR1 = {name = "RR1"; print_name= "R";
+let rookR1 = {name = "RR1"; print_name= "\xE2\x99\x96";
 type_of = Rook; team =true}
-let rookR2 = {name = "RR2"; print_name="R";
+let rookR2 = {name = "RR2"; print_name= "\xE2\x99\x96";
 type_of = Rook; team = true}
-let rookB1 = {name = "RB1"; print_name= "R";
+let rookB1 = {name = "RB1"; print_name= "\xE2\x99\x96";
 type_of = Rook; team = false}
-let rookB2 = {name = "RB2"; print_name= "R";
+let rookB2 = {name = "RB2"; print_name= "\xE2\x99\x96";
 type_of = Rook; team = false}
 
-let canR1 = {name= "CR1"; print_name = "C";
-type_of = Cannon; team = true}
-let canR2 = {name= "CR2"; print_name = "C";
-type_of = Cannon; team = true}
-let canB1 = {name= "CB1"; print_name = "C";
-type_of = Cannon; team = false}
-let canB2 = {name= "CB2"; print_name = "C";
-type_of = Cannon; team = false}
+let canR1 = {name= "CR1"; print_name = "\xE2\x98\xA2";
+type_of = Rook; team = true}
+let canR2 = {name= "CR2"; print_name = "\xE2\x98\xA2";
+type_of = Rook; team = true}
+let canB1 = {name= "CB1"; print_name = "\xE2\x98\xA2";
+type_of = Rook; team = false}
+let canB2 = {name= "CB2"; print_name = "\xE2\x98\xA2";
+type_of = Rook; team = false}
 
-let soldR1 = {name = "SR1"; print_name = "S";
+let soldR1 = {name = "SR1"; print_name = "\xE2\x99\x99";
 type_of = Soldier; team = true }
-let soldR2 = {name = "SR2"; print_name = "S";
+let soldR2 = {name = "SR2"; print_name = "\xE2\x99\x99";
 type_of = Soldier; team = true }
-let soldR3 = {name = "SR3"; print_name = "S";
+let soldR3 = {name = "SR3"; print_name = "\xE2\x99\x99";
 type_of = Soldier; team = true }
-let soldR4 = {name = "SR4"; print_name = "S";
+let soldR4 = {name = "SR4"; print_name = "\xE2\x99\x99";
 type_of = Soldier; team = true }
-let soldR5 = {name = "SR5"; print_name = "S";
+let soldR5 = {name = "SR5"; print_name = "\xE2\x99\x99";
 type_of = Soldier; team = true }
-let soldB1 = {name = "SB1"; print_name = "S";
+let soldB1 = {name = "SB1"; print_name = "\xE2\x99\x99";
 type_of = Soldier; team = false }
-let soldB2 = {name = "SB2"; print_name = "S";
+let soldB2 = {name = "SB2"; print_name = "\xE2\x99\x99";
 type_of = Soldier; team = false }
-let soldB3 = {name = "SB3"; print_name = "S";
+let soldB3 = {name = "SB3"; print_name = "\xE2\x99\x99";
 type_of = Soldier; team = false }
-let soldB4 = {name = "SB4"; print_name = "S";
+let soldB4 = {name = "SB4"; print_name = "\xE2\x99\x99";
 type_of = Soldier; team = false }
-let soldB5 = {name = "SB5"; print_name = "S";
+let soldB5 = {name = "SB5"; print_name = "\xE2\x99\x99";
 type_of = Soldier; team = false }
 
 let string_of_position (x,y) =
