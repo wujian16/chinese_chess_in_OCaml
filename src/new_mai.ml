@@ -77,8 +77,6 @@ let valid_first_coor (gs  : game_state) (ps : position) : bool =
                 else
                  let () = print_endline "This piece is not of the current player's color!" in  false
 
-    (* | _ -> let () = print_endline "Please input a valid starting coordinate." in false *)
-
 
 let valid_snd_coor (gs  : game_state) (ps : position) : bool =
 
@@ -86,7 +84,6 @@ let valid_snd_coor (gs  : game_state) (ps : position) : bool =
     | None -> true
     | Some x ->  true
 
-    (* | _ -> let () = print_endline "Please input a valid starting coordinate." in false *)
 
 let print_piece (p : piece option) : unit =
   match  p with
@@ -120,7 +117,7 @@ and choose_mode (gs: game_state) : game_state =
   | "2p" -> choose_color {gs with game_mode = false}
 
   | _ -> choose_mode gs
-
+(* let the user choose color, red always goes firs *)
 and choose_color (gs:game_state) : game_state =
   let () = print_endline "Type 'Red' to play first, type 'green' to play later." in
   let input = read_line () in
@@ -128,11 +125,12 @@ and choose_color (gs:game_state) : game_state =
   | "red" -> run_round {gs with color = true}
   | "green" -> run_round {gs with color = false}
   | _ -> print_endline "please type either 'red' or 'green'"; choose_color gs
-
+(* run a round *)
 and run_round (gs:game_state) : game_state =
+(* let () = print_board gs.board in *)
+(* let () = print_endline "enter run_round" *)
+  let () = print_endline ("This is "^(if gs.curr_color then "red" else "green")^" playing." )in
 
-let () = print_endline "enter run_round"
- in
     if gs.game_mode && (not gs.color)=gs.curr_color then
     let () = print_endline "AI running"
   in
@@ -145,7 +143,7 @@ and run_undo (gs:game_state) : game_state =
   run_round {gs with prev_step = new_pv }
 
 and first_coor (gs:game_state) : game_state =
-  let () = print_board gs.board in
+   let () = print_board gs.board in
    let () = print_endline "type the first piece you want to move, in the form
    'x, y' " in
   try( let input = read_line () in
@@ -170,13 +168,14 @@ and second_coor (gs: game_state) : game_state =
    begin
    match pos |> valid_snd_coor gs with
    | true ->
-      print_endline ("You are moving to "^
-        (string_of_position pos)^"and captured "^(piece_name (pos |> check_position gs.board)));
       let st = {gs.curr_step with destination = pos;
     piece_captured = (pos |> check_position gs.board)} in
-    if check_valid gs.board gs.prev_step st then
-      run_step {gs with curr_step = st } else
-      let () = print_endline "Somehow validated the rule" in second_coor gs
+    if check_valid gs.board gs.prev_step st then begin
+
+      let () = (print_endline ("You are moving to "^
+        (string_of_position pos)^"and captured "^(piece_name (pos |> check_position gs.board)))) in
+      run_step {gs with curr_step = st } end else
+      let () = print_endline "Somehow violated the rule" in second_coor gs
    | false -> print_endline "invalid coordinate"; second_coor gs
  end )
  with _ -> print_endline "invalid input, retype a coordinate"; second_coor gs
@@ -197,11 +196,9 @@ and run_human (gs: game_state ) : game_state =
 
 and run_ai (gs: game_state) : game_state =
   let () = print_board gs.board in
-  let () = print_endline "got in run_ai" in
-  let bst_step =  hard_AI gs.board gs.prev_step false in
-  let () = print_endline "update board and step " in
+  let () = print_endline "got in run_ai, please wait patiently" in
+  let bst_step =  hard_AI gs.board gs.prev_step (not gs.color) in
   let up_gs = {gs with curr_step = bst_step} in
-  let ()  = print_endline "update new game_state" in
   run_step up_gs
 
 let _ = init_game ()

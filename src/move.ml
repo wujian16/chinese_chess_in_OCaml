@@ -22,8 +22,8 @@ match pc.team with
 
 
 let self_side (pc:piece) ((x,y): position):bool=
-if pc.team=true && x>=1 && x<=9 && y>=1 && y <=5 then true
-else if pc.team=false && x>=1 && x<=9 && y>=6 && y <=10 then true
+if (pc.team=true && x>=1 && x<=9 && y>=1 && y <=5) then true
+else if (pc.team=false && x>=1 && x<=9 && y>=6 && y <=10) then true
 else false
 
 
@@ -97,29 +97,6 @@ begin
 end
 
 
-(*   let result = [] in
-begin
-match  p.place, pc.team  with
-| x , y ,b ->
-  (*forward*)
-  for y'=y+1 to 10 do
-    begin
-      match check_position b (x, y') with
-      | None -> {start= p; end = (x, y'); piece_captured = None}::result
-      | Some oth -> if oth.team = b then result;raise Exit
-                    else {start= p; end = (x, y'); piece_captured = oth}::result
-    end
-    (*TODOhow to link them!?!!!!!!!!!!!!!!*)
-    for y' = y-1 downto 1 do
-    begin
-      match check_position b (x, y') with
-      | None -> {start= p; end = (x, y'); piece_captured = None}::result
-      | Some oth -> if oth.team =b then result;raise Exit
-                    else {start= p; end = (x, y'); piece_captured = oth}::result
-    end
-(*dfajlsj*)
-in  result
-end*)
 
 (*move *)
 let move_soldier (b:board) (pc:piece) ((x,y): position) : step list =
@@ -129,7 +106,6 @@ match pc.team, y<=5 with
  | true,  true -> [{start= (x,y); destination = (x, y+1); piece_captured =
   (check_position b (x, y+1))}]
  (*red piece, other side of river*)
-
  | true, false -> let raw_pos = [(x+1, y); (x-1, y); (x, y+1) ] in
 
  List.flatten (List.map (fun p -> if (in_bound p) && (
@@ -139,10 +115,10 @@ match pc.team, y<=5 with
  ) then [{start= (x,y); destination = p;
     piece_captured = (check_position b p)}] else []) raw_pos )
  (*black piece, own side*)
- | false, true -> [{start= (x,y); destination = (x, y-1); piece_captured =
+ | false, false -> [{start= (x,y); destination = (x, y-1); piece_captured =
   (check_position b (x, y+1))}]
  (*black piece, other side*)
- | false, false-> let raw_pos = [(x+1, y); (x-1, y); (x, y-1) ] in
+ | false, true-> let raw_pos = [(x+1, y); (x-1, y); (x, y-1) ] in
  List.flatten (List.map (fun p -> if (in_bound p) && (
     match check_position b p with
     | Some sth-> sth.team <> pc.team
@@ -316,16 +292,16 @@ let move_horse (b:board) (pc:piece) ((x,y): position) :step list =
     match check_position b p with
     | Some sth-> sth.team <> pc.team
     | None -> true
- ) && ( check_position b (((fst p) + x)/2 , y) = None) then [{start= (x,y);
+ ) && ( check_position b ((fst p +x) /2 , (snd p)) = None) then [{start= (x,y);
  destination = p;
-    piece_captured = (check_position b p)}] else []) raw_hori_pos)
+    piece_captured = (check_position b p )}] else []) raw_hori_pos)
 
 in let raw_vert_pos = [(x+1, y+2) ; (x+1,y-2); (x-1, y+2); (x-1, y-2)] in
   let vert_pos = List.flatten (List.map (fun p -> if (in_bound p) && (
     match check_position b p with
     | Some sth-> sth.team <> pc.team
     | None -> true
- ) && ( check_position b (((snd p)+ y)/2 , x) = None) then [{start= (x,y);
+ ) && ( check_position b ((fst p),((snd p)+ y)/2  ) = None) then [{start= (x,y);
 destination = p;
     piece_captured = (check_position b p)}] else []) raw_vert_pos)
 in hori_pos@vert_pos
@@ -499,8 +475,8 @@ let undo_one (b:board) (ps : prev_step) : prev_step =
   let dest_piece = check_position b rect_step.destination in
   let dest = rect_step.destination in
   let strt = rect_step.start in
-  let () = (get_boardArray b).((snd dest) -1).((fst dest) -1) <- rect_step.piece_captured in
-  let () = (get_boardArray b).((snd strt) -1).((fst strt) -1) <- dest_piece in
+  let () = (get_boardArray b).((fst dest) ).((snd dest) ) <- rect_step.piece_captured in
+  let () = (get_boardArray b).((fst strt) ).((snd strt) ) <- dest_piece in
   List.tl ps
 
 let undo (b:board) (ps : prev_step ) : prev_step =
