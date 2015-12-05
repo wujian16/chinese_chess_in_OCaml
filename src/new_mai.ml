@@ -129,7 +129,7 @@ and choose_color (gs:game_state) : game_state =
 and run_round (gs:game_state) : game_state =
 (* let () = print_board gs.board in *)
 (* let () = print_endline "enter run_round" *)
-  let () = print_endline ("This is "^(if gs.color then "red" else "grenn")^" playing." )in
+  let () = print_endline ("This is "^(if gs.curr_color then "red" else "green")^" playing." )in
 
     if gs.game_mode && (not gs.color)=gs.curr_color then
     let () = print_endline "AI running"
