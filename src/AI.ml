@@ -21,6 +21,9 @@ let generate_all_moves (b:board) (p:prev_step) (side:bool): step list=
 		(fun a -> let l = generate_piece_move b p a in List.iter print_step l; l) all_pieces in
 	List.flatten each_steps
 
+let check_end_game (b:board) : bool = 
+	not ((check_alive b "GR") && (check_alive b "GB"))
+
 let cnt = ref 0
 
 let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
@@ -28,8 +31,8 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 
 
 	if depth_left = 0 then (cnt := !cnt + 1; (eval_board b),[])
+	else if check_end_game then (cnt := !cnt + 1; (eval_board b),[])
 	else
-
 		(if curr_rd = ai_col then 
 			(let result = ref min_int in
 			let v = ref alpha in
