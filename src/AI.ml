@@ -12,7 +12,7 @@ type transposition_table = (string, search_result) Hashtbl.t
 
 type history_table = (string, search_result) Hashtbl.t
 
-let depth_limit=32
+let depth_limit=2
 
 let nHistoryTable=Hashtbl.create (90*90)
 
@@ -69,7 +69,7 @@ let check_end_game (b:board) (p:prev_step) : bool =
 *)
 let rec quiescence (alpha:int) (beta:int) (depth:int)
 (b:board) (p:prev_step) (ai_col:bool) (curr_rd:bool):int=
-  if depth=0 then (eval_board b)
+  if depth=0 then (eval_board b ai_col)
   else
   (
     let v = ref alpha in
@@ -82,7 +82,7 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
     else
     (
       print_endline "hahahah";
-      let score=eval_board b in
+      let score=eval_board b ai_col in
       (if (score > !v) then
             v:= score
        else if (score > beta) then
@@ -115,6 +115,10 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
         while ((!i < (Array.length sort_moves_array)) && (beta <> !result))
         do
           let (updated_b,updated_prev) = update_unmutable sort_moves_array.(!i) b p in
+          print_int !i;
+          print_string " ";
+          print_int (List.length (get_alive_pieces updated_b));
+          print_endline "";
           let next=(-(quiescence (-(beta)) (-(!v)) (depth-1) updated_b updated_prev
             ai_col (not curr_rd))) in
           (if (next > !v) then
@@ -140,7 +144,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 
 	if depth_left = 0 then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n"; *)(*(eval_board b),[])*)
      ((quiescence alpha beta depth_limit b p ai_col curr_rd), []))
-	else if check_end_game b p then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n";*)(eval_board b),[])
+	else if check_end_game b p then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n";*)((eval_board b ai_col),[]))
 	else
 
 		(if curr_rd = ai_col then
