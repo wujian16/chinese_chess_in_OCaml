@@ -73,7 +73,7 @@ let valid_first_coor (gs  : game_state) (ps : position) : bool =
     match check_position gs.board ps with
     | None -> let () = print_endline "Nothing at this position" in false
     | Some x -> if (gs.curr_color = x.team) then
-                  let () = Printf.printf "%s\n" x.name in  true
+                  let () = Printf.printf "%s\n" (piece_name (Some x)) in  true
                 else
                  let () = print_endline "This piece is not of the current player's color!" in  false
 
@@ -84,7 +84,7 @@ let valid_snd_coor (gs  : game_state) (ps : position) : bool =
 
     match check_position gs.board ps  with
     | None -> true
-    | Some x -> let () = (Printf.printf "%s\n" x.name) in true
+    | Some x ->  true
 
     (* | _ -> let () = print_endline "Please input a valid starting coordinate." in false *)
 
@@ -130,10 +130,13 @@ and choose_color (gs:game_state) : game_state =
   | _ -> print_endline "please type either 'red' or 'green'"; choose_color gs
 
 and run_round (gs:game_state) : game_state =
+
 let () = print_endline "enter run_round"
  in
     if gs.game_mode && (not gs.color)=gs.curr_color then
-    let () = print_endline "AI running" in run_ai gs
+    let () = print_endline "AI running"
+  in
+  run_ai gs
   else
     let () = print_endline "human running" in run_human gs
 
@@ -150,9 +153,8 @@ and first_coor (gs:game_state) : game_state =
    let pos = input |> input_Parse |> position_Convert  in
 
    if ( pos |> (valid_first_coor gs )) then
-   let pc = check_position gs.board pos in
    let () =
-   print_endline ("You are moving the piece "^(string_of_piece pc)) in
+   print_endline ("You are moving the piece "^(piece_name (check_position gs.board pos))) in
    let st = {gs.curr_step with start = pos} in
    second_coor {gs with curr_step = st} else first_coor gs)
  with _ -> print_endline "invalid input, retype a coordinate"; first_coor gs
@@ -168,10 +170,10 @@ and second_coor (gs: game_state) : game_state =
    begin
    match pos |> valid_snd_coor gs with
    | true ->
-      let pc = check_position gs.board pos in
-      print_endline ("You are moving to "^(string_of_position pos));
+      print_endline ("You are moving to "^
+        (string_of_position pos)^"and captured "^(piece_name (pos |> check_position gs.board)));
       let st = {gs.curr_step with destination = pos;
-    piece_captured = pc} in
+    piece_captured = (pos |> check_position gs.board)} in
     if check_valid gs.board gs.prev_step st then
       run_step {gs with curr_step = st } else
       let () = print_endline "Somehow validated the rule" in second_coor gs
@@ -196,8 +198,7 @@ and run_human (gs: game_state ) : game_state =
 and run_ai (gs: game_state) : game_state =
   let () = print_board gs.board in
   let () = print_endline "got in run_ai" in
-  clr := not gs.color ;
-  let bst_step = (let () = print_endline "haha" in hard_AI gs.board gs.prev_step) in
+  let bst_step =  hard_AI gs.board gs.prev_step false in
   let () = print_endline "update board and step " in
   let up_gs = {gs with curr_step = bst_step} in
   let ()  = print_endline "update new game_state" in
