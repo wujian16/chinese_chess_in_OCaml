@@ -167,12 +167,13 @@ and second_coor (gs: game_state) : game_state =
    begin
    match pos |> valid_snd_coor gs with
    | true ->
-      print_endline ("You are moving to "^
-        (string_of_position pos)^"and captured "^(piece_name (pos |> check_position gs.board)));
       let st = {gs.curr_step with destination = pos;
     piece_captured = (pos |> check_position gs.board)} in
-    if check_valid gs.board gs.prev_step st then
-      run_step {gs with curr_step = st } else
+    if check_valid gs.board gs.prev_step st then begin
+
+      let () = (print_endline ("You are moving to "^
+        (string_of_position pos)^"and captured "^(piece_name (pos |> check_position gs.board)))) in
+      run_step {gs with curr_step = st } end else
       let () = print_endline "Somehow violated the rule" in second_coor gs
    | false -> print_endline "invalid coordinate"; second_coor gs
  end )
