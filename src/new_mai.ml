@@ -25,7 +25,7 @@ let curr_Board  = Board.init()
 let init_Step = Move.init_step ()
 type game_state =
 {
-(* AI  or 2 person  *)
+(* AI  or 2 person  true=AI*)
 game_mode: bool;
 (* now who's playing *)
 color: bool;
@@ -101,6 +101,9 @@ and choose_color (gs:game_state) : game_state =
   | "green" -> first_coor {gs with color = false}
   | _ -> print_endline "please type either 'red' or 'green'"; choose_color gs
 
+and run_round (gs:game_state) : game_state =
+  if gs.game_mode then run_ai gs else run_human gs
+
 and  first_coor (gs:game_state) : game_state =
    let () = print_endline "type the first piece you want to move, in the form
    'x, y' " in
@@ -126,35 +129,28 @@ and  second_coor (gs: game_state) : game_state =
       print_endline ("You are moving to "^(string_of_position pos));
       let st = {gs.curr_step with destination = pos;
     piece_captured = pc} in
-
-    begin match check_valid gs.board gs.prev_step st with
-    |true -> begin
-      match check_win gs.board gs.prev_step st with
-      | true -> let () = print_endline "You win! " in init_game ()
-      | false -> let () =  print_endline "continue---"  in
-    let () = update_board gs.board st in first_coor {gs with prev_step = gs.prev_step |> update_prev st }
-    end
-    |false -> let () = print_endline "This somehow violated the rule" in second_coor gs
-    end
+    if check_valid gs.board gs.prev_step st then
+      run_step {gs with curr_step = st }
    | false -> print_endline "invalid coordinate"; second_coor gs
 
-   end
-   (*
+and run_step (gs : game_state ) : game_state =
 
-    st |> check_valid
-  in let () =
-    print_endline "you captured "^(string_of_piece) in
+    match check_win gs.board gs.prev_step gs.curr_step with
+      | true -> let () = print_endline "You win! " in init_game ()
+      | false -> let () =  print_endline "continue---"  in
     let () = update_board gs.board st in
-    let new_prev = update_prev_step gs.prev_Step st in
-   run_first {gs with color = (not gs.color); prev_step = new_prev}
-
- else print_endline "invalid coordinate"; second_coor gs
- *)
+      run_round {gs with prev_step = gs.prev_step |> update_prev st ; color= not (gs.color)}
 
 
-(* let start_test = repl init_board in
- Printf.printf "%B" start_test
-let start_test2 = repl2(init_board) *)
+and run_human (gs: game_state ) : game_state =
+  gs |> first_coor |>second_coor
+
+and run_ai (gs: game_state) : game_state =
+  let bst_step = hard_A1 gs.board gs.prev_step in
+  let up_gs = {gs with curr_step = bst_step} in
+  run_step up_gs
+
+
 
 
 
