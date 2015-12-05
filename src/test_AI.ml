@@ -34,7 +34,7 @@ do
 done;
 *)
 let t=Unix.gettimeofday () in
-let (score, pred) = best_move_v0 3 b0 prev0 in
+let (score, pred) = best_move_v0 3 b0 prev0 true in
 print_float (Unix.gettimeofday () -. t);
 print_int score;
 List.iter print_step pred;
