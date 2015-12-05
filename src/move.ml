@@ -8,7 +8,7 @@ exception InvalidMove
 type step={start:position; destination: position; piece_captured: piece option}
 
 type prev_step = step list
-
+let init_step = {start= (1,1); destination = (1,1) ; piece_captured = None}
 let init_PrevStep () = []
 
 let in_bound ((x,y):position) : bool=

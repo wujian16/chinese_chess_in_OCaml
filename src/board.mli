@@ -27,6 +27,9 @@ val get_alive_side: board -> bool -> piece list
 (* change the board*)
 val change_entry: board-> position -> position-> piece option->unit
 
+(*change one position to a piece (option)*)
+val change_one : board -> position -> piece option -> unit
+
 (* make a copy of board*)
 val copy: board->board
 

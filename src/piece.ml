@@ -9,6 +9,7 @@ type_of: piece_type;
 team: bool;
 }
 
+
 (*general*)
 let generalR= {name= "GR"; print_name="G";
 type_of=General;team = true }
