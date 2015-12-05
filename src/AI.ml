@@ -12,6 +12,8 @@ type transposition_table = (string, search_result) Hashtbl.t
 
 type history_table = (string, search_result) Hashtbl.t
 
+let depth_limit=32
+
 let nHistoryTable=Hashtbl.create (90*90)
 
 let ()=
@@ -25,27 +27,124 @@ let ()=
 		done
 	done
 
-let sort b = raise TODO
+(* The value of each piece type
+*)
+let mVV (p:piece) =
+  match p.type_of with
+  |General->5
+  |Advisor->1
+  |Elephant->1
+  |Horse->3
+  |Rook->4
+  |Cannon->3
+  |Soldier->2
+
+let value_MVV (b:board) (s:step)=
+  let pos=
+  match s.piece_captured with
+  |None->0
+  |Some dst->(mVV dst)
+  in
+  begin
+  match (check_position b s.start) with
+   | None -> failwith "impossible"
+   | Some src->pos-(mVV src)
+  end
+
+let compared_MVV (b:board) (s1:step) (s2:step)=
+  (value_MVV b s2)-(value_MVV b s1)
 
 (* compare the vals of two steps in history table*)
-let compared s1 s2=
+let compared_hist s1 s2=
 	(Hashtbl.find nHistoryTable (s2.start, s2.destination))
 	-(Hashtbl.find nHistoryTable (s1.start, s1.destination))
 
-let check_end_game (b:board) (p:prev_step) : bool = 
+
+
+let check_end_game (b:board) (p:prev_step) : bool =
 	(generate_all_moves b p true = []) || (generate_all_moves b p false = []) ||
 	(not ((check_alive b "GR") && (check_alive b "GB")))
+
+
+(* quiescence search
+*)
+let rec quiescence (alpha:int) (beta:int) (depth:int)
+(b:board) (p:prev_step) (ai_col:bool) (curr_rd:bool):int=
+  if depth=0 then (eval_board b)
+  else
+  (
+    let v = ref alpha in
+    let result = ref min_int in
+    let sort_moves =
+    if checked b (init_PrevStep ()) (not curr_rd) then
+      let ()=print_endline "hehehehehe" in
+      let all_moves = generate_all_moves b p curr_rd in
+      List.sort (fun s1 s2->compared_MVV b s1 s2) all_moves
+    else
+    (
+      print_endline "hahahah";
+      let score=eval_board b in
+      (if (score > !v) then
+            v:= score
+       else if (score > beta) then
+            (*Printf.printf "Score is greater than beta, impossible, break immediately\n";*)
+            result := beta
+      else ()
+      );
+      (
+      if !result=beta then []
+      else let all_moves = generate_all_moves b p curr_rd in
+           let cap_moves = ref [] in
+           let ()=List.iter (fun s-> begin
+           match s.piece_captured with
+           |None -> ()
+           |Some p-> cap_moves:=(s::(!cap_moves))
+           end
+           ) all_moves in
+           List.sort (fun s1 s2->compared_MVV b s1 s2) !cap_moves
+      )
+    ) in
+    List.iter (fun s-> print_step s) sort_moves;
+    print_endline "Not hello";
+    (
+    if !result=beta then !result
+    else
+       (
+        let i=ref 0 in
+        let result = ref min_int in
+        let sort_moves_array=Array.of_list sort_moves in
+        while ((!i < (Array.length sort_moves_array)) && (beta <> !result))
+        do
+          let (updated_b,updated_prev) = update_unmutable sort_moves_array.(!i) b p in
+          let next=(-(quiescence (-(beta)) (-(!v)) (depth-1) updated_b updated_prev
+            ai_col (not curr_rd))) in
+          (if (next > !v) then
+            v:= next
+          else if (next > beta) then
+            (*Printf.printf "Score is greater than beta, impossible, break immediately\n";*)
+            result := beta
+          else ()
+          );
+        i:=!i+1;
+        done;
+        if !result=beta then !result
+        else !v
+      )
+    )
+  )
+
 
 let cnt = ref 0
 
 let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 	(b:board) (p:prev_step) (ai_col:bool) (curr_rd:bool): int*step list =
 
-	if depth_left = 0 then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n"; *)(eval_board b),[])
+	if depth_left = 0 then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n"; *)(*(eval_board b),[])*)
+     ((quiescence alpha beta depth_limit b p ai_col curr_rd), []))
 	else if check_end_game b p then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n";*)(eval_board b),[])
 	else
 
-		(if curr_rd = ai_col then 
+		(if curr_rd = ai_col then
 			(let result = ref min_int in
 			let v = ref alpha in
 			let i = ref 0 in
@@ -54,11 +153,11 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 			(*let h_e = (generate_piece_move b p canR1) in
 			begin match h_e with*)
 			| [] -> (depth_left - max_int,[])
-			| l -> 
+			| l ->
 				List.iter (fun a -> if (in_bound a.start)&&(in_bound a.destination) then ()
 					else print_step a) l;
 				(*List.iter print_step l;*)
-				let sorted_l = List.sort compared l in
+				let sorted_l = List.sort compared_hist l in
 				let all_moves = Array.of_list sorted_l in
 
 				while ((!i < (Array.length all_moves)) && (beta <> !result))
@@ -81,7 +180,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 						(*Printf.printf "Now the best steps are: \n";
 						List.iter print_step !best_steps*)
 						)
-					else if (score > beta) then 
+					else if (score > beta) then
 						((*Printf.printf "Score is greater than beta, impossible, break immediately\n";*)
 						result := beta;
 					  flag:=true
@@ -97,13 +196,13 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 						(all_moves.(!i).start,all_moves.(!i).destination)
 					  new_val)
           			else ());
-					cnt := !cnt + 1; 
+					cnt := !cnt + 1;
 					i:= !i+1
 				done;
 				(*print_int !cnt;Printf.printf "\n";*)
-				if !result = beta then (*(Printf.printf "Break with beta %d; Best steps are: \n" beta; 
-										List.iter print_step !best_steps;*) (beta,!best_steps) 
-				else (*(Printf.printf "Node's value is %d; Best steps are: \n" !v; 
+				if !result = beta then (*(Printf.printf "Break with beta %d; Best steps are: \n" beta;
+										List.iter print_step !best_steps;*) (beta,!best_steps)
+				else (*(Printf.printf "Node's value is %d; Best steps are: \n" !v;
 					List.iter print_step !best_steps;*) (!v,!best_steps)
 			end)
 
@@ -119,7 +218,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 			| l ->
 				List.iter (fun a -> if (in_bound a.start)&&(in_bound a.destination) then ()
 					else print_step a) l;
-				let sorted_l = List.sort compared l in
+				let sorted_l = List.sort compared_hist l in
 				let all_moves = Array.of_list sorted_l in
 
 				while ((!i < (Array.length all_moves)) && (alpha <> !result))
@@ -144,7 +243,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 						(*Printf.printf "Now the best steps are: \n";
 						List.iter print_step !best_steps*)
 						)
-					else if (score < alpha) then 
+					else if (score < alpha) then
 						(*(Printf.printf "Score is less than alpha, impossible, break immediately\n";*)
 						(result := alpha;
 					  flag:=true)
@@ -158,18 +257,18 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 					  new_val)
 
 					else ());
-					cnt := !cnt + 1; 
+					cnt := !cnt + 1;
 					i:= !i+1
 				done;
 				(*print_int !cnt;Printf.printf "\n";*)
 				if !result = alpha then (*
-					(Printf.printf "Break with beta %d; Best steps are: \n" alpha; 
-										List.iter print_step !best_steps;*) (alpha,!best_steps) 
-				else (*(Printf.printf "Node's value is %d; Best steps are: \n" !v; 
+					(Printf.printf "Break with beta %d; Best steps are: \n" alpha;
+										List.iter print_step !best_steps;*) (alpha,!best_steps)
+				else (*(Printf.printf "Node's value is %d; Best steps are: \n" !v;
 					List.iter print_step !best_steps; *)(!v,!best_steps)
 			end)
 		)
-		
+
 
 (*
 let alphaBetaMax (alpha:int ref) (beta:int ref) (depth_left:int)
@@ -225,20 +324,20 @@ let best_move_v0 (n:int) (b:board) (p:prev_step) : int*step list =
 
 (*generate the best possible moves for the futural several steps
 * int below is how many steps we predict for the future*)
-let best_move (n:int) (b:board) (tran:transposition_table) (hist:history_table) : step list = 
+let best_move (n:int) (b:board) (tran:transposition_table) (hist:history_table) : step list =
 raise TODO
 
 (*update the historical information*)
-let update_AI (b:board) (s:step) (tran:transposition_table) (hist:history_table) 
-				: transposition_table * history_table = 
+let update_AI (b:board) (s:step) (tran:transposition_table) (hist:history_table)
+				: transposition_table * history_table =
   raise TODO
 
-let easy_AI (b:board) (p:prev_step) : step = 
-  				
-  let (score,pred) = best_move_v0 2 b p in 
-  List.hd pred
-  
-let hard_AI (b:board) (p:prev_step) : step = 
+let easy_AI (b:board) (p:prev_step) : step =
 
-  let (score,pred) = best_move_v0 4 b p in 
+  let (score,pred) = best_move_v0 2 b p in
+  List.hd pred
+
+let hard_AI (b:board) (p:prev_step) : step =
+
+  let (score,pred) = best_move_v0 4 b p in
   List.hd pred

@@ -466,10 +466,10 @@ let generate_piece_move (b:board) (pv:prev_step) (p:piece)=
 
 let generate_all_moves (b:board) (p:prev_step) (side:bool): step list=
   let all_pieces = get_alive_side b side in
-  let each_steps = List.map 
+  let each_steps = List.map
     (fun a -> generate_piece_move b p a) all_pieces in
   List.flatten each_steps
-  
+
 
 let check_valid (b: board) (pv:prev_step) (st:step) :bool =
   let start = st.start in
@@ -489,6 +489,10 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
     | General -> true
     | _ -> false
   end
+
+let checked (b:board) (pv:prev_step) (cur_side:bool)=
+  let all_moves=generate_all_moves b pv cur_side in
+  List.exists (fun a->check_win b pv a) all_moves
 
 (*In main, still need to ensure that the undos are restricted*)
 let undo (b:board) (ps : prev_step) : prev_step =

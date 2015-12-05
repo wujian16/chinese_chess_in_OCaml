@@ -3,7 +3,7 @@ open Board
 open Move
 open Score
 
-(* Hashcode for a board's current state *)  
+(* Hashcode for a board's current state *)
 type board_hashcode
 
 (* A record for the search result of a given state *)
@@ -17,8 +17,7 @@ type history_table
 
 val cnt: int ref
 
-(* sort the all possible moves*)
-val sort: board-> step list
+val quiescence: int->int->int->board->prev_step->bool->bool->int
 
 (* generate the best move using non-iterative alpha beta w/o tables *)
 val best_move_v0: int-> board-> prev_step -> int*step list
@@ -28,10 +27,10 @@ val best_move_v0: int-> board-> prev_step -> int*step list
 val best_move: int-> board-> transposition_table-> history_table-> step list
 
 (*update the historical information*)
-val update_AI: 
+val update_AI:
   board-> step-> transposition_table -> history_table-> transposition_table * history_table
 
-val easy_AI: 
+val easy_AI:
   board-> prev_step -> step
 
 val hard_AI:

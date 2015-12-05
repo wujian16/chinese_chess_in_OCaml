@@ -19,8 +19,8 @@ val check_valid: board->prev_step->step->bool
 val check_win: board->prev_step->step->bool
 
 (* check whether either side is checked*)
-(* val checked: board-> prev_step -> step ->bool
- *)
+val checked: board-> prev_step -> bool ->bool
+
 (* update the game information*)
 val update_unmutable: step->board->prev_step->board*prev_step
 (* go a sta *)

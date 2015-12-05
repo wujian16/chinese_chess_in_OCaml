@@ -59,13 +59,13 @@ let rookB2 = {name = "RB2"; print_name= "\xE2\x99\x96";
 type_of = Rook; team = false}
 
 let canR1 = {name= "CR1"; print_name = "\xE2\x98\xA2";
-type_of = Rook; team = true}
+type_of = Cannon; team = true}
 let canR2 = {name= "CR2"; print_name = "\xE2\x98\xA2";
-type_of = Rook; team = true}
+type_of = Cannon; team = true}
 let canB1 = {name= "CB1"; print_name = "\xE2\x98\xA2";
-type_of = Rook; team = false}
+type_of = Cannon; team = false}
 let canB2 = {name= "CB2"; print_name = "\xE2\x98\xA2";
-type_of = Rook; team = false}
+type_of = Cannon; team = false}
 
 let soldR1 = {name = "SR1"; print_name = "\xE2\x99\x99";
 type_of = Soldier; team = true }
