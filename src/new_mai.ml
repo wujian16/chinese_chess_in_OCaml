@@ -135,8 +135,8 @@ let () = print_endline "enter run_round"
  in
     if gs.game_mode && (not gs.color)=gs.curr_color then
     let () = print_endline "AI running"
-  in let () = col := (not gs.color) in
-  let () = print_endline (if (!col) then "true" else "false") in run_ai gs
+  in
+  run_ai gs
   else
     let () = print_endline "human running" in run_human gs
 
@@ -198,7 +198,7 @@ and run_human (gs: game_state ) : game_state =
 and run_ai (gs: game_state) : game_state =
   let () = print_board gs.board in
   let () = print_endline "got in run_ai" in
-  let bst_step = (let () = print_endline "haha" in hard_AI gs.board gs.prev_step) in
+  let bst_step =  hard_AI gs.board gs.prev_step false in
   let () = print_endline "update board and step " in
   let up_gs = {gs with curr_step = bst_step} in
   let ()  = print_endline "update new game_state" in
