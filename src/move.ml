@@ -35,6 +35,7 @@ let print_step stp =
   print_piece pcap
   end
 
+
 (*generate all the steps of a Rook on board with position p *)
 let move_rook (b:board) (pc:piece) ((x,y): position) :step list =
 
@@ -96,15 +97,20 @@ begin
   !result
 end
 
-
+ let catch_ok (b :board) (pc :piece) (p: position) : bool =
+  match check_position b p with
+  | None -> true
+  | Some sth -> not (sth.team = pc.team)
 
 (*move *)
 let move_soldier (b:board) (pc:piece) ((x,y): position) : step list =
  (*red piece in its own part: row 0-5*)
+
+
 match pc.team, y<=5 with
  (*red piece, in river side*)
- | true,  true -> [{start= (x,y); destination = (x, y+1); piece_captured =
-  (check_position b (x, y+1))}]
+ | true, true -> if (catch_ok b pc (x,y+1) ) then [{start= (x,y); destination = (x, y+1); piece_captured =
+  (check_position b (x, y+1))}] else []
  (*red piece, other side of river*)
  | true, false -> let raw_pos = [(x+1, y); (x-1, y); (x, y+1) ] in
 
@@ -115,16 +121,17 @@ match pc.team, y<=5 with
  ) then [{start= (x,y); destination = p;
     piece_captured = (check_position b p)}] else []) raw_pos )
  (*black piece, own side*)
- | false, false -> [{start= (x,y); destination = (x, y-1); piece_captured =
-  (check_position b (x, y+1))}]
+
+ | false, false -> if (catch_ok b pc (x,y-1)) then [{start= (x,y); destination = (x, y-1); piece_captured =
+  (check_position b (x, y+1))}] else []
  (*black piece, other side*)
  | false, true-> let raw_pos = [(x+1, y); (x-1, y); (x, y-1) ] in
  List.flatten (List.map (fun p -> if (in_bound p) && (
     match check_position b p with
     | Some sth-> sth.team <> pc.team
     | None -> true
- ) then [{start= (x,y); destination = p;
-    piece_captured = (check_position b p)}] else []) raw_pos )
+ ) then [{start= (x,y); destination = p ;
+ piece_captured = (check_position b p)}] else [] ) raw_pos)
 
 
 (*  let result = [] in begin  if (pc.team ) &&
@@ -339,11 +346,11 @@ let raw_pos = [(x+1, y+1); (x-1, y-1); (x-1, y+1); (x+1, y-1) ] in
 
 let move_general (b:board) (pc:piece) ((x,y): position) : step list =
 let raw_pos = [(x+1, y); (x-1, y); (x, y+1); (x, y-1) ] in
- List.flatten (List.map (fun p -> if (in_bound p) && (
+ List.flatten (List.map (fun p -> if (in_bound p) && (in_square pc p)&& (
     match check_position  b p with
     | Some sth-> sth.team <> pc.team
     | None -> true
- ) && (in_square pc p)then [{start= (x,y); destination = p;
+ )  then [{start= (x,y); destination = p;
     piece_captured = (check_position b p)}] else []) raw_pos )
 
   (*check*)
