@@ -72,6 +72,8 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
   if depth=0 then (eval_board b ai_col)
   else
   (
+    if ai_col=curr_rd then
+    (
     let v = ref alpha in
     let result = ref min_int in
     let sort_moves =
@@ -119,8 +121,8 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
           print_string " ";
           print_int (List.length (get_alive_pieces updated_b));
           print_endline "";
-          let next=(-(quiescence (-(beta)) (-(!v)) (depth-1) updated_b updated_prev
-            ai_col (not curr_rd))) in
+          let next=(quiescence !v beta (depth-1) updated_b updated_prev
+            ai_col (not curr_rd)) in
           (if (next > !v) then
             v:= next
           else if (next > beta) then
@@ -136,6 +138,73 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
     )
   )
 
+
+  else
+    (
+    let v = ref beta in
+    let result = ref max_int in
+    let sort_moves =
+    if checked b (init_PrevStep ()) (not curr_rd) then
+      let ()=print_endline "hehehehehe" in
+      let all_moves = generate_all_moves b p curr_rd in
+      List.sort (fun s1 s2->compared_MVV b s1 s2) all_moves
+    else
+    (
+      print_endline "hahahah";
+      let score=eval_board b ai_col in
+      (if (score < !v) then
+            v:= score
+       else if (score < alpha) then
+            (*Printf.printf "Score is greater than beta, impossible, break immediately\n";*)
+            result := alpha
+      else ()
+      );
+      (
+      if !result=alpha then []
+      else let all_moves = generate_all_moves b p curr_rd in
+           let cap_moves = ref [] in
+           let ()=List.iter (fun s-> begin
+           match s.piece_captured with
+           |None -> ()
+           |Some p-> cap_moves:=(s::(!cap_moves))
+           end
+           ) all_moves in
+           List.sort (fun s1 s2->compared_MVV b s1 s2) !cap_moves
+      )
+    ) in
+    List.iter (fun s-> print_step s) sort_moves;
+    print_endline "Not hello";
+    (
+    if !result=alpha then !result
+    else
+       (
+        let i=ref 0 in
+        let result = ref max_int in
+        let sort_moves_array=Array.of_list sort_moves in
+        while ((!i < (Array.length sort_moves_array)) && (alpha <> !result))
+        do
+          let (updated_b,updated_prev) = update_unmutable sort_moves_array.(!i) b p in
+          print_int !i;
+          print_string " ";
+          print_int (List.length (get_alive_pieces updated_b));
+          print_endline "";
+          let next=(quiescence alpha !v (depth-1) updated_b updated_prev
+            ai_col (not curr_rd)) in
+          (if (next < !v) then
+            v:= next
+          else if (next < alpha) then
+            (*Printf.printf "Score is greater than beta, impossible, break immediately\n";*)
+            result := alpha
+          else ()
+          );
+        i:=!i+1;
+        done;
+        if !result=alpha then !result
+        else !v
+      )
+    )
+  )
+)
 
 let cnt = ref 0
 
@@ -342,6 +411,6 @@ let easy_AI (b:board) (p:prev_step) (ai_col:bool): step =
 
 let hard_AI (b:board) (p:prev_step) (ai_col:bool): step =
 let res =
-  let (score,pred) = best_move_v0 3 b p ai_col in
+  let (score,pred) = best_move_v0 2 b p ai_col in
   List.hd pred
 in let () = print_step res in res
