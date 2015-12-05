@@ -112,7 +112,7 @@ let rec init_game () : game_state =
 
 
 and choose_mode (gs: game_state) : game_state =
-  let () = print_endline "Type 'AI' to play with AI, type 2p to play with another" in
+  let () = print_endline "Type 'AI' to play with AI or type '2p' to play with another human" in
   let input = read_line () in
   match  lowercase (input) with
   | "ai" -> choose_difficulty {gs with game_mode = true}
@@ -122,9 +122,7 @@ and choose_mode (gs: game_state) : game_state =
   | _ -> print_endline "Input is not recognized. Please retype valid input."; choose_mode gs
 (* let the user choose color, red always goes firs *)
 and choose_color (gs:game_state) : game_state =
-  let () = print_endline "Type 'red' to play first, type 'green' to play later.
-  Type 'restart' to restart.
-  Type 'quit' to quit game."   in
+  let () = print_endline "Type 'red' to play first, type 'green' to play second.\nType 'restart' to restart.\nType 'quit' to quit game." in
   let input = read_line () in
   match lowercase (input) with
   | "red" -> run_round {gs with color = true}
@@ -135,10 +133,7 @@ and choose_color (gs:game_state) : game_state =
 (* run a round *)
 and choose_difficulty (gs:game_state) : game_state =
   let () = print_endline
- "Type 'easy' to play with a 2110 (easy) AI.
-  Type 'hard' to play with a 3110 (hard) AI.
-  Type 'restart' to restart.
-  Type 'quit' to quit game."   in
+ "Type 'easy' to play with a 2110 (easy) AI. \nType 'hard' to play with a 3110 (hard) AI.\nType 'restart' to restart.\nType 'quit' to quit game." in
   let input = read_line () in
   match lowercase (input) with
   | "easy" -> choose_color {gs with hard =false}
@@ -178,11 +173,7 @@ and run_back (gs:game_state) : game_state =
 
 and first_coor (gs:game_state) : game_state =
    let () = print_board gs.board in
-   let () = print_endline "Type the first piece you want to move, in the form
-   'x, y' .
-   Type 'undo' to undo one round.
-   Type 'restart' to restart.
-   Type 'quit' to quit game." in
+   let () = print_endline "Type the first piece you want to move, in the form 'x, y' .\nType 'undo' to undo one round.\nType 'restart' to restart.\nType 'quit' to quit game." in
   try( let input = read_line () in
     match input with
     | "undo" ->  run_undo gs
@@ -199,12 +190,7 @@ and first_coor (gs:game_state) : game_state =
 
 (* operate on second coordinate *)
 and second_coor (gs: game_state) : game_state =
-   let () = print_endline "Type the destination you want to go to, in the form
-   'x, y'.
-   Type 'back' to retype your starting position.
-   Type 'restart' to restart game.
-   Type 'quit' to quit game.
-   " in
+   let () = print_endline "Type the destination you want to go to, in the form 'x, y'.\nType 'back' to retype your starting position.\nType 'restart' to restart game.\nType 'quit' to quit game." in
    try (let input = read_line () in
    match input with
     | "back" -> run_back gs
