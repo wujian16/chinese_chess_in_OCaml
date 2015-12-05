@@ -32,7 +32,7 @@ val update_AI:
   board-> step-> transposition_table -> history_table-> transposition_table * history_table
 
 val easy_AI: 
-  board-> transposition_table-> history_table-> step list * transposition_table * history_table
-  
+  board-> prev_step -> step
+
 val hard_AI:
-  board-> transposition_table-> history_table-> step list * transposition_table * history_table
+  board-> prev_step -> step

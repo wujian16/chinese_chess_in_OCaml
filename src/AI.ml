@@ -41,8 +41,8 @@ let cnt = ref 0
 let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 	(b:board) (p:prev_step) (ai_col:bool) (curr_rd:bool): int*step list =
 
-	if depth_left = 0 then (cnt := !cnt + 1; print_int !cnt; Printf.printf "\n"; (eval_board b),[])
-	else if check_end_game b p then (cnt := !cnt + 1; print_int !cnt; Printf.printf "\n";(eval_board b),[])
+	if depth_left = 0 then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n"; *)(eval_board b),[])
+	else if check_end_game b p then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n";*)(eval_board b),[])
 	else
 
 		(if curr_rd = ai_col then 
@@ -100,7 +100,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 					cnt := !cnt + 1; 
 					i:= !i+1
 				done;
-				print_int !cnt;Printf.printf "\n";
+				(*print_int !cnt;Printf.printf "\n";*)
 				if !result = beta then (*(Printf.printf "Break with beta %d; Best steps are: \n" beta; 
 										List.iter print_step !best_steps;*) (beta,!best_steps) 
 				else (*(Printf.printf "Node's value is %d; Best steps are: \n" !v; 
@@ -161,7 +161,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 					cnt := !cnt + 1; 
 					i:= !i+1
 				done;
-				print_int !cnt;Printf.printf "\n";
+				(*print_int !cnt;Printf.printf "\n";*)
 				if !result = alpha then (*
 					(Printf.printf "Break with beta %d; Best steps are: \n" alpha; 
 										List.iter print_step !best_steps;*) (alpha,!best_steps) 
@@ -220,6 +220,7 @@ let best_move_v0 (n:int) (b:board) (p:prev_step) : int*step list =
 			result:=(alphaBeta min_int max_int (!i) b p col round);
 			i:=!i+1
 		done;
+		print_float (Unix.gettimeofday () -. t);
 		!result
 
 (*generate the best possible moves for the futural several steps
@@ -232,10 +233,12 @@ let update_AI (b:board) (s:step) (tran:transposition_table) (hist:history_table)
 				: transposition_table * history_table = 
   raise TODO
 
-let easy_AI (b:board) (tran:transposition_table) (hist:history_table) 
-  				: step list * transposition_table * history_table =
-  raise TODO
+let easy_AI (b:board) (p:prev_step) : step = 
+  				
+  let (score,pred) = best_move_v0 2 b p in 
+  List.hd pred
   
-let hard_AI (b:board) (tran:transposition_table) (hist:history_table) 
-  				: step list * transposition_table * history_table =
-  raise TODO
+let hard_AI (b:board) (p:prev_step) : step = 
+
+  let (score,pred) = best_move_v0 4 b p in 
+  List.hd pred
