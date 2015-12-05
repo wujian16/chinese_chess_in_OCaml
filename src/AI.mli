@@ -30,9 +30,14 @@ val best_move: int-> board-> transposition_table-> history_table-> step list
 val update_AI:
   board-> step-> transposition_table -> history_table-> transposition_table * history_table
 
+(* AI generating a random valid step*)
+val random_AI:
+  board-> prev_step -> bool -> step
 
+(* easy level AI*)
 val easy_AI:
   board-> prev_step -> bool -> step
 
+(* hard level AI*)
 val hard_AI:
   board-> prev_step -> bool -> step
