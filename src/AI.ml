@@ -411,6 +411,6 @@ let easy_AI (b:board) (p:prev_step) (ai_col:bool): step =
 
 let hard_AI (b:board) (p:prev_step) (ai_col:bool): step =
 let res =
-  let (score,pred) = best_move_v0 3 b p ai_col in
+  let (score,pred) = best_move_v0 2 b p ai_col in
   List.hd pred
 in let () = print_step res in res
