@@ -462,7 +462,11 @@ let generate_piece_move (b:board) (pv:prev_step) (p:piece)=
   if List.length candidate>0 then  candidate
   else [] end
 
-
+let generate_all_moves (b:board) (p:prev_step) (side:bool): step list=
+  let all_pieces = get_alive_side b side in
+  let each_steps = List.map 
+    (fun a -> let l = generate_piece_move b p a in List.iter print_step l; l) all_pieces in
+  List.sort compared (List.flatten each_steps)
 
 let check_valid (b: board) (pv:prev_step) (st:step) :bool =
   let start = st.start in
