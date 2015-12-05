@@ -81,12 +81,34 @@ let valid_snd_coor (gs  : game_state) (ps : position) : bool =
 
     (* | _ -> let () = print_endline "Please input a valid starting coordinate." in false *)
 
+let print_piece (p : piece option) : unit =
+  match  p with
+  | None -> Printf.printf "%s%s" "\027[37m" "  -"
+  (* red // green *)
+  | Some pc -> let clr = if pc.team then "\027[31m " else "\027[32m " in
+    Printf.printf "%s %s" clr pc.print_name
+(*\xE2\x95\xB1 \xE2\x95\xB2  diagonal unicodes*)
+
+let print_board (b: board) : unit =
+  let line_counter = ref 0 in
+  Printf.printf "%s%s" "\027[37m" "     1  2  3  4  5  6  7  8  9\n";
+  Array.iter (fun inner_arr ->
+  incr line_counter;
+  if (!line_counter = 10) then Printf.printf "%s %d" "\027[37m" (!line_counter)
+  else Printf.printf "%s %d" "\027[37m " (!line_counter) ;
+  Array.iter print_piece inner_arr; Printf.printf "%s\n" "\027[37m")
+  (get_boardArray init_board)
+
+let run_board = print_board (init_board)
+
 let rec init_game () : game_state =
   init_GameState |> choose_mode
 
+
+
 and choose_mode (gs: game_state) : game_state =
   let () = print_endline "type 'AI' to play with AI, type 2p to play with another" in
-
+  
   let input = read_line () in
   match  lowercase (input) with
   | "ai" -> choose_color {gs with game_mode = true}
