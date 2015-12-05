@@ -73,10 +73,9 @@ let valid_first_coor (gs  : game_state) (ps : position) : bool =
 
     match check_position gs.board ps with
     | None -> let () = print_endline "Nothing at this position" in false
-    | Some x -> if (gs.curr_color = x.team) then
-                  let () = Printf.printf "%s\n" (piece_name (Some x)) in  true
+    | Some x -> if (gs.curr_color = x.team) then true
                 else
-                 let () = print_endline "This piece is not of the current player's color!" in  false
+                let () = print_endline "This piece is not of the current player's color!" in  false
 
 
 let valid_snd_coor (gs  : game_state) (ps : position) : bool =
@@ -108,19 +107,19 @@ let print_board (b: board) : unit =
 (* let run_board = print_board (init_board) *)
 
 let rec init_game () : game_state =
-  print_endline "Welcome to super cool command line Chinese Chess!";
+  print_endline "\nWelcome to super cool command line Chinese Chess!";
   {init_GameState with board = Board.init()} |> choose_mode
 
 
 and choose_mode (gs: game_state) : game_state =
-  let () = print_endline "type 'AI' to play with AI, type 2p to play with another" in
+  let () = print_endline "Type 'AI' to play with AI, type 2p to play with another" in
   let input = read_line () in
   match  lowercase (input) with
   | "ai" -> choose_difficulty {gs with game_mode = true}
   | "2p" -> choose_color {gs with game_mode = false}
   | "quit" -> run_quit gs
   | "restart" -> run_restart gs
-  | _ -> print_endline "cannot recognize, please retype"; choose_mode gs
+  | _ -> print_endline "Input is not recognized. Please retype valid input."; choose_mode gs
 (* let the user choose color, red always goes firs *)
 and choose_color (gs:game_state) : game_state =
   let () = print_endline "Type 'red' to play first, type 'green' to play later.
@@ -132,7 +131,7 @@ and choose_color (gs:game_state) : game_state =
   | "green" -> run_round {gs with color = false}
   | "quit" -> run_quit gs
   | "restart" -> run_restart gs
-  | _ -> print_endline "please type either 'red' or 'green'"; choose_color gs
+  | _ -> print_endline "Please type either 'red' or 'green'"; choose_color gs
 (* run a round *)
 and choose_difficulty (gs:game_state) : game_state =
   let () = print_endline
@@ -146,7 +145,7 @@ and choose_difficulty (gs:game_state) : game_state =
   | "hard" -> choose_color {gs with color = true}
   | "quit" -> run_quit gs
   | "restart" -> run_restart gs
-  | _ -> print_endline "please type either 'easy' or 'hard'"; choose_difficulty gs
+  | _ -> print_endline "Please type either 'easy' or 'hard'"; choose_difficulty gs
 
 and run_round (gs:game_state) : game_state =
 (* let () = print_board gs.board in *)
@@ -154,11 +153,11 @@ and run_round (gs:game_state) : game_state =
   let () = print_endline ("This is "^(if gs.curr_color then "red" else "green")^" playing." )in
 
     if gs.game_mode && (not gs.color)=gs.curr_color then
-    let () = print_endline "AI running"
+    let () = print_endline "This is the AI's turn."
   in
   (if gs.hard then run_hard_ai gs else run_easy_ai gs)
   else
-    let () = print_endline "human running" in run_human gs
+    let () = print_endline "This is the human's turn." in run_human gs
 
 and run_undo (gs:game_state) : game_state =
   print_endline "Undo.";
@@ -169,17 +168,17 @@ and run_quit (gs:game_state) : game_state =
   exit 0
   (*to the beginning of the game*)
 and run_restart (gs:game_state) : game_state =
-  print_endline "You restart.";
+  print_endline "You restarted.";
   init_game ()
 and run_back (gs:game_state) : game_state =
-  let () = print_endline "retype starting point like (x,y)."
+  let () = print_endline "Please retype starting point of form 'x,y'."
                  in first_coor gs
 
 
 
 and first_coor (gs:game_state) : game_state =
    let () = print_board gs.board in
-   let () = print_endline "type the first piece you want to move, in the form
+   let () = print_endline "Type the first piece you want to move, in the form
    'x, y' .
    Type 'undo' to undo one round.
    Type 'restart' to restart.
@@ -195,11 +194,12 @@ and first_coor (gs:game_state) : game_state =
    print_endline ("You are moving the piece "^(piece_name (check_position gs.board pos))) in
    let st = {gs.curr_step with start = pos} in
    second_coor {gs with curr_step = st} else first_coor gs)
- with _ -> print_endline "invalid input, retype a coordinate"; first_coor gs
+  with _ -> print_endline "Invalid input. Please input a valid coordinate";
+  first_coor gs
 
 (* operate on second coordinate *)
 and second_coor (gs: game_state) : game_state =
-   let () = print_endline "type the destination you want to go to, in the form
+   let () = print_endline "Type the destination you want to go to, in the form
    'x, y'.
    Type 'back' to retype your starting position.
    Type 'restart' to restart game.
@@ -222,11 +222,11 @@ and second_coor (gs: game_state) : game_state =
         (string_of_position pos)^"and captured "
         ^(piece_name (pos |> check_position gs.board)))) in
       run_step {gs with curr_step = st } end else
-      let () = print_endline "Somehow violated the rule,
-      retype a coordinate" in second_coor gs
-   | false -> print_endline "invalid coordinate"; second_coor gs
+      let () = print_endline "The inputted coordinate produces an invalid step. Please retype a valid coordinate"
+      in second_coor gs
+   | false -> print_endline "Invalid coordinate."; second_coor gs
  end )
- with _ -> print_endline "invalid input, retype a coordinate"; second_coor gs
+ with _ -> print_endline "Invalid input. Retype a valid coordinate"; second_coor gs
 (* update gs functions *)
 
 and run_step (gs : game_state ) : game_state =
@@ -234,7 +234,7 @@ and run_step (gs : game_state ) : game_state =
     match check_win gs.board gs.prev_step gs.curr_step with
       | true -> let () = print_endline
       ((if gs.curr_color then "RED" else "GREEN" )^" wins! " ) in init_game ()
-      | false -> let () =  print_endline "continue playing"  in
+      | false -> let () =  print_endline "Continue playing"  in
     let () = update_board gs.board gs.curr_step in
       run_round {gs with prev_step = gs.prev_step |>
       update_prev gs.curr_step ; curr_color= not (gs.curr_color)}
@@ -246,14 +246,14 @@ and run_human (gs: game_state ) : game_state =
 
 and run_hard_ai (gs: game_state) : game_state =
   let () = print_board gs.board in
-  let () = print_endline "got in run_AI, please wait patiently" in
+  let () = print_endline "The AI is thinking. Please wait patiently." in
   let bst_step =  hard_AI gs.board gs.prev_step (not gs.color) in
   let up_gs = {gs with curr_step = bst_step} in
   run_step up_gs
 
 and run_easy_ai (gs: game_state) : game_state =
   let () = print_board gs.board in
-  let () = print_endline "got in run_AI, please wait patiently" in
+  let () = print_endline "The AI is thinking. Please wait patiently." in
   let bst_step =  easy_AI gs.board gs.prev_step (not gs.color) in
   let up_gs = {gs with curr_step = bst_step} in
   run_step up_gs
