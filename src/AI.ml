@@ -12,7 +12,7 @@ type transposition_table = (string, search_result) Hashtbl.t
 
 type history_table = (string, search_result) Hashtbl.t
 
-let depth_limit=4
+let depth_limit=2
 
 let nHistoryTable=Hashtbl.create (90*90)
 
