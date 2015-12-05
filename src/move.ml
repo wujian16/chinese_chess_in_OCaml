@@ -342,7 +342,7 @@ let move_elephant (b:board) (pc:piece) ((x,y): position) :step list =
       |None->  [{start= (x,y); destination = (x+(fst p), y+(snd p));
      piece_captured = None}]
       |Some sth->if sth.team<>pc.team then
-       [{start= (x,y); destination = p;
+       [{start= (x,y); destination = (x+(fst p), y+(snd p));
         piece_captured = (check_position b p)}]
                  else []
      else []) raw_pos)
@@ -465,8 +465,9 @@ let generate_piece_move (b:board) (pv:prev_step) (p:piece)=
 let generate_all_moves (b:board) (p:prev_step) (side:bool): step list=
   let all_pieces = get_alive_side b side in
   let each_steps = List.map 
-    (fun a -> let l = generate_piece_move b p a in List.iter print_step l; l) all_pieces in
-  List.sort compared (List.flatten each_steps)
+    (fun a -> generate_piece_move b p a) all_pieces in
+  List.flatten each_steps
+  
 
 let check_valid (b: board) (pv:prev_step) (st:step) :bool =
   let start = st.start in

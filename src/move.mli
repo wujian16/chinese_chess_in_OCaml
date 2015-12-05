@@ -7,6 +7,8 @@ type step={start:position; destination: position; piece_captured: piece option}
 (* record the previous step*)
 type prev_step
 
+val in_bound: position -> bool
+
 val init_PrevStep: unit -> prev_step
 
 (*check whether a step is valid or not*)
