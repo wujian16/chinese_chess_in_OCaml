@@ -12,14 +12,31 @@ type transposition_table = (string, search_result) Hashtbl.t
 
 type history_table = (string, search_result) Hashtbl.t
 
+let nHistoryTable=Hashtbl.create (90*90)
+
+let ()=
+	for i = 1 to 9 do
+	  for j=1 to 10 do
+			for m=1 to 9 do
+				for n=1 to 10 do
+					Hashtbl.add nHistoryTable ((i,j),(m,n)) 0
+				done
+			done
+		done
+	done
+
 let sort b = raise TODO
 
+(* compare the vals of two steps in history table*)
+let compared s1 s2=
+	(Hashtbl.find nHistoryTable (s2.start, s2.destination))
+	-(Hashtbl.find nHistoryTable (s1.start, s1.destination))
 
 let generate_all_moves (b:board) (p:prev_step) (side:bool): step list=
 	let all_pieces = get_alive_side b side in
 	let each_steps = List.map 
 		(fun a -> let l = generate_piece_move b p a in List.iter print_step l; l) all_pieces in
-	List.flatten each_steps
+	List.sort compared (List.flatten each_steps)
 
 let check_end_game (b:board) : bool = 
 	not ((check_alive b "GR") && (check_alive b "GB"))
@@ -29,9 +46,8 @@ let cnt = ref 0
 let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 	(b:board) (p:prev_step) (ai_col:bool) (curr_rd:bool): int*step list =
 
-
 	if depth_left = 0 then (cnt := !cnt + 1; (eval_board b),[])
-	else if check_end_game then (cnt := !cnt + 1; (eval_board b),[])
+	else if check_end_game b then (cnt := !cnt + 1; (eval_board b),[])
 	else
 		(if curr_rd = ai_col then 
 			(let result = ref min_int in
@@ -58,19 +74,31 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 					Printf.printf "\nIts %d's child has score %d. Its best moves are: \n" !i score;
 					List.iter print_step new_best_steps;
 					Printf.printf "\nThe current alpha is %d; beta is %d\n" !v beta;*)
+          let flag=ref false in
 					(if (score > !v) then
 						(
 						v:= score;
 						Printf.printf "Score is greater than current alpha. Alpha is updated: %d\n" !v;
-						best_steps:= all_moves.(!i)::new_best_steps;
+ 						best_steps:= all_moves.(!i)::new_best_steps;
+						flag:=true;
 						Printf.printf "Now the best steps are: \n";
 						List.iter print_step !best_steps
 						)
 					else if (score > beta) then 
 						(Printf.printf "Score is greater than beta, impossible, break immediately\n";
-						result := beta)
+						result := beta;
+					  flag:=true
+					  )
 					else (Printf.printf "Nothing happens\n")
 					);
+					(if (!flag=true) then
+						let new_val=(Hashtbl.find nHistoryTable
+						(all_moves.(!i).start,all_moves.(!i).destination))+(depth_left*depth_left)
+						in
+						(Hashtbl.replace nHistoryTable
+						(all_moves.(!i).start,all_moves.(!i).destination)
+					  new_val)
+          else ());
 					cnt := !cnt + 1; 
 					i:= !i+1
 				done;
@@ -81,7 +109,6 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 			end)
 
 		else
-
 			(
 			let result = ref max_int in
 			let v = ref beta in
@@ -100,23 +127,34 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 					let (updated_b,updated_prev) = update_unmutable all_moves.(!i) b p in
 					let (score,new_best_steps) = alphaBeta alpha !v (depth_left - 1)
 								updated_b updated_prev ai_col (not curr_rd) in
-(*
-					
+          (*
 					Printf.printf "\nIts %d's child has score %d. Its best moves are: \n" !i score;
 					List.iter print_step new_best_steps;
 					Printf.printf "\nThe current alpha is %d; beta is %d\n" alpha !v;*)
+          let flag=ref false in
 					(
 					if (score < !v) then
 						(v:= score;
 						(*Printf.printf "Score is smaller than current beta. Beta is updated: %d\n" !v;*)
-						best_steps:= all_moves.(!i)::new_best_steps
+						best_steps:= all_moves.(!i)::new_best_steps;
+						flag:=true
 						(*Printf.printf "Now the best steps are: \n";
 						List.iter print_step !best_steps*)
 						)
 					else if (score < alpha) then 
 						(*(Printf.printf "Score is less than alpha, impossible, break immediately\n";*)
-						(result := alpha)
+						(result := alpha;
+					  flag:=true)
 					else ()(*(Printf.printf "Nothing happens\n"))*));
+					(if (!flag=true) then
+						let new_val=(Hashtbl.find nHistoryTable
+						(all_moves.(!i).start,all_moves.(!i).destination))+(depth_left*depth_left)
+						in
+						(Hashtbl.replace nHistoryTable
+						(all_moves.(!i).start,all_moves.(!i).destination)
+					  new_val)
+
+					else ());
 					cnt := !cnt + 1; 
 					i:= !i+1
 				done;
