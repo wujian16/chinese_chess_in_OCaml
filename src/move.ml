@@ -344,7 +344,7 @@ let move_elephant (b:board) (pc:piece) ((x,y): position) :step list =
       |None->  [{start= (x,y); destination = (x+(fst p), y+(snd p));
      piece_captured = None}]
       |Some sth->if sth.team<>pc.team then
-       [{start= (x,y); destination = p;
+       [{start= (x,y); destination = (x+(fst p), y+(snd p));
         piece_captured = (check_position b p)}]
                  else []
      else []) raw_pos)
@@ -464,7 +464,12 @@ let generate_piece_move (b:board) (pv:prev_step) (p:piece)=
   if List.length candidate>0 then  candidate
   else [] end
 
-
+let generate_all_moves (b:board) (p:prev_step) (side:bool): step list=
+  let all_pieces = get_alive_side b side in
+  let each_steps = List.map 
+    (fun a -> generate_piece_move b p a) all_pieces in
+  List.flatten each_steps
+  
 
 let check_valid (b: board) (pv:prev_step) (st:step) :bool =
   let start = st.start in
@@ -487,14 +492,13 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
 
 (*In main, still need to ensure that the undos are restricted*)
 let undo (b:board) (ps : prev_step) : prev_step =
-  let rect_step = List.nth ps (List.length ps - 1) in
+  let rect_step = List.hd ps in
   let dest_piece = check_position b rect_step.destination in
   let dest = rect_step.destination in
   let strt = rect_step.start in
   let () = (get_boardArray b).((snd dest) -1).((fst dest) -1) <- rect_step.piece_captured in
   let () = (get_boardArray b).((snd strt) -1).((fst strt) -1) <- dest_piece in
-  List.tl (List.rev ps)
-
+  List.tl ps
 
 (*
 let string_of_step stp = begin match stp with
