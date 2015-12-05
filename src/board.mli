@@ -5,10 +5,6 @@ open Piece
  *)
 type board
 
-(* the variable round tells the current round
- * is red side's turn or blue side's turn*)
-val round: bool
-
 (*get the piece given position*)
 val check_position: board-> position-> piece option
 

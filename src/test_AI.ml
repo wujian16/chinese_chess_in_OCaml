@@ -59,6 +59,7 @@ List.iter print_step !result
 *)
 
 let (score, pred) = best_move_v0 2 b0 prev0 in
+
 print_int score;
 List.iter print_step pred;
 print_int !cnt

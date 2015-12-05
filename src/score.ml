@@ -149,7 +149,7 @@ let col=3+(fst p) in
 
 
 (* initialize AI's color to red*)
-let col = true
+let col = ref true
 
 
 let evaluate (b:board) (c:bool)=
@@ -205,4 +205,4 @@ let ()=if c=true && (not (check_alive b "GR")) then score:=!score-10000
 in
  !score
 
-let eval_board (b:board)=evaluate b col
+let eval_board (b:board) (ai_col:bool) =evaluate b ai_col

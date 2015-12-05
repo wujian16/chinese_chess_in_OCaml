@@ -8,18 +8,17 @@ exception InvalidMove
 type step={start:position; destination: position; piece_captured: piece option}
 
 type prev_step = step list
-
-let init_step () = {start= (1,1); destination = (1,1) ; piece_captured = None}
-
+let init_step = {start= (1,1); destination = (1,1) ; piece_captured = None}
 let init_PrevStep () = []
 
 let in_bound ((x,y):position) : bool=
   x>=1 && x<=9 && y>=1 && y <=10
 
+let init_step () = {start = (1,1); destination = (1,1); piece_captured = None}
 let in_square (pc:piece) ((x,y): position) : bool =
 match pc.team with
-| true  -> x>=4 &&x<=6 && y>=1 && y<=3
-| false -> x>=4 && x <= 6 && y>=8 && y<=10
+  | true  -> x>=4 &&x<=6 && y>=1 && y<=3
+  | false -> x>=4 && x <= 6 && y>=8 && y<=10
 
 
 let self_side (pc:piece) ((x,y): position):bool=
@@ -495,7 +494,7 @@ let checked (b:board) (pv:prev_step) (cur_side:bool)=
   List.exists (fun a->check_win b pv a) all_moves
 
 (*In main, still need to ensure that the undos are restricted*)
-let undo (b:board) (ps : prev_step) : prev_step =
+let undo_one (b:board) (ps : prev_step) : prev_step =
   let rect_step = List.hd ps in
   let dest_piece = check_position b rect_step.destination in
   let dest = rect_step.destination in
@@ -503,6 +502,10 @@ let undo (b:board) (ps : prev_step) : prev_step =
   let () = (get_boardArray b).((snd dest) -1).((fst dest) -1) <- rect_step.piece_captured in
   let () = (get_boardArray b).((snd strt) -1).((fst strt) -1) <- dest_piece in
   List.tl ps
+
+let undo (b:board) (ps : prev_step ) : prev_step =
+  undo_one b ps |> undo_one b
+
 
 (*
 let string_of_step stp = begin match stp with

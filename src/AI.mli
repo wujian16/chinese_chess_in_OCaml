@@ -20,7 +20,7 @@ val cnt: int ref
 val quiescence: int->int->int->board->prev_step->bool->bool->int
 
 (* generate the best move using non-iterative alpha beta w/o tables *)
-val best_move_v0: int-> board-> prev_step -> int*step list
+val best_move_v0: int-> board-> prev_step-> bool-> int*step list
 
 (*generate the best possible moves for the futural several steps
 * int below is how many steps we predict for the future*)
@@ -30,8 +30,9 @@ val best_move: int-> board-> transposition_table-> history_table-> step list
 val update_AI:
   board-> step-> transposition_table -> history_table-> transposition_table * history_table
 
+
 val easy_AI:
-  board-> prev_step -> step
+  board-> prev_step -> bool -> step
 
 val hard_AI:
-  board-> prev_step -> step
+  board-> prev_step -> bool -> step

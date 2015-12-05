@@ -60,7 +60,6 @@ let compared_hist s1 s2=
 	-(Hashtbl.find nHistoryTable (s1.start, s1.destination))
 
 
-
 let check_end_game (b:board) (p:prev_step) : bool =
 	(generate_all_moves b p true = []) || (generate_all_moves b p false = []) ||
 	(not ((check_alive b "GR") && (check_alive b "GB")))
@@ -310,16 +309,16 @@ and alphaBetaMin (alpha:int ref) (beta:int ref) (depth_left:int)
 		if !result = !alpha then !alpha else !beta
 *)
 
-let best_move_v0 (n:int) (b:board) (p:prev_step) : int*step list =
+let best_move_v0 (n:int) (b:board) (p:prev_step) (ai_col:bool): int*step list =
 	(* need to modify the alpha beta to keep track of the optimum steps *)
 	  let t=Unix.gettimeofday () in
 		let result=ref (0, []) in
 		let i=ref 1 in
 		while ((Unix.gettimeofday () -. t)<=300.0 && !i<=n) do
-			result:=(alphaBeta min_int max_int (!i) b p col round);
+			result:=(alphaBeta min_int max_int (!i) b p ai_col ai_col);
 			i:=!i+1
 		done;
-		print_float (Unix.gettimeofday () -. t);
+
 		!result
 
 (*generate the best possible moves for the futural several steps
@@ -332,12 +331,13 @@ let update_AI (b:board) (s:step) (tran:transposition_table) (hist:history_table)
 				: transposition_table * history_table =
   raise TODO
 
-let easy_AI (b:board) (p:prev_step) : step =
+let easy_AI (b:board) (p:prev_step) (ai_col:bool): step =
 
-  let (score,pred) = best_move_v0 2 b p in
+  let (score,pred) = best_move_v0 2 b p ai_col in
   List.hd pred
 
-let hard_AI (b:board) (p:prev_step) : step =
-
-  let (score,pred) = best_move_v0 4 b p in
+let hard_AI (b:board) (p:prev_step) (ai_col:bool): step =
+let res =
+  let (score,pred) = best_move_v0 3 b p ai_col in
   List.hd pred
+in let () = print_step res in res

@@ -101,3 +101,20 @@ let string_of_piece pc =
 
 let print_piece pc = print_bytes (pc.name^"a "); print_position pc.position
 *)
+
+let piece_name (input: piece option): bytes=
+
+begin
+  match input with
+  |None -> "None"
+  | Some pc -> begin match pc.type_of with
+
+    | General   -> "General"
+    | Advisor   -> "Advisor"
+    | Elephant  -> "Elephant"
+    | Horse     -> "Horse"
+    | Rook      -> "Chariot"
+    | Cannon    -> "Cannon"
+    | Soldier   -> "Soldier"
+  end
+end
