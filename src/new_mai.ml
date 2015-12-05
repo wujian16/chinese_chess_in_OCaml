@@ -104,7 +104,8 @@ and choose_color (gs:game_state) : game_state =
 and run_round (gs:game_state) : game_state =
   if gs.game_mode then run_ai gs else run_human gs
 and run_undo (gs:game_state) : game_state =
-  gs
+  let new_pv = undo gs.board gs.prev_step in
+  run_round {gs with prev_step = new_pv }
 
 and  first_coor (gs:game_state) : game_state =
    let () = print_endline "type the first piece you want to move, in the form
@@ -157,7 +158,7 @@ and run_ai (gs: game_state) : game_state =
   let up_gs = {gs with curr_step = bst_step} in
   run_step up_gs
 
-
+let _ = init_game ()
 
 
 
