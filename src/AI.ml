@@ -409,12 +409,13 @@ let random_AI (b:board) (p:prev_step) (ai_col:bool): step =
 		List.nth all_moves (Random.int (List.length all_moves))
 
 let easy_AI (b:board) (p:prev_step) (ai_col:bool): step =
-
+  let res =
   let (score,pred) = best_move_v0 1 b p ai_col in
   List.hd pred
+  in let () = print_step res in res
 
 let hard_AI (b:board) (p:prev_step) (ai_col:bool): step =
-(* let res = *)
+  let res =
   let (score,pred) = best_move_v0 2 b p ai_col in
   List.hd pred
-(* in let () = print_step res in res *)
+  in let () = print_step res in res
