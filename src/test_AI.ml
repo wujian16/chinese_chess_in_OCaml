@@ -34,7 +34,7 @@ do
 done;
 *)
 (*
-let score=quiescence min_int max_int 32 b0 prev0 col round in
+let score=quiescence min_int max_int 6 b0 prev0 true true in
 print_int score
 *)
 (*
@@ -58,7 +58,7 @@ List.iter (fun s-> begin
 List.iter print_step !result
 *)
 
-let (score, pred) = best_move_v0 3 b0 prev0 true in
+let (score, pred) = best_move_v0 2 b0 prev0 true in
 print_int score;
 List.iter print_step pred;
 print_int !cnt
