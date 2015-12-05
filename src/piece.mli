@@ -11,6 +11,8 @@ print_name : string;
 type_of: piece_type;
 team: bool
 }
+
+
 val generalR: piece
 val generalB: piece
 
@@ -51,3 +53,8 @@ val soldB2 : piece
 val soldB3 : piece
 val soldB4 : piece
 val soldB5 : piece
+
+val string_of_position : position -> string
+val string_of_piece : piece option -> string
+
+

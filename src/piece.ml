@@ -89,9 +89,16 @@ type_of = Soldier; team = false }
 let soldB5 = {name = "SB5"; print_name = "S";
 type_of = Soldier; team = false }
 
-(* let print_position (ps:position ) = match  ps with
+let string_of_position (x,y) =
+  "( "^(string_of_int x)^", "^(string_of_int y)^")"
+
+let string_of_piece pc =
+  match pc with
+  | None -> "Nothing"
+  | Some p -> p.name
+(* let print_position (ps:position ) = match ps with
   | x, y -> print_int x; print_int y *)
 (*  | _ -> failwith "invalid"
 
-let print_piece pc = print_bytes (pc.name^"at "); print_position pc.position
+let print_piece pc = print_bytes (pc.name^"a "); print_position pc.position
 *)

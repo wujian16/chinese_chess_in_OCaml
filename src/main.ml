@@ -19,9 +19,12 @@ let previous_Step = init_PrevStep()
 (*Make them forfeit before they can quit*)
 
 (* 1P vs AI is true and 2P is false
-Red is true and black is false*)
+Red is true and black is falseteble *)
 let curr_Board  = Board.init()
-type game_state = {mutable game_mode: bool; mutable color: bool; mutable started: bool; mutable board: board}
+type game_state = {mutable game_mode: bool;
+mutable color: bool; mutable started: bool; mutable board: board}
+
+
 let curr_GameState () = {game_mode = true; color = true; started = false; board = curr_Board}
 
 
@@ -48,12 +51,14 @@ let run_board = print_board (curr_Board)
 
 let comma = Str.regexp ","
 
-let input_Parse (input : bytes) =
+let input_Parse (input : bytes) : bytes list =
   let input = Str.bounded_split comma input 2 in
     if List.length input > 1
       then [List.hd input] @ List.tl input
     else input
+
 (*convert [x;y] to a position *)
+
 let rec position_Convert (input: bytes list): int * int =
   if (List.length input = 2) then
     (int_of_string (List.hd input), int_of_string (List.hd (List.rev input)))
@@ -71,26 +76,33 @@ let is_piece (b:board ) (p:position): bool =
   | None -> false
   | Some _ -> true
 
-(*validate first coordinate(piece want to move), includ*)
-let rec check_first_coor (board: board): bool =
-let input = read_line() in
-(*if (Bytes.lowercase input) <> "quit" then*)
+
+(*validate first coordinate(piece want to move), include:
+  there is a piece at that position
+  the piece is of the current team*)
+let check_first_coor (ps : position) (gs  : game_state): bool =
+(* let input = read_line() in
+if (Bytes.lowercase input) <> "quit" then
   try
   let parsed_Input = input_Parse input in
-  let check_Converted_Position = check_ValidCoor parsed_Input board in
-    match check_Converted_Position with
-    | None -> print_endline "Nothing at this position";
-              failwith "Invalid first coordinate"
+  let check_Converted_Position = check_ValidCoor parsed_Input board in *)
+    match check_position ps with
+    | None -> let () = print_endline "Nothing at this position" in false
     | Some x -> if (curr_GameState.color = x.team) then
                   let () = Printf.printf "%s\n" x.name in  true
                 else
                   failwith "This piece is not of the current player's color!"
   with
-    _ -> print_endline "Please input a valid starting coordinate."; repl (board)
+    _ -> print_endline "Please input a valid starting coordinate."
+
+  let rec repl1 (gs : game_state) : game_state =
+  let input = read_line () in
+   let input_pos = input |> input_Parse |> position_Convert in
+   is_piece gs.board input_pos &&
 
 
 (* second coordinate *)
-let rec check_snd_coor (board:board) :bool=
+let rec check_snd_coor  (board:board) :bool=
   let input2 = read_line() in
   (* let second_coordinate =
   ( *)try
