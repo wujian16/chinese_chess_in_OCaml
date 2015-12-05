@@ -142,8 +142,8 @@ let cnt = ref 0
 let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 	(b:board) (p:prev_step) (ai_col:bool) (curr_rd:bool): int*step list =
 
-	if depth_left = 0 then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n"; *)(*(eval_board b),[])*)
-     ((quiescence alpha beta depth_limit b p ai_col curr_rd), []))
+	if depth_left = 0 then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n"; *)((eval_board b ai_col),[]))
+     (*((quiescence alpha beta depth_limit b p ai_col curr_rd), []))*)
 	else if check_end_game b p then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n";*)((eval_board b ai_col),[]))
 	else
 

@@ -120,7 +120,7 @@ and choose_mode (gs: game_state) : game_state =
   | "2p" -> choose_color {gs with game_mode = false}
 
   | _ -> choose_mode gs
-(* let the user choose color, red always goes first *)
+(* let the user choose color, red always goes firs *)
 and choose_color (gs:game_state) : game_state =
   let () = print_endline "Type 'Red' to play first, type 'green' to play later." in
   let input = read_line () in

@@ -201,12 +201,12 @@ in let ()=if c=true then score:=(-(!score)) else () in
 
 let ()=if c=true then
           (if (not (check_alive b "GR")) then score:=!score-10000
-          else if (not (check_alive b "GB")) then score:=!score+10000)
-          else ()
+          else if (not (check_alive b "GB")) then score:=!score+10000
+          else ())
        else
-           if (not (check_alive b "GB")) then score:=!score-10000
+           (if (not (check_alive b "GB")) then score:=!score-10000
            else if (not (check_alive b "GR")) then score:=!score+10000
-           else ()
+           else ())
 in
  !score
 
