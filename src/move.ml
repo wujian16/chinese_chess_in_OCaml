@@ -31,8 +31,7 @@ let print_step stp =
   | {start = st; destination = ds; piece_captured=pcap} ->
   Printf.printf "starting position: (%d, %d)\n" (fst st) (snd st);
   Printf.printf "ending position: (%d, %d)\n" (fst ds) (snd ds);
-  print_piece pcap;
-  Printf.printf "\n"
+  print_piece pcap
   end
 
 (*generate all the steps of a Rook on board with position p *)
@@ -333,26 +332,22 @@ in hori_pos@vert_pos
 
 let move_elephant (b:board) (pc:piece) ((x,y): position) :step list =
   let raw_pos=[(2,2); (-2,-2); (2,-2); (-2, 2)] in
-  begin
   match (self_side pc (x,y)) with
  (*self side*)
  | true -> List.flatten (List.map (fun p ->
      if self_side pc (x+(fst p), y+(snd p)) &&
         check_position b (x+(fst p)/2, y+(snd p)/2)=None
      then
-      begin
       match (check_position b (x+(fst p), y+(snd p))) with
       |None->  [{start= (x,y); destination = (x+(fst p), y+(snd p));
      piece_captured = None}]
       |Some sth->if sth.team<>pc.team then
-       [{start= (x,y); destination =  (x+(fst p), y+(snd p));
+       [{start= (x,y); destination = p;
         piece_captured = (check_position b p)}]
                  else []
-      end
      else []) raw_pos)
  (*other side of river*)
  | false -> []
-  end
 
 
 let move_advisor (b:board) (pc:piece) ((x,y): position) : step list =
@@ -393,6 +388,7 @@ let update_prev (s:step)  (pv:prev_step) :prev_step =
   | [] -> [s]
   | hd::tl -> begin match tl with
               | []->hd::[s]
+              | h::[] -> hd :: h :: [s]
               | _->tl@[s]
               end
 end
@@ -427,11 +423,14 @@ let additional_rules_1 (b:board) (pv:prev_step) (s:step)=
                   end
              | _ -> true
              end
-(*cannot repeat 3 times*)
+
+(*Currently incorrect-- need to keep track of 5 total steps, not 3*)
+(* (*cannot repeat 3 times*)
 let additional_rules_2 (b:board) (pv:prev_step) (s:step)=
   if List.length pv >=2 then
-    let h1=List.nth pv 0 in
-    let h2=List.nth pv 1 in
+  (*To account for previous step list of length 3*)
+    let h1=List.nth pv (List.length pv -2) in
+    let h2=List.nth pv (List.length pv -1) in
     if (fst h1.start)=(fst s.destination) && (snd h1.start)=(snd s.destination)
      && (fst h1.destination)=(fst s.start) && (snd h1.destination)=(snd s.start)
      && (fst h2.start)=(fst s.start) && (snd h2.destination)=(snd s.destination)
@@ -439,9 +438,9 @@ let additional_rules_2 (b:board) (pv:prev_step) (s:step)=
     then false
     else true
   else true
-
+ *)
 let additional_rules (b:board) (pv:prev_step) (s:step)=
-  if additional_rules_1 b pv s=true && additional_rules_2 b pv s=true
+  if additional_rules_1 b pv s=true (* && additional_rules_2 b pv s=true *)
   then true
   else false
 
@@ -480,20 +479,21 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
   match st.piece_captured with
   | None -> false
   | Some pc -> begin match pc.type_of with
-
     | General -> true
     | _ -> false
   end
 
-(*
+(*In main, still need to ensure that the undos are restricted*)
 let undo (b:board) (ps : prev_step) : prev_step =
-  let rect_step = List.hd ps in
+  let rect_step = List.nth ps (List.length ps - 1) in
   let dest_piece = check_position b rect_step.destination in
   let dest = rect_step.destination in
   let strt = rect_step.start in
-  b.first.((snd dest) -1).((fst dest) -1) <- rect_step.piece_captured;
-  b.first.((snd strt) -1).((fst strt) -1) <- dest_piece
-*)
+  let () = (get_boardArray b).((snd dest) -1).((fst dest) -1) <- rect_step.piece_captured in
+  let () = (get_boardArray b).((snd strt) -1).((fst strt) -1) <- dest_piece in
+  List.tl (List.rev ps)
+
+
 (*
 let string_of_step stp = begin match stp with
   | {start = st; destination = ds; piece_captured=pcap} ->
