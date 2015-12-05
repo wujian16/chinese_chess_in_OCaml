@@ -106,6 +106,7 @@ let print_board (b: board) : unit =
 (* let run_board = print_board (init_board) *)
 
 let rec init_game () : game_state =
+  print_endline "Welcome to super cool command line Chinese Chess!";
   {init_GameState with board = Board.init()} |> choose_mode
 
 
@@ -145,10 +146,13 @@ and run_undo (gs:game_state) : game_state =
 and first_coor (gs:game_state) : game_state =
    let () = print_board gs.board in
    let () = print_endline "type the first piece you want to move, in the form
-   'x, y' \n Type 'undo' to undo one round." in
+   'x, y' \n Type 'undo' to undo one round.\n Type 'quit' to restart" in
   try( let input = read_line () in
-   if input = "undo" then run_undo gs else
-   let pos = input |> input_Parse |> position_Convert  in
+    match input with
+    | "undo" -> print_endline "Undo." ; run_undo gs
+    | "quit" -> let () = print_endline "Quit game."
+                 in init_game()
+    | sth ->  let pos = input |> input_Parse |> position_Convert  in
    if ( pos |> (valid_first_coor gs )) then
    let () =
    print_endline ("You are moving the piece "^(piece_name (check_position gs.board pos))) in
@@ -159,10 +163,13 @@ and first_coor (gs:game_state) : game_state =
 and second_coor (gs: game_state) : game_state =
    let () = print_endline "type the destination you want to go to, in the form
    'x, y' \n Type 'back' to retype your starting position." in
-   try (let input = read_line () in if input = "back" then
-    let () = print_endline "retype starting point like (x,y)."
-  in first_coor gs else
-   let pos = input |> input_Parse |> position_Convert  in
+   try (let input = read_line () in
+   match input with
+    | "back" -> let () = print_endline "retype starting point like (x,y)."
+                 in first_coor gs
+    | "quit" -> let () = print_endline "Quit game."
+                 in init_game()
+    |  sth -> let pos = sth |> input_Parse |> position_Convert  in
    begin
    match pos |> valid_snd_coor gs with
    | true ->
