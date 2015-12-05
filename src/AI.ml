@@ -32,7 +32,7 @@ let compared s1 s2=
 	(Hashtbl.find nHistoryTable (s2.start, s2.destination))
 	-(Hashtbl.find nHistoryTable (s1.start, s1.destination))
 
-let check_end_game (b:board) (p:prev_step) : bool = 
+let check_end_game (b:board) (p:prev_step) : bool =
 	(generate_all_moves b p true = []) || (generate_all_moves b p false = []) ||
 	(not ((check_alive b "GR") && (check_alive b "GB")))
 
@@ -45,7 +45,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 	else if check_end_game b p then (cnt := !cnt + 1; (*print_int !cnt; Printf.printf "\n";*)(eval_board b),[])
 	else
 
-		(if curr_rd = ai_col then 
+		(if curr_rd = ai_col then
 			(let result = ref min_int in
 			let v = ref alpha in
 			let i = ref 0 in
@@ -54,7 +54,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 			(*let h_e = (generate_piece_move b p canR1) in
 			begin match h_e with*)
 			| [] -> (depth_left - max_int,[])
-			| l -> 
+			| l ->
 				List.iter (fun a -> if (in_bound a.start)&&(in_bound a.destination) then ()
 					else print_step a) l;
 				(*List.iter print_step l;*)
@@ -81,7 +81,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 						(*Printf.printf "Now the best steps are: \n";
 						List.iter print_step !best_steps*)
 						)
-					else if (score > beta) then 
+					else if (score > beta) then
 						((*Printf.printf "Score is greater than beta, impossible, break immediately\n";*)
 						result := beta;
 					  flag:=true
@@ -97,13 +97,13 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 						(all_moves.(!i).start,all_moves.(!i).destination)
 					  new_val)
           			else ());
-					cnt := !cnt + 1; 
+					cnt := !cnt + 1;
 					i:= !i+1
 				done;
 				(*print_int !cnt;Printf.printf "\n";*)
-				if !result = beta then (*(Printf.printf "Break with beta %d; Best steps are: \n" beta; 
-										List.iter print_step !best_steps;*) (beta,!best_steps) 
-				else (*(Printf.printf "Node's value is %d; Best steps are: \n" !v; 
+				if !result = beta then (*(Printf.printf "Break with beta %d; Best steps are: \n" beta;
+										List.iter print_step !best_steps;*) (beta,!best_steps)
+				else (*(Printf.printf "Node's value is %d; Best steps are: \n" !v;
 					List.iter print_step !best_steps;*) (!v,!best_steps)
 			end)
 
@@ -144,7 +144,7 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 						(*Printf.printf "Now the best steps are: \n";
 						List.iter print_step !best_steps*)
 						)
-					else if (score < alpha) then 
+					else if (score < alpha) then
 						(*(Printf.printf "Score is less than alpha, impossible, break immediately\n";*)
 						(result := alpha;
 					  flag:=true)
@@ -158,18 +158,18 @@ let rec alphaBeta (alpha:int) (beta:int) (depth_left:int)
 					  new_val)
 
 					else ());
-					cnt := !cnt + 1; 
+					cnt := !cnt + 1;
 					i:= !i+1
 				done;
 				(*print_int !cnt;Printf.printf "\n";*)
 				if !result = alpha then (*
-					(Printf.printf "Break with beta %d; Best steps are: \n" alpha; 
-										List.iter print_step !best_steps;*) (alpha,!best_steps) 
-				else (*(Printf.printf "Node's value is %d; Best steps are: \n" !v; 
+					(Printf.printf "Break with beta %d; Best steps are: \n" alpha;
+										List.iter print_step !best_steps;*) (alpha,!best_steps)
+				else (*(Printf.printf "Node's value is %d; Best steps are: \n" !v;
 					List.iter print_step !best_steps; *)(!v,!best_steps)
 			end)
 		)
-		
+
 
 (*
 let alphaBetaMax (alpha:int ref) (beta:int ref) (depth_left:int)
@@ -225,20 +225,21 @@ let best_move_v0 (n:int) (b:board) (p:prev_step) : int*step list =
 
 (*generate the best possible moves for the futural several steps
 * int below is how many steps we predict for the future*)
-let best_move (n:int) (b:board) (tran:transposition_table) (hist:history_table) : step list = 
+let best_move (n:int) (b:board) (tran:transposition_table) (hist:history_table) : step list =
 raise TODO
 
 (*update the historical information*)
-let update_AI (b:board) (s:step) (tran:transposition_table) (hist:history_table) 
-				: transposition_table * history_table = 
+let update_AI (b:board) (s:step) (tran:transposition_table) (hist:history_table)
+				: transposition_table * history_table =
   raise TODO
 
-let easy_AI (b:board) (p:prev_step) : step = 
-  				
-  let (score,pred) = best_move_v0 2 b p in 
-  List.hd pred
-  
-let hard_AI (b:board) (p:prev_step) : step = 
+let easy_AI (b:board) (p:prev_step) : step =
 
-  let (score,pred) = best_move_v0 4 b p in 
+  let (score,pred) = best_move_v0 2 b p in
   List.hd pred
+
+let hard_AI (b:board) (p:prev_step) : step =
+let res =
+  let (score,pred) = best_move_v0 3 b p in
+  List.hd pred
+in let () = print_step res in res

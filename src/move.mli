@@ -4,6 +4,7 @@ open Board
 (* the following type tells one step during one game*)
 type step={start:position; destination: position; piece_captured: piece option}
 
+val init_step : unit -> step
 (* record the previous step*)
 type prev_step
 
@@ -34,4 +35,8 @@ val generate_piece_move: board-> prev_step-> piece-> step list
 val generate_all_moves: board-> prev_step-> bool-> step list
 
 (* print for debugging purpose*)
-val print_step: step->unit 
+val print_step: step->unit
+
+val undo_one : board -> prev_step -> prev_step
+
+val undo : board -> prev_step -> prev_step

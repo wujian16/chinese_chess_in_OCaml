@@ -14,10 +14,11 @@ let init_PrevStep () = []
 let in_bound ((x,y):position) : bool=
   x>=1 && x<=9 && y>=1 && y <=10
 
+let init_step () = {start = (1,1); destination = (1,1); piece_captured = None}
 let in_square (pc:piece) ((x,y): position) : bool =
 match pc.team with
-| true  -> x>=4 &&x<=6 && y>=1 && y<=3
-| false -> x>=4 && x <= 6 && y>=8 && y<=10
+  | true  -> x>=4 &&x<=6 && y>=1 && y<=3
+  | false -> x>=4 && x <= 6 && y>=8 && y<=10
 
 
 let self_side (pc:piece) ((x,y): position):bool=
@@ -464,10 +465,10 @@ let generate_piece_move (b:board) (pv:prev_step) (p:piece)=
 
 let generate_all_moves (b:board) (p:prev_step) (side:bool): step list=
   let all_pieces = get_alive_side b side in
-  let each_steps = List.map 
+  let each_steps = List.map
     (fun a -> generate_piece_move b p a) all_pieces in
   List.flatten each_steps
-  
+
 
 let check_valid (b: board) (pv:prev_step) (st:step) :bool =
   let start = st.start in
@@ -489,14 +490,17 @@ let check_win (b:board) (pv : prev_step) (st:step) :bool=
   end
 
 (*In main, still need to ensure that the undos are restricted*)
-let undo (b:board) (ps : prev_step) : prev_step =
-  let rect_step = List.nth ps (List.length ps - 1) in
+let undo_one (b:board) (ps : prev_step) : prev_step =
+  let rect_step = List.hd ps in
   let dest_piece = check_position b rect_step.destination in
   let dest = rect_step.destination in
   let strt = rect_step.start in
   let () = (get_boardArray b).((snd dest) -1).((fst dest) -1) <- rect_step.piece_captured in
   let () = (get_boardArray b).((snd strt) -1).((fst strt) -1) <- dest_piece in
-  List.tl (List.rev ps)
+  List.tl ps
+
+let undo (b:board) (ps : prev_step ) : prev_step =
+  undo_one b ps |> undo_one b
 
 
 (*
