@@ -93,6 +93,7 @@ let print_piece (p : piece option) : unit =
     Printf.printf "%s %s" clr pc.print_name
 (*\xE2\x95\xB1 \xE2\x95\xB2  diagonal unicodes*)
 
+
 let print_board (b: board) : unit =
   let line_counter = ref 0 in
   Printf.printf "%s%s" "\027[37m" "     1  2  3  4  5  6  7  8  9\n";
@@ -116,15 +117,20 @@ and choose_mode (gs: game_state) : game_state =
   match  lowercase (input) with
   | "ai" -> choose_color {gs with game_mode = true}
   | "2p" -> choose_color {gs with game_mode = false}
-
-  | _ -> choose_mode gs
+  | "quit" -> run_quit gs
+  | "restart" -> run_restart gs
+  | _ -> print_endline "cannot recognize, please retype"; choose_mode gs
 (* let the user choose color, red always goes firs *)
 and choose_color (gs:game_state) : game_state =
-  let () = print_endline "Type 'Red' to play first, type 'green' to play later." in
+  let () = print_endline "Type 'red' to play first, type 'green' to play later.
+   Type 'restart' to restart.
+   Type 'quit' to quit game."   in
   let input = read_line () in
   match lowercase (input) with
   | "red" -> run_round {gs with color = true}
   | "green" -> run_round {gs with color = false}
+  | "quit" -> run_quit gs
+  | "restart" -> run_restart gs
   | _ -> print_endline "please type either 'red' or 'green'"; choose_color gs
 (* run a round *)
 and run_round (gs:game_state) : game_state =
@@ -140,18 +146,34 @@ and run_round (gs:game_state) : game_state =
     let () = print_endline "human running" in run_human gs
 
 and run_undo (gs:game_state) : game_state =
+  print_endline "Undo.";
   let new_pv = undo gs.board gs.prev_step in
   run_round {gs with prev_step = new_pv }
+and run_quit (gs:game_state) : game_state =
+  print_endline "Byebye!";
+  exit 0
+  (*to the beginning of the game*)
+and run_restart (gs:game_state) : game_state =
+  print_endline "You restart.";
+  init_game ()
+and run_back (gs:game_state) : game_state =
+  let () = print_endline "retype starting point like (x,y)."
+                 in first_coor gs
+
+
 
 and first_coor (gs:game_state) : game_state =
    let () = print_board gs.board in
    let () = print_endline "type the first piece you want to move, in the form
-   'x, y' \n Type 'undo' to undo one round.\n Type 'quit' to restart" in
+   'x, y' .
+   Type 'undo' to undo one round.
+   Type 'restart' to restart.
+   Type 'quit' to quit game." in
   try( let input = read_line () in
     match input with
-    | "undo" -> print_endline "Undo." ; run_undo gs
-    | "quit" -> let () = print_endline "Quit game."
-                 in init_game()
+    | "undo" ->  run_undo gs
+    | "restart" -> run_restart gs
+    | "quit" -> run_quit gs
     | sth ->  let pos = input |> input_Parse |> position_Convert  in
    if ( pos |> (valid_first_coor gs )) then
    let () =
@@ -160,15 +182,19 @@ and first_coor (gs:game_state) : game_state =
    second_coor {gs with curr_step = st} else first_coor gs)
  with _ -> print_endline "invalid input, retype a coordinate"; first_coor gs
 
+(* operate on second coordinate *)
 and second_coor (gs: game_state) : game_state =
    let () = print_endline "type the destination you want to go to, in the form
-   'x, y' \n Type 'back' to retype your starting position." in
+   'x, y'.
+   Type 'back' to retype your starting position.
+   Type 'restart' to restart game.
+   Type 'quit' to quit game.
+   " in
    try (let input = read_line () in
    match input with
-    | "back" -> let () = print_endline "retype starting point like (x,y)."
-                 in first_coor gs
-    | "quit" -> let () = print_endline "Quit game."
-                 in init_game()
+    | "back" -> run_back gs
+    | "quit" ->  run_quit gs
+    | "restart" -> run_restart gs
     |  sth -> let pos = sth |> input_Parse |> position_Convert  in
    begin
    match pos |> valid_snd_coor gs with
@@ -178,20 +204,22 @@ and second_coor (gs: game_state) : game_state =
     if check_valid gs.board gs.prev_step st then begin
 
       let () = (print_endline ("You are moving to "^
-        (string_of_position pos)^"and captured "^(piece_name (pos |> check_position gs.board)))) in
+        (string_of_position pos)^"and captured "
+        ^(piece_name (pos |> check_position gs.board)))) in
       run_step {gs with curr_step = st } end else
-      let () = print_endline "Somehow violated the rule" in second_coor gs
+      let () = print_endline "Somehow violated the rule,
+      retype a coordinate" in second_coor gs
    | false -> print_endline "invalid coordinate"; second_coor gs
  end )
  with _ -> print_endline "invalid input, retype a coordinate"; second_coor gs
-
+(* update gs functions *)
 
 and run_step (gs : game_state ) : game_state =
 
     match check_win gs.board gs.prev_step gs.curr_step with
       | true -> let () = print_endline
       ((if gs.curr_color then "RED" else "GREEN" )^" wins! " ) in init_game ()
-      | false -> let () =  print_endline "continue---"  in
+      | false -> let () =  print_endline "continue playing"  in
     let () = update_board gs.board gs.curr_step in
       run_round {gs with prev_step = gs.prev_step |>
       update_prev gs.curr_step ; curr_color= not (gs.curr_color)}
