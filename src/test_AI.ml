@@ -33,11 +33,11 @@ do
 	i := !i + 1
 done;
 *)
-<<<<<<< HEAD
+(*
 let t=Unix.gettimeofday () in
 let (score, pred) = best_move_v0 2 b0 prev0 true in
 print_float (Unix.gettimeofday () -. t);
-=======
+*)
 (*
 let score=quiescence min_int max_int 6 b0 prev0 true true in
 print_int score
@@ -64,7 +64,6 @@ List.iter print_step !result
 *)
 
 let (score, pred) = best_move_v0 2 b0 prev0 true in
->>>>>>> 99147c41b3d62ead372a65d6c3d93a169319474a
 print_int score;
 List.iter print_step pred;
 print_int !cnt
