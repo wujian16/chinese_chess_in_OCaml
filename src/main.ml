@@ -9,6 +9,7 @@ open Piece
 open Score
 open AI
 open Array
+open Bytes
 
 (*types for commands*)
 type inputs = Undo| AI | TwoPlayer| Help | Forfeit | Restart| Exception| StartCo |
@@ -21,41 +22,44 @@ let previous_Step = init_PrevStep()
 (* 1P vs AI is true and 2P is false
 Red is true and black is falseteble *)
 let curr_Board  = Board.init()
-type game_state = {mutable game_mode: bool;
-mutable color: bool; mutable started: bool; mutable board: board}
+let init_Step = Move.init_step ()
+type game_state =
+{
+(* AI  or 2 person  true=AI*)
+game_mode: bool;
+(* player choose color, red = true*)
+color: bool;
+(* who is playing, red = true *)
+curr_color : bool ;
+ (* start the new game *)
+started: bool;
+(* board carrying *)
+board: board;
+prev_step : prev_step;
+curr_step : step;
+undon: bool;
+hard: bool
+}
 
+(* if red goes first *)
+let init_GameState  =
+  {game_mode = true;
+  color = true;
+  curr_color = true;
+  started = false; board = curr_Board;
+  prev_step = init_PrevStep() ;
+  curr_step = init_step () ;
+  undon = false;
+  hard = false
+  }
 
-let curr_GameState () = {game_mode = true; color = true; started = false; board = curr_Board}
-
-
-let line_counter = ref 0
-
-let print_piece (p : piece option) : unit =
-  match  p with
-  | None -> Printf.printf "%s%s" "\027[37m" "  -"
-  (* red // green *)
-  | Some pc -> let clr = if pc.team then "\027[31m " else "\027[32m " in
-    Printf.printf "%s %s" clr pc.print_name
-
-
-let print_board (b: board) : unit =
-  Printf.printf "%s%s" "\027[37m" "     1  2  3  4  5  6  7  8  9\n";
-  Array.iter (fun inner_arr ->
-  incr line_counter;
-  if (!line_counter = 10) then Printf.printf "%s %d" "\027[37m" (!line_counter)
-  else Printf.printf "%s %d" "\027[37m " (!line_counter) ;
-  Array.iter print_piece inner_arr; Printf.printf "%s\n" "\027[37m")
-  (get_boardArray curr_Board)
-
-let run_board = print_board (curr_Board)
-
-let comma = Str.regexp ","
-
+(* following funtion all have readline! *)
 let input_Parse (input : bytes) : bytes list =
-  let input = Str.bounded_split comma input 2 in
+  let comma = Str.regexp "," in
+  let input = Str.bounded_split comma (String.trim input) 2 in
     if List.length input > 1
       then [List.hd input] @ List.tl input
-    else input
+    else failwith "Incorrect input"
 
 (*convert [x;y] to a position *)
 
@@ -65,132 +69,195 @@ let rec position_Convert (input: bytes list): int * int =
   else
     failwith "Incorrect coordinate size"
 
-(*Gets the piece option at the given parsed location*)
-let check_ValidCoor (p: position) (b: board) : piece option =
-  check_position b p
+let valid_first_coor (gs  : game_state) (ps : position) : bool =
 
-  (* check whether there is a piece at this position *)
-let is_piece (b:board ) (p:position): bool =
-  let po = check_position b p in
-  match po with
-  | None -> false
-  | Some _ -> true
-
-
-(*validate first coordinate(piece want to move), include:
-  there is a piece at that position
-  the piece is of the current team*)
-let check_first_coor (ps : position) (gs  : game_state): bool =
-
-    match check_position ps with
+    match check_position gs.board ps with
     | None -> let () = print_endline "Nothing at this position" in false
-    | Some x -> if (curr_GameState.color = x.team) then
-                  let () = Printf.printf "%s\n" x.name in  true
+    | Some x -> if (gs.curr_color = x.team) then true
                 else
-                  failwith "This piece is not of the current player's color!"
-  with
-    _ -> print_endline "Please input a valid starting coordinate."
-
-  let rec repl1 (gs : game_state) : game_state =
-  let input = read_line () in
-   let input_pos = input |> input_Parse |> position_Convert in
-   is_piece gs.board input_pos &&
+                let () = print_endline "This piece is not of your team's color!" in  false
 
 
-(* second coordinate *)
-let rec check_snd_coor  (board:board) :bool=
-  let input2 = read_line() in
-  (* let second_coordinate =
-  ( *)try
-  let sndparsed_Input = input_Parse input2 in
-  let check_Converted_Position = check_ValidCoor sndparsed_Input board in
-    match check_Converted_Position with
+let valid_snd_coor (gs  : game_state) (ps : position) : bool =
+    match check_position gs.board ps  with
     | None -> true
-    | Some x -> (Printf.printf "%s\n" x.name); true
-  with
-    _ -> print_endline "Please input a valid starting coordinate."; repl2 (board)
+    | Some x ->  
+        if (gs.curr_color = x.team) then 
+        (print_endline "This piece is of your team's color!"; false)
+        else true
 
-let start_test = repl init_board in
- Printf.printf "%B" start_test
-let start_test2 = repl2(init_board)
-
-(* let position_Convert (input: bytes list) =
-  (int_of_string (List.hd input), int_of_string (List.hd (List.rev input))) *)
-(* let command_undo  =
-  TODO *)
-
-
-
-let assign_Inputs (input: bytes list) =
- function
-  | [] ->           Exception
-  | "ai" ->         AI
-  | "undo" ->       Undo
-  | "twoplayer" ->  TwoPlayer
-  | "help" ->       Help
-  | "forfeit" ->    Forfeit
-  | "restart" ->    Restart
-  | h :: t ->       Other_input
+let print_piece (p : piece option) : unit =
+  match  p with
+  | None -> Printf.printf "%s%s" "\027[37m" "  -"
+  (* red // green *)
+  | Some pc -> let clr = if pc.team then "\027[31m " else "\027[32m " in
+    Printf.printf "%s %s" clr pc.print_name
+(*\xE2\x95\xB1 \xE2\x95\xB2  diagonal unicodes*)
 
 
-let rec init_stateGame : unit=
-  (*if (Array.length Sys.argv - 1) = 1 then *)
-  let input = read_line() in
-  match lowercase(input) with
-  | "1p" -> let () = curr_GameState.started <- true in
-            let () = curr_GameState.game_mode <- true in
-            (print_endline "You will now playing against the AI.")
-  | "2p" -> let () = curr_GameState.started <- true in
-            let () = curr_GameState.game_mode <- false in
-            (print_endline "You will be playing against a second human player.")
-  | _ ->    (print_endline "Please type a valid game mode."); init_stateGame()
+let print_board (b: board) : unit =
+  let line_counter = ref 0 in
+  Printf.printf "%s%s" "\027[37m" "     1  2  3  4  5  6  7  8  9\n";
+  Array.iter (fun inner_arr ->
+  incr line_counter;
+  if (!line_counter = 10) then Printf.printf "%s %d" "\027[37m" (!line_counter)
+  else Printf.printf "%s %d" "\027[37m " (!line_counter) ;
+  Array.iter print_piece inner_arr; Printf.printf "%s\n" "\027[37m")
+  (get_boardArray b)
+
+(* let run_board = print_board (init_board) *)
+
+let rec init_game () : game_state =
+  print_endline "\nWelcome to super cool command line Chinese Chess!";
+  {init_GameState with board = Board.init()} |> choose_mode
 
 
-let rec init_stateTeam () =
-  let input = read_line() in
-  match lowercase(input) with
-  | "red"    -> let () = curr_GameState.color <- true in
-                print_endline "You are now playing as Red."
-  | "green"  -> let () = curr_GameState.color <- false in
-                print_endline "You are now playing as Green."
-  | _        -> print_endline ("Please choose a valid team color.")
+and choose_mode (gs: game_state) : game_state =
+  let () = print_endline "Type 'AI' to play with AI or type '2p' to play with another human" in
+  let input = read_line () in
+  match  lowercase (input) with
+  | "ai" -> choose_difficulty {gs with game_mode = true}
+  | "2p" -> choose_color {gs with game_mode = false}
+  | "quit" -> run_quit gs
+  | "restart" -> run_restart gs
+  | _ -> print_endline "Input is not recognized. Please retype valid input."; choose_mode gs
 
 
-  let initialize =
-(print_endline ("Please choose the game mode that you would like to play.\n
-If you would like to play against an AI, type '1P'.\n
-If you would like to play two player, type '2P'. \n " );
-
-let () = init_stateGame() in
-print_endline ("Please select the color of the team you would like to play as:
-  RED goes first GREEN goes second.\n
-  Please type 'red' if you would like to play as red or 'green'
-if you would like to play as green.");
-init_stateTeam())
-
-"Please input the starting coordinates of the piece you would like to move
- in the following format: \"x, y \" where x is the x coordinate and y is the
- y coordinate"
-
- "Please input the end coordinate of the selected piece in the
- same format  \"x, y \". If you would like to select a different piece to move,
- type 'back'"
+(* let the user choose color, red always goes firs *)
+and choose_color (gs:game_state) : game_state =
+  let () = print_endline "Type 'red' to play first, type 'green' to play second.\nType 'restart' to restart.\nType 'quit' to quit game." in
+  let input = read_line () in
+  match lowercase (input) with
+  | "red" -> run_round {gs with color = true}
+  | "green" -> run_round {gs with color = false}
+  | "quit" -> run_quit gs
+  | "restart" -> run_restart gs
+  | _ -> print_endline "Please type either 'red' or 'green'"; choose_color gs
 
 
-"%s general has been killed! %s wins!"
-(*
+and choose_difficulty (gs:game_state) : game_state =
+  let () = print_endline
+ "Type 'easy' to play with a 2110 (easy) AI. \nType 'hard' to play with a 3110 (hard) AI.\nType 'restart' to restart.\nType 'quit' to quit game." in
+  let input = read_line () in
+  match lowercase (input) with
+  | "easy" -> choose_color {gs with hard =false}
+  | "hard" -> choose_color {gs with color = true}
+  | "quit" -> run_quit gs
+  | "restart" -> run_restart gs
+  | _ -> print_endline "Please type either 'easy' or 'hard'"; choose_difficulty gs
 
-  if List.nth (Array.to_list Sys.argv) 1 = "1p"  then
 
-  else if List.nth (Array.to_list Sys.argv) 1 = "2p" then
+(* run a round *)
+and run_round (gs:game_state) : game_state =
+(* let () = print_board gs.board in *)
+(* let () = print_endline "enter run_round" *)
+  let () = print_endline ("This is "^(if gs.curr_color then "red" else "green")^" playing." )in
 
-  else *)
+    if gs.game_mode && (not gs.color)=gs.curr_color then
+    let () = print_endline "This is the AI's turn."
+  in
+  (if gs.hard then run_hard_ai gs else run_easy_ai gs)
+  else
+    let () = print_endline "This is the human's turn." in run_human gs
+
+and run_undo (gs:game_state) : game_state =
+  print_endline "Undo.";
+  let new_pv = (* gs.prev_step *) undo gs.board gs.prev_step  in
+  Printf.printf "undo_one in run_undo is done\n";
+  run_round {gs with prev_step = new_pv }
+and run_quit (gs:game_state) : game_state =
+  print_endline "Byebye!";
+  exit 0
+  (*to the beginning of the game*)
+and run_restart (gs:game_state) : game_state =
+  print_endline "You restarted.";
+  init_game ()
+and run_back (gs:game_state) : game_state =
+  let () = print_endline "Please retype starting point of form 'x,y'."
+                 in first_coor gs
 
 
-(* let start_game input =
+
+and first_coor (gs:game_state) : game_state =
+   let () = print_board gs.board in
+   let () = print_endline "Type the first piece you want to move, in the form 'x, y' .\nType 'undo' to undo one round.\nType 'restart' to restart.\nType 'quit' to quit game." in
+   (* try(  *)let input = read_line () in
+    match input with
+    | "undo" ->  run_undo gs
+    | "restart" -> run_restart gs
+    | "quit" -> run_quit gs
+    | sth ->  (let pos = input |> input_Parse |> position_Convert  in
+              if ( pos |> (valid_first_coor gs )) then
+              (print_endline ("You are moving the piece "^(piece_name (check_position gs.board pos)));
+              let st = {gs.curr_step with start = pos} in
+              second_coor {gs with curr_step = st})
+              else (first_coor gs))
+    (* with _ -> print_endline "Invalid input. Please input a valid coordinate";
+    first_coor gs *)
+
+(* operate on second coordinate *)
+and second_coor (gs: game_state) : game_state =
+   let () = print_endline "Type the destination you want to go to, in the form 'x, y'.\nType 'back' to retype your starting position.\nType 'restart' to restart game.\nType 'quit' to quit game." in
+   try (let input = read_line () in
+   match input with
+    | "back" -> run_back gs
+    | "quit" ->  run_quit gs
+    | "restart" -> run_restart gs
+    |  sth -> let pos = sth |> input_Parse |> position_Convert  in
+   begin
+   match pos |> valid_snd_coor gs with
+   | true ->
+      let st = {gs.curr_step with destination = pos;
+    piece_captured = (pos |> check_position gs.board)} in
+    if check_valid gs.board gs.prev_step st then begin
+
+      let () = (print_endline ("You are moving to "^
+        (string_of_position pos)^"and captured "
+        ^(piece_name (pos |> check_position gs.board)))) in
+      run_step {gs with curr_step = st } end else
+      let () = print_endline "The inputted coordinate produces an invalid step. Please retype a valid coordinate"
+      in second_coor gs
+   | false -> print_endline "Invalid coordinate."; second_coor gs
+ end )
+ with _ -> print_endline "Invalid input. Retype a valid coordinate"; second_coor gs
+(* update gs functions *)
+
+and run_step (gs : game_state ) : game_state =
+
+    match check_win gs.board gs.prev_step gs.curr_step with
+      | true -> let () = print_endline
+      ((if gs.curr_color then "RED" else "GREEN" )^" wins! " ) in init_game ()
+      | false -> let () =  print_endline "Continue playing"  in
+    let () = update_board gs.board gs.curr_step in
+      run_round {gs with prev_step = gs.prev_step |>
+      update_prev gs.curr_step ; curr_color= not (gs.curr_color)}
 
 
-let rec run_game =
-  choose_
-  initialize_board;
- *)
+and run_human (gs: game_state ) : game_state =
+  gs |> first_coor |>second_coor
+
+
+and run_hard_ai (gs: game_state) : game_state =
+  let () = print_board gs.board in
+  let () = print_endline "The AI is thinking. Please wait patiently." in
+  let bst_step =  hard_AI gs.board gs.prev_step (not gs.color) in
+  let up_gs = {gs with curr_step = bst_step} in
+  run_step up_gs
+
+and run_easy_ai (gs: game_state) : game_state =
+  let () = print_board gs.board in
+  let () = print_endline "The AI is thinking. Please wait patiently." in
+  let bst_step =  easy_AI gs.board gs.prev_step (not gs.color) in
+  let up_gs = {gs with curr_step = bst_step} in
+  run_step up_gs
+
+let _ = init_game ()
+
+
+
+
+
+
+
+
+

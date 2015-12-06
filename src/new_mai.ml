@@ -75,15 +75,16 @@ let valid_first_coor (gs  : game_state) (ps : position) : bool =
     | None -> let () = print_endline "Nothing at this position" in false
     | Some x -> if (gs.curr_color = x.team) then true
                 else
-                let () = print_endline "This piece is not of the current player's color!" in  false
+                let () = print_endline "This piece is not of your team's color!" in  false
 
 
 let valid_snd_coor (gs  : game_state) (ps : position) : bool =
-
     match check_position gs.board ps  with
     | None -> true
-    | Some x ->  true
-
+    | Some x ->  
+        if (gs.curr_color = x.team) then 
+        (print_endline "This piece is of your team's color!"; false)
+        else true
 
 let print_piece (p : piece option) : unit =
   match  p with
@@ -120,6 +121,8 @@ and choose_mode (gs: game_state) : game_state =
   | "quit" -> run_quit gs
   | "restart" -> run_restart gs
   | _ -> print_endline "Input is not recognized. Please retype valid input."; choose_mode gs
+
+
 (* let the user choose color, red always goes firs *)
 and choose_color (gs:game_state) : game_state =
   let () = print_endline "Type 'red' to play first, type 'green' to play second.\nType 'restart' to restart.\nType 'quit' to quit game." in
@@ -130,7 +133,8 @@ and choose_color (gs:game_state) : game_state =
   | "quit" -> run_quit gs
   | "restart" -> run_restart gs
   | _ -> print_endline "Please type either 'red' or 'green'"; choose_color gs
-(* run a round *)
+
+
 and choose_difficulty (gs:game_state) : game_state =
   let () = print_endline
  "Type 'easy' to play with a 2110 (easy) AI. \nType 'hard' to play with a 3110 (hard) AI.\nType 'restart' to restart.\nType 'quit' to quit game." in
@@ -142,6 +146,8 @@ and choose_difficulty (gs:game_state) : game_state =
   | "restart" -> run_restart gs
   | _ -> print_endline "Please type either 'easy' or 'hard'"; choose_difficulty gs
 
+
+(* run a round *)
 and run_round (gs:game_state) : game_state =
 (* let () = print_board gs.board in *)
 (* let () = print_endline "enter run_round" *)
@@ -156,7 +162,8 @@ and run_round (gs:game_state) : game_state =
 
 and run_undo (gs:game_state) : game_state =
   print_endline "Undo.";
-  let new_pv = undo gs.board gs.prev_step in
+  let new_pv = (* gs.prev_step *) undo gs.board gs.prev_step  in
+  Printf.printf "undo_one in run_undo is done\n";
   run_round {gs with prev_step = new_pv }
 and run_quit (gs:game_state) : game_state =
   print_endline "Byebye!";
@@ -174,19 +181,19 @@ and run_back (gs:game_state) : game_state =
 and first_coor (gs:game_state) : game_state =
    let () = print_board gs.board in
    let () = print_endline "Type the first piece you want to move, in the form 'x, y' .\nType 'undo' to undo one round.\nType 'restart' to restart.\nType 'quit' to quit game." in
-  try( let input = read_line () in
+   (* try(  *)let input = read_line () in
     match input with
     | "undo" ->  run_undo gs
     | "restart" -> run_restart gs
     | "quit" -> run_quit gs
-    | sth ->  let pos = input |> input_Parse |> position_Convert  in
-   if ( pos |> (valid_first_coor gs )) then
-   let () =
-   print_endline ("You are moving the piece "^(piece_name (check_position gs.board pos))) in
-   let st = {gs.curr_step with start = pos} in
-   second_coor {gs with curr_step = st} else first_coor gs)
-  with _ -> print_endline "Invalid input. Please input a valid coordinate";
-  first_coor gs
+    | sth ->  (let pos = input |> input_Parse |> position_Convert  in
+              if ( pos |> (valid_first_coor gs )) then
+              (print_endline ("You are moving the piece "^(piece_name (check_position gs.board pos)));
+              let st = {gs.curr_step with start = pos} in
+              second_coor {gs with curr_step = st})
+              else (first_coor gs))
+    (* with _ -> print_endline "Invalid input. Please input a valid coordinate";
+    first_coor gs *)
 
 (* operate on second coordinate *)
 and second_coor (gs: game_state) : game_state =

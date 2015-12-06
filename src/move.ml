@@ -497,17 +497,40 @@ let checked (b:board) (pv:prev_step) (cur_side:bool)=
   List.exists (fun a->check_win b pv a) all_moves
 
 (*In main, still need to ensure that the undos are restricted*)
-let undo_one (b:board) (ps : prev_step) : prev_step =
+(* let undo_one (b:board) (ps : prev_step) : prev_step =
+  Printf.printf " Here is undo_one! \n THe length of prev_step is now: \n";
+  print_int (List.length ps);
   let rect_step = List.hd ps in
+  Printf.printf " \nLIst.hd is done \n";
   let dest_piece = check_position b rect_step.destination in
   let dest = rect_step.destination in
   let strt = rect_step.start in
   let () = (get_boardArray b).((fst dest) ).((snd dest) ) <- rect_step.piece_captured in
   let () = (get_boardArray b).((fst strt) ).((snd strt) ) <- dest_piece in
-  List.tl ps
+  List.tl ps (*need to also update hashtable*) *)
+
+let undo_one (b:board) (ps : prev_step) : prev_step =
+ Printf.printf " Here is undo_one! \n THe length of prev_step is now: \n";
+ print_int (List.length ps);
+ match ps with
+  | [] -> failwith "prev_step is empty."
+  | hd::tl ->  
+    (
+    Printf.printf "THe step being undone is:\n";
+    print_step hd;
+    let rect_step = hd in
+    let dest_piece = check_position b rect_step.destination in
+    let dest = rect_step.destination in
+    let strt = rect_step.start in
+    Printf.printf "Assignment done\n";
+    let () = (get_boardArray b).((snd dest)-1).((fst dest)-1) <- rect_step.piece_captured in
+    Printf.printf "First line done\n";
+    let () = (get_boardArray b).((snd strt)-1).((fst strt)-1) <- dest_piece in
+    Printf.printf "Second line done\n";
+    tl)
 
 let undo (b:board) (ps : prev_step ) : prev_step =
-  undo_one b ps |> undo_one b
+  let temp = undo_one b ps in undo_one b temp
 
 
 (*
