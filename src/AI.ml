@@ -12,7 +12,7 @@ type transposition_table = (string, search_result) Hashtbl.t
 
 type history_table = (string, search_result) Hashtbl.t
 
-let depth_limit=2
+let depth_limit=6
 
 let nHistoryTable=Hashtbl.create (90*90)
 
@@ -77,7 +77,8 @@ let rec quiescence (alpha:int) (beta:int) (depth:int)
     let v = ref alpha in
     let result = ref min_int in
     let sort_moves =
-    if checked b (init_PrevStep ()) (not curr_rd) then
+    if checked b (update_prev {start=(1,1);destination=(1,2);piece_captured=None} p)
+    	(not curr_rd) then
       (* let ()=print_endline "hehehehehe" in *)
       let all_moves = generate_all_moves b p curr_rd in
       List.sort (fun s1 s2->compared_MVV b s1 s2) all_moves
@@ -457,6 +458,6 @@ let easy_AI (b:board) (p:prev_step) (ai_col:bool): step =
 
 let hard_AI (b:board) (p:prev_step) (ai_col:bool): step =
   let res =
-  let (score,pred) = best_move_v0 2 b p ai_col in
+  let (score,pred) = best_move_v0 3 b p ai_col in
   List.hd pred
   in let () = print_step res in res
