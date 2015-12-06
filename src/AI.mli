@@ -17,18 +17,12 @@ type history_table
 
 val cnt: int ref
 
+(*Static search with quiescence algorithm; returns the score of a leaf*)
 val quiescence: int->int->int->board->prev_step->bool->bool->int
-
-(* generate the best move using non-iterative alpha beta w/o tables *)
-val best_move_v0: int-> board-> prev_step-> bool-> int*step list
 
 (*generate the best possible moves for the futural several steps
 * int below is how many steps we predict for the future*)
-val best_move: int-> board-> transposition_table-> history_table-> step list
-
-(*update the historical information*)
-val update_AI:
-  board-> step-> transposition_table -> history_table-> transposition_table * history_table
+val best_move_v0: int-> board-> prev_step-> bool-> int*step list
 
 (* AI generating a random valid step*)
 val random_AI:
