@@ -14,7 +14,7 @@ Piece Legend: What is each piece?
 ♗ AKA 仕/士 AKA advisor
 ♔ AKA 帥/將  AKA general
 ♙ AKA 兵 /卒 AKA soldier
-☢AKA 炮/砲 AKA cannon
+☢ AKA 炮/砲 AKA cannon
 
 Pieces: What do they do? 
 Please refer to https://en.wikipedia.org/wiki/Xiangqi for in-depth explanations to how these pieces are moved.
